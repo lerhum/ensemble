@@ -1,0 +1,49 @@
+@import "@fontsource/manrope/400.css";
+@import "@fontsource/manrope/500.css";
+@import "@fontsource/manrope/600.css";
+@import "@fontsource/manrope/700.css";
+@import "@fontsource/manrope/800.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Jetons shadcn dérivés de la palette Ensemble (HSL) */
+    --background: 0 0% 100%;
+    --foreground: 211 52% 12%; /* #0F1F30 */
+    --card: 0 0% 100%;
+    --card-foreground: 211 52% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 211 52% 12%;
+    --primary: 4 68% 55%; /* corail #DA4A40 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 13% 96%; /* #F4F5F7 */
+    --secondary-foreground: 211 52% 12%;
+    --muted: 210 13% 96%;
+    --muted-foreground: 214 13% 49%; /* #6B7A8D */
+    --accent: 210 18% 95%; /* #EEF1F4 */
+    --accent-foreground: 213 54% 24%; /* navy */
+    --destructive: 4 56% 50%; /* #C7443A */
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 13% 90%; /* #E1E4E8 */
+    --input: 214 13% 90%;
+    --ring: 213 54% 24%; /* navy */
+    --radius: 0.75rem; /* 12px */
+
+    /* Accent thématisé par école (écrasé au runtime depuis event.couleurTheme) */
+    --accent-brand: #da4a40;
+  }
+
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+  h1, h2, h3 {
+    letter-spacing: -0.02em;
+  }
+}
