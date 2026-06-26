@@ -1,5 +1,5 @@
 # Stack de dev local — simule la prod (Postgres + API Hono + Web Vite).
-# `docker compose up` suffit : db monte → migrate installe deps + migre + seed →
+# `docker compose up` suffit : db monte → migrate installe deps + migre →
 # api démarre → web démarre (proxy /api → api).
 #
 # ⚠️ Dev local uniquement. En prod : web → Cloudflare Pages, api → Worker,
@@ -36,8 +36,8 @@ services:
       timeout: 3s
       retries: 20
 
-  # One-shot : installe les dépendances (premier run), applique les migrations
-  # Drizzle puis seed la base de démo. Sort en 0 ; api/web attendent sa réussite.
+  # One-shot : installe les dépendances (premier run) et applique les migrations
+  # Drizzle. Sort en 0 ; api/web attendent sa réussite. Lancer `make seed` pour le contenu de démo.
   migrate:
     build: { context: ., dockerfile: Dockerfile.dev }
     depends_on:
@@ -51,8 +51,7 @@ services:
     working_dir: /app
     command: >
       sh -c "pnpm install &&
-             pnpm --filter @ensemble/db migrate &&
-             pnpm --filter @ensemble/db seed"
+             pnpm --filter @ensemble/db migrate"
 
   api:
     build: { context: ., dockerfile: Dockerfile.dev }
