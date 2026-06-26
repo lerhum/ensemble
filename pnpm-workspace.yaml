@@ -1,0 +1,9 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# Autorise les seuls scripts de build nécessaires (binaires natifs).
+allowBuilds:
+  esbuild: true
+  workerd: true
+  sharp: false

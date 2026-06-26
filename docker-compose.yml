@@ -1,0 +1,90 @@
+# Stack de dev local — simule la prod (Postgres + API Hono + Web Vite).
+# `docker compose up` suffit : db monte → migrate installe deps + migre + seed →
+# api démarre → web démarre (proxy /api → api).
+#
+# ⚠️ Dev local uniquement. En prod : web → Cloudflare Pages, api → Worker,
+# base → Neon (voir DEPLOY.md). Cloudflare gratuit n'héberge ni Docker ni Postgres.
+
+name: ensemble
+
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-ensemble}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ensemble}
+      POSTGRES_DB: ${POSTGRES_DB:-ensemble}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ensemble} -d ${POSTGRES_DB:-ensemble}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  # One-shot : installe les dépendances (premier run), applique les migrations
+  # Drizzle puis seed la base de démo. Sort en 0 ; api/web attendent sa réussite.
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgres://ensemble:ensemble@db:5432/ensemble}
+      DB_DRIVER: node
+    volumes:
+      - .:/app
+      - pnpm_store:/root/.local/share/pnpm/store
+    working_dir: /app
+    command: >
+      sh -c "pnpm install &&
+             pnpm --filter @ensemble/db migrate &&
+             pnpm --filter @ensemble/db seed"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgres://ensemble:ensemble@db:5432/ensemble}
+      DB_DRIVER: node
+      API_PORT: ${API_PORT:-8787}
+      SESSION_SECRET: ${SESSION_SECRET:-dev-secret-change-me-please-32chars-min}
+      WEB_ORIGIN: ${WEB_ORIGIN:-http://localhost:5173}
+    ports:
+      - "${API_PORT:-8787}:8787"
+    volumes:
+      - .:/app
+      - pnpm_store:/root/.local/share/pnpm/store
+    working_dir: /app
+    command: pnpm --filter @ensemble/api dev
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      VITE_API_PROXY: ${VITE_API_PROXY:-http://api:8787}
+    ports:
+      - "${WEB_PORT:-5173}:5173"
+    volumes:
+      - .:/app
+      - pnpm_store:/root/.local/share/pnpm/store
+    working_dir: /app
+    command: pnpm --filter @ensemble/web dev --host 0.0.0.0 --port 5173
+
+volumes:
+  pgdata:
+  pnpm_store:

@@ -1,0 +1,12 @@
+# Image de dev partagée par les services api / web / migrate.
+# Le code source est monté en volume (bind) ; les dépendances sont installées
+# au premier `up` par le service `migrate`, puis partagées via le mount.
+FROM node:24-bookworm-slim
+
+# Outils utiles (pg_isready côté healthcheck est dans l'image postgres, pas ici).
+RUN corepack enable
+
+WORKDIR /app
+
+# Pas de COPY : tout est monté en volume par docker-compose (dev only).
+CMD ["node", "--version"]

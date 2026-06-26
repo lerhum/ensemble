@@ -1,0 +1,33 @@
+# Added by code-review-graph
+.code-review-graph/
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Builds
+dist/
+build/
+.output/
+*.tsbuildinfo
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Cloudflare / Wrangler
+.wrangler/
+.dev.vars
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor / OS
+.DS_Store
+.idea/
+*.swp
+
+# Local uploads (banner storage dev)
+apps/api/.uploads/
