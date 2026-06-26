@@ -1,8 +1,9 @@
 import * as React from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { Check, Upload } from "lucide-react";
 import type { EventDetailDTO } from "@ensemble/db/shared";
 import { api } from "@/lib/api";
-import { useEvent, DEMO_SLUG } from "@/lib/useEvent";
+import { useAdminEvent } from "@/lib/useEvent";
 import { applyAccent } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 import { AdminLayout } from "@/components/admin/AdminLayout";
@@ -13,15 +14,38 @@ import { Textarea } from "@/components/ui/textarea";
 
 const SWATCHES = ["#1C3A5E", "#DA4A40", "#2F7E59", "#E8A13A", "#7A5CC0"];
 
+function toFrenchDate(iso: string): string {
+  return new Intl.DateTimeFormat("fr-BE", { dateStyle: "full" }).format(
+    new Date(iso + "T12:00:00"),
+  );
+}
+
 export default function AdminDashboardPage() {
-  const { event, loading, reload } = useEvent(DEMO_SLUG);
-  if (loading || !event) {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { event, loading, error, reload } = useAdminEvent(id ?? "");
+
+  if (!id) { navigate("/admin"); return null; }
+
+  if (loading) {
     return (
-      <AdminLayout eyebrow="Événements · Édition" title="Créer un événement">
+      <AdminLayout eyebrow="Événements · Édition" title="Chargement…">
         <p className="text-label">Chargement…</p>
       </AdminLayout>
     );
   }
+
+  if (error || !event) {
+    return (
+      <AdminLayout eyebrow="Événements · Édition" title="Événement introuvable">
+        <p className="text-label">{error ?? "Cet événement n'existe pas."}</p>
+        <Button className="mt-4" variant="outline" onClick={() => navigate("/admin")}>
+          ← Retour aux événements
+        </Button>
+      </AdminLayout>
+    );
+  }
+
   return <DashboardInner event={event} reload={reload} />;
 }
 
@@ -29,6 +53,7 @@ function DashboardInner({ event, reload }: { event: EventDetailDTO; reload: () =
   const [form, setForm] = React.useState({
     nom: event.nom,
     date: event.date,
+    dateIso: event.dateIso ?? "",
     horaires: event.horaires,
     lieu: event.lieu,
     histoire: event.histoire,
@@ -45,6 +70,15 @@ function DashboardInner({ event, reload }: { event: EventDetailDTO; reload: () =
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const setDateIso = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const iso = e.target.value;
+    setForm((f) => ({
+      ...f,
+      dateIso: iso,
+      date: iso ? toFrenchDate(iso) : f.date,
+    }));
+  };
 
   const persist = (patch: Record<string, unknown>) => api.updateEvent(event.id, patch);
 
@@ -68,8 +102,8 @@ function DashboardInner({ event, reload }: { event: EventDetailDTO; reload: () =
 
   return (
     <AdminLayout
-      eyebrow="Événements · Nouveau"
-      title="Créer un événement"
+      eyebrow="Événements · Édition"
+      title={event.nom || "Nouvel événement"}
       actions={
         <>
           <Button variant="outline" onClick={() => publish("brouillon")} disabled={saving}>
@@ -93,10 +127,13 @@ function DashboardInner({ event, reload }: { event: EventDetailDTO; reload: () =
             </Field>
             <div className="grid grid-cols-2 gap-4">
               <Field label="Date">
-                <Input value={form.date} onChange={set("date")} onBlur={() => persist({ date: form.date })} />
+                <Input type="date" value={form.dateIso} onChange={setDateIso} onBlur={() => persist({ dateIso: form.dateIso || null, date: form.date })} />
+                {form.date && (
+                  <p className="mt-1 text-[12px] text-label capitalize">{form.date}</p>
+                )}
               </Field>
               <Field label="Horaires">
-                <Input value={form.horaires} onChange={set("horaires")} onBlur={() => persist({ horaires: form.horaires })} />
+                <Input value={form.horaires} onChange={set("horaires")} placeholder="14h00 – 20h00" onBlur={() => persist({ horaires: form.horaires })} />
               </Field>
             </div>
             <Field label="Lieu">
@@ -185,7 +222,7 @@ function DashboardInner({ event, reload }: { event: EventDetailDTO; reload: () =
                 {form.nom}
               </h3>
               <p className="mt-0.5 text-[13px] text-label">
-                {form.date} · {form.horaires}
+                {form.date || "—"}{form.horaires ? ` · ${form.horaires}` : ""}
               </p>
               <Button variant="brand" size="sm" className="mt-3 w-full">
                 Je participe

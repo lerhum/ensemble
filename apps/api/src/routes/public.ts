@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import { and, eq } from "drizzle-orm";
-import { creneaux, inscriptions, volunteers } from "@ensemble/db";
+import { and, desc, eq } from "drizzle-orm";
+import { creneaux, events, inscriptions, volunteers } from "@ensemble/db";
 import { inscriptionSchema } from "@ensemble/db/shared";
 import type { AppEnv } from "../context.js";
 import { conflict, notFound, validate } from "../errors.js";
@@ -8,9 +8,23 @@ import { buildEventDetailBySlug } from "../dto.js";
 
 export const publicRoutes = new Hono<AppEnv>();
 
+// Événement "en cours" : le prochain publié (dateIso ≥ aujourd'hui), ou le plus récent si aucun futur.
+publicRoutes.get("/events/current", async (c) => {
+  const db = c.get("db");
+  const today = new Date().toISOString().slice(0, 10);
+  const all = await db.query.events.findMany({
+    where: eq(events.statut, "publie"),
+    orderBy: desc(events.dateIso),
+  });
+  if (!all.length) return c.json(null);
+  const upcoming = all.find((e) => e.dateIso && e.dateIso >= today) ?? all[0]!;
+  const detail = await buildEventDetailBySlug(db, upcoming.slug, true);
+  return c.json(detail);
+});
+
 // Page événement publique : event + pôles→tâches→créneaux + compteurs dérivés.
 publicRoutes.get("/events/:slug", async (c) => {
-  const detail = await buildEventDetailBySlug(c.get("db"), c.req.param("slug"));
+  const detail = await buildEventDetailBySlug(c.get("db"), c.req.param("slug"), true);
   if (!detail) throw notFound("Événement introuvable");
   return c.json(detail);
 });

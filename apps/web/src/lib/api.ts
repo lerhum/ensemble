@@ -1,5 +1,6 @@
 // Client API typé. Les types proviennent de @ensemble/db/shared (source unique).
 import type {
+  EventDTO,
   EventDetailDTO,
   InscriptionInput,
   SessionUserDTO,
@@ -58,6 +59,7 @@ export const api = {
   me: () => req<{ user: SessionUserDTO | null }>("/auth/me"),
 
   // — Public —
+  getCurrentEvent: () => req<EventDetailDTO | null>("/events/current"),
   getEvent: (slug: string) => req<EventDetailDTO>(`/events/${slug}`),
   inscrire: (creneauId: string, body: InscriptionInput) =>
     req<{ ok: true; inscrits: number }>(`/creneaux/${creneauId}/inscriptions`, json(body)),
@@ -68,11 +70,15 @@ export const api = {
       headers: { "content-type": "application/json" },
     }),
 
-  // — Admin : événement —
+  // — Admin : événements —
+  listAdminEvents: () => req<EventDTO[]>("/admin/events"),
+  getAdminEvent: (id: string) => req<EventDetailDTO>(`/admin/events/${id}`),
   createEvent: (body: Record<string, unknown>) =>
     req<EventDetailDTO>("/events", json(body)),
   updateEvent: (id: string, body: Record<string, unknown>) =>
     req<EventDetailDTO>(`/events/${id}`, { method: "PATCH", body: JSON.stringify(body), headers: { "content-type": "application/json" } }),
+  duplicateEvent: (id: string) =>
+    req<EventDetailDTO>(`/admin/events/${id}/duplicate`, { method: "POST" }),
   uploadBanner: async (id: string, file: File): Promise<{ url: string }> => {
     const form = new FormData();
     form.append("file", file);

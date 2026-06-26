@@ -11,7 +11,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 // ── Enums ────────────────────────────────────────────────────────────────
-export const eventStatut = pgEnum("event_statut", ["brouillon", "publie"]);
+export const eventStatut = pgEnum("event_statut", ["brouillon", "publie", "archive"]);
 export const volunteerStatut = pgEnum("volunteer_statut", ["confirme", "attente"]);
 export const userRole = pgEnum("user_role", ["admin"]);
 
@@ -31,6 +31,7 @@ export const events = pgTable(
     couleurTheme: text("couleur_theme").notNull().default("#DA4A40"),
     orgNom: text("org_nom").notNull().default(""),
     statut: eventStatut("statut").notNull().default("brouillon"),
+    dateIso: text("date_iso"), // YYYY-MM-DD — auto-archive + tri
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => ({

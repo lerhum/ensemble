@@ -1,8 +1,9 @@
 import * as React from "react";
 import { Download, Plus, Search, X } from "lucide-react";
 import type { EventDetailDTO, VolunteerDTO, VolunteerFilter } from "@ensemble/db/shared";
+import { useParams } from "react-router-dom";
 import { api } from "@/lib/api";
-import { useEvent, DEMO_SLUG } from "@/lib/useEvent";
+import { useAdminEvent } from "@/lib/useEvent";
 import { initials } from "@/lib/utils";
 import { AdminLayout, StatCard } from "@/components/admin/AdminLayout";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -22,10 +23,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 const ALL = "all";
 
 export default function AdminVolunteersPage() {
-  const { event, loading } = useEvent(DEMO_SLUG);
+  const { id = "" } = useParams<{ id: string }>();
+  const { event, loading } = useAdminEvent(id);
   if (loading || !event) {
     return (
-      <AdminLayout eyebrow="Vinalmont Got's Talent" title="Bénévoles">
+      <AdminLayout eyebrow="Bénévoles" title="Bénévoles">
         <p className="text-label">Chargement…</p>
       </AdminLayout>
     );

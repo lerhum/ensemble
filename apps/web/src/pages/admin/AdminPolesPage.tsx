@@ -1,8 +1,9 @@
 import * as React from "react";
 import { ChevronDown, GripVertical, Plus, X } from "lucide-react";
 import type { EventDetailDTO, PoleDTO, TacheDTO } from "@ensemble/db/shared";
+import { useParams } from "react-router-dom";
 import { api } from "@/lib/api";
-import { useEvent, DEMO_SLUG } from "@/lib/useEvent";
+import { useAdminEvent } from "@/lib/useEvent";
 import { cn, initials } from "@/lib/utils";
 import { useDnd, move } from "@/lib/useDnd";
 import { AdminLayout, StatCard } from "@/components/admin/AdminLayout";
@@ -13,10 +14,11 @@ import { BadgeStatut } from "@/components/primitives/BadgeStatut";
 import { statusMeta } from "@/components/primitives/status";
 
 export default function AdminPolesPage() {
-  const { event, loading, reload } = useEvent(DEMO_SLUG);
+  const { id = "" } = useParams<{ id: string }>();
+  const { event, loading, reload } = useAdminEvent(id);
   if (loading || !event) {
     return (
-      <AdminLayout eyebrow="Vinalmont Got's Talent · Configuration" title="Pôles & créneaux">
+      <AdminLayout eyebrow="Configuration" title="Pôles & créneaux">
         <p className="text-label">Chargement…</p>
       </AdminLayout>
     );

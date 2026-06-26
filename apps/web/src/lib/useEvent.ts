@@ -2,9 +2,6 @@ import * as React from "react";
 import type { EventDetailDTO } from "@ensemble/db/shared";
 import { api, ApiError } from "./api";
 
-// Slug de l'événement de démo (un seul événement dans le seed).
-export const DEMO_SLUG = "vinalmont-gots-talent";
-
 interface EventState {
   event: EventDetailDTO | null;
   loading: boolean;
@@ -18,8 +15,6 @@ export function useEvent(slug: string): EventState {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
-  // Ne bascule pas `loading` (réservé au chargement initial) : un reload après
-  // mutation ne doit pas démonter l'écran ni faire clignoter « Chargement… ».
   const reload = React.useCallback(async () => {
     setError(null);
     try {
@@ -30,6 +25,29 @@ export function useEvent(slug: string): EventState {
       setLoading(false);
     }
   }, [slug]);
+
+  React.useEffect(() => {
+    void reload();
+  }, [reload]);
+
+  return { event, loading, error, reload, setEvent };
+}
+
+export function useAdminEvent(id: string): EventState {
+  const [event, setEvent] = React.useState<EventDetailDTO | null>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+
+  const reload = React.useCallback(async () => {
+    setError(null);
+    try {
+      setEvent(await api.getAdminEvent(id));
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Erreur de chargement");
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
 
   React.useEffect(() => {
     void reload();

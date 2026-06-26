@@ -1,9 +1,10 @@
 // Construction des DTO dérivés (event détaillé, bénévoles filtrés) à partir des
 // requêtes relationnelles Drizzle. Partagé entre routes publiques et admin.
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { events, volunteers } from "@ensemble/db";
 import {
   slotStatus,
+  type EventDTO,
   type EventDetailDTO,
   type PoleDTO,
   type VolunteerDTO,
@@ -16,13 +17,35 @@ const asc =
   (a: T, b: T) =>
     a.position - b.position;
 
+/** Liste légère de tous les événements (sans l'arbre de pôles). */
+export async function listEvents(db: Db): Promise<EventDTO[]> {
+  const rows = await db.query.events.findMany({ orderBy: desc(events.createdAt) });
+  return rows.map((ev) => ({
+    id: ev.id,
+    slug: ev.slug,
+    nom: ev.nom,
+    date: ev.date,
+    dateIso: ev.dateIso,
+    horaires: ev.horaires,
+    lieu: ev.lieu,
+    histoire: ev.histoire,
+    banniere: ev.banniere,
+    couleurTheme: ev.couleurTheme,
+    orgNom: ev.orgNom,
+    statut: ev.statut,
+  }));
+}
+
 /** Charge un événement complet (pôles→tâches→créneaux + inscriptions) par slug. */
 export async function buildEventDetailBySlug(
   db: Db,
   slug: string,
+  publicOnly = false,
 ): Promise<EventDetailDTO | null> {
   const ev = await db.query.events.findFirst({
-    where: eq(events.slug, slug),
+    where: publicOnly
+      ? (t, { and, eq: _eq }) => and(_eq(t.slug, slug), _eq(t.statut, "publie"))
+      : eq(events.slug, slug),
     with: {
       poles: {
         with: {
@@ -110,6 +133,7 @@ function assembleEventDetail(ev: EventWithTree): EventDetailDTO {
     slug: ev.slug,
     nom: ev.nom,
     date: ev.date,
+    dateIso: ev.dateIso,
     horaires: ev.horaires,
     lieu: ev.lieu,
     histoire: ev.histoire,

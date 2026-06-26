@@ -31,7 +31,7 @@ export const STATUS_COLORS: Record<
 };
 
 // ── Énumérations métier ──────────────────────────────────────────────────
-export type EventStatut = "brouillon" | "publie";
+export type EventStatut = "brouillon" | "publie" | "archive";
 export type VolunteerStatut = "confirme" | "attente";
 
 // ── DTO renvoyés par l'API ───────────────────────────────────────────────
@@ -79,6 +79,7 @@ export interface EventDTO {
   slug: string;
   nom: string;
   date: string;
+  dateIso: string | null;
   horaires: string;
   lieu: string;
   histoire: string;
@@ -140,14 +141,18 @@ export type LoginInput = z.infer<typeof loginSchema>;
 
 export const eventInputSchema = z.object({
   nom: z.string().min(1),
-  date: z.string().min(1),
-  horaires: z.string().min(1),
-  lieu: z.string().min(1),
+  date: z.string().default(""),
+  horaires: z.string().default(""),
+  lieu: z.string().default(""),
   histoire: z.string().max(600).default(""),
   banniere: z.string().url().nullish(),
   couleurTheme: hexColor.default("#DA4A40"),
   orgNom: z.string().default(""),
-  statut: z.enum(["brouillon", "publie"]).default("brouillon"),
+  statut: z.enum(["brouillon", "publie", "archive"]).default("brouillon"),
+  dateIso: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Format YYYY-MM-DD attendu")
+    .nullish(),
 });
 export type EventInput = z.infer<typeof eventInputSchema>;
 export const eventUpdateSchema = eventInputSchema.partial();

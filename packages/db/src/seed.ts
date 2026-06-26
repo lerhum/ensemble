@@ -204,6 +204,7 @@ async function main() {
       couleurTheme: "#DA4A40",
       orgNom: "Comité Vinalmont",
       statut: "publie",
+      dateIso: "2026-06-14",
     })
     .returning();
   const eventId = event!.id;

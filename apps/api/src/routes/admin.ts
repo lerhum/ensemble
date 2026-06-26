@@ -1,6 +1,6 @@
 import { Hono, type Context } from "hono";
 import { z } from "zod";
-import { and, eq, max } from "drizzle-orm";
+import { and, eq, isNotNull, lt, max, sql } from "drizzle-orm";
 import { creneaux, events, poles, taches } from "@ensemble/db";
 import {
   creneauInputSchema,
@@ -20,6 +20,7 @@ import { requireAdmin } from "../auth.js";
 import {
   buildEventDetailById,
   buildVolunteers,
+  listEvents,
   volunteersToCsv,
 } from "../dto.js";
 
@@ -48,6 +49,89 @@ async function nextPosition(
   return (row?.m ?? -1) + 1;
 }
 
+// ── Liste et duplication des événements (préfixe /admin/) ─────────────────
+
+adminRoutes.get("/admin/events", async (c) => {
+  const db = c.get("db");
+  // Auto-archivage : publie dont la date est passée → archive
+  await db
+    .update(events)
+    .set({ statut: "archive" })
+    .where(
+      and(
+        eq(events.statut, "publie"),
+        isNotNull(events.dateIso),
+        lt(events.dateIso, sql`CURRENT_DATE::text`),
+      ),
+    );
+  return c.json(await listEvents(db));
+});
+
+adminRoutes.get("/admin/events/:id", async (c) => {
+  const detail = await buildEventDetailById(c.get("db"), c.req.param("id"));
+  if (!detail) throw notFound("Événement introuvable");
+  return c.json(detail);
+});
+
+adminRoutes.post("/admin/events/:id/duplicate", async (c) => {
+  const db = c.get("db");
+  const src = await db.query.events.findFirst({
+    where: eq(events.id, c.req.param("id")),
+    with: { poles: { with: { taches: { with: { creneaux: true } } } } },
+  });
+  if (!src) throw notFound("Événement introuvable");
+
+  let slug = slugify(`${src.nom}-copie`) || "evenement-copie";
+  const [clash] = await db.select({ id: events.id }).from(events).where(eq(events.slug, slug));
+  if (clash) slug = `${slug}-${Date.now().toString(36).slice(-4)}`;
+
+  const [copy] = await db
+    .insert(events)
+    .values({
+      slug,
+      nom: `${src.nom} — copie`,
+      date: src.date,
+      dateIso: null,
+      horaires: src.horaires,
+      lieu: src.lieu,
+      histoire: src.histoire,
+      banniere: src.banniere,
+      couleurTheme: src.couleurTheme,
+      orgNom: src.orgNom,
+      statut: "brouillon",
+    })
+    .returning();
+
+  const sortedPoles = [...src.poles].sort((a, b) => a.position - b.position);
+  for (const p of sortedPoles) {
+    const [newPole] = await db
+      .insert(poles)
+      .values({ eventId: copy!.id, nom: p.nom, description: p.description, position: p.position })
+      .returning();
+    const sortedTaches = [...p.taches].sort((a, b) => a.position - b.position);
+    for (const t of sortedTaches) {
+      const [newTache] = await db
+        .insert(taches)
+        .values({ poleId: newPole!.id, nom: t.nom, description: t.description, position: t.position })
+        .returning();
+      const sortedCreneaux = [...t.creneaux].sort((a, b) => a.position - b.position);
+      if (sortedCreneaux.length > 0) {
+        await db.insert(creneaux).values(
+          sortedCreneaux.map((cr) => ({
+            tacheId: newTache!.id,
+            debut: cr.debut,
+            fin: cr.fin,
+            necessaires: cr.necessaires,
+            position: cr.position,
+          })),
+        );
+      }
+    }
+  }
+
+  return c.json(await buildEventDetailById(db, copy!.id), 201);
+});
+
 // ── Événements ────────────────────────────────────────────────────────────
 adminRoutes.post("/events", async (c) => {
   const db = c.get("db");
@@ -60,14 +144,15 @@ adminRoutes.post("/events", async (c) => {
     .values({
       slug,
       nom: body.nom,
-      date: body.date,
-      horaires: body.horaires,
-      lieu: body.lieu,
-      histoire: body.histoire,
+      date: body.date ?? "",
+      dateIso: body.dateIso ?? null,
+      horaires: body.horaires ?? "",
+      lieu: body.lieu ?? "",
+      histoire: body.histoire ?? "",
       banniere: body.banniere ?? null,
-      couleurTheme: body.couleurTheme,
-      orgNom: body.orgNom,
-      statut: body.statut,
+      couleurTheme: body.couleurTheme ?? "#DA4A40",
+      orgNom: body.orgNom ?? "",
+      statut: body.statut ?? "brouillon",
     })
     .returning();
   return c.json(await buildEventDetailById(db, ev!.id), 201);
