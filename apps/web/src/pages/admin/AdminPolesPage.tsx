@@ -31,8 +31,9 @@ function PolesInner({ event, reload }: { event: EventDetailDTO; reload: () => Pr
   const [open, setOpen] = React.useState<string | null>(event.poles[0]?.id ?? null);
 
   const addPole = async () => {
-    await api.createPole({ eventId: event.id, nom: "Nouveau pôle", description: "" });
+    const pole = await api.createPole({ eventId: event.id, nom: "Nouveau pôle", description: "" }) as { id: string };
     await reload();
+    setOpen(pole.id);
   };
 
   const reorderPoles = async (from: number, to: number) => {
@@ -87,6 +88,8 @@ function PoleCard({
   onToggle: () => void;
   reload: () => Promise<void>;
 }) {
+  const [nom, setNom] = React.useState(pole.nom);
+  const [description, setDescription] = React.useState(pole.description);
   const meta = statusMeta(pole.inscrits, pole.necessaires);
   const poleLabel =
     pole.placesLibres === 0
@@ -95,6 +98,12 @@ function PoleCard({
         ? "À compléter"
         : `${pole.placesLibres} place${pole.placesLibres > 1 ? "s" : ""} à pourvoir`;
 
+  const saveNom = async () => {
+    if (nom.trim() && nom !== pole.nom) await api.updatePole(pole.id, { nom: nom.trim() });
+  };
+  const saveDescription = async () => {
+    if (description !== pole.description) await api.updatePole(pole.id, { description });
+  };
   const addTache = async () => {
     await api.createTache({ poleId: pole.id, nom: "Nouvelle tâche", description: "" });
     await reload();
@@ -115,19 +124,25 @@ function PoleCard({
   return (
     <div className="overflow-hidden rounded-card border border-hair bg-white">
       {/* En-tête de pôle */}
-      <div className="flex cursor-grab items-center gap-3 px-5 py-4">
-        <GripVertical className="h-4 w-4 shrink-0 text-label2" />
-        <span className="grid h-9 w-9 place-items-center rounded-full bg-chip text-[12px] font-800 text-navy">
-          {initials(pole.nom)}
+      <div className="flex items-center gap-3 px-5 py-4">
+        <GripVertical className="h-4 w-4 shrink-0 cursor-grab text-label2" />
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-chip text-[12px] font-800 text-navy">
+          {initials(nom)}
         </span>
-        <button onClick={onToggle} className="flex flex-1 items-center gap-2 text-left">
-          <span className="font-800 text-ink">{pole.nom}</span>
-          <span className="text-sm text-label">
+        <div className="flex flex-1 items-center gap-2 min-w-0">
+          <input
+            value={nom}
+            onChange={(e) => setNom(e.target.value)}
+            onBlur={saveNom}
+            onClick={(e) => e.stopPropagation()}
+            className="min-w-0 flex-1 rounded-[8px] bg-transparent px-1 py-0.5 font-800 text-ink outline-none focus:bg-surface"
+          />
+          <span className="shrink-0 text-sm text-label">
             {pole.inscrits} / {pole.necessaires} inscrits
           </span>
-        </button>
+        </div>
         <span
-          className="rounded-full px-2.5 py-1 text-xs font-700"
+          className="shrink-0 rounded-full px-2.5 py-1 text-xs font-700"
           style={{ background: meta.bg, color: meta.fg }}
         >
           {poleLabel}
@@ -139,6 +154,17 @@ function PoleCard({
 
       {expanded && (
         <div className="border-t border-hair px-5 pb-5">
+          {/* Description du pôle */}
+          <div className="py-3 border-b border-[#F1F3F5]">
+            <input
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              onBlur={saveDescription}
+              placeholder="Description du pôle (optionnelle)…"
+              className="w-full rounded-[8px] bg-transparent px-1 py-0.5 text-sm text-ink2 outline-none placeholder:text-label2 focus:bg-surface"
+            />
+          </div>
+
           {/* En-têtes de colonnes */}
           <div className="grid grid-cols-[1fr_110px_110px_120px_140px_90px_28px] items-center gap-3 px-2 pb-2 pt-4 text-[11px] font-800 uppercase tracking-[.08em] text-label">
             <span>Tâche</span>
@@ -177,7 +203,15 @@ function TacheGroup({ tache, reload }: { tache: TacheDTO; reload: () => Promise<
     if (nom.trim() && nom !== tache.nom) await api.updateTache(tache.id, { nom });
   };
   const addCreneau = async () => {
-    await api.createCreneau({ tacheId: tache.id, debut: "12:00", fin: "13:00", necessaires: 1 });
+    const last = tache.creneaux.at(-1);
+    let debut = "08:00";
+    let fin = "09:00";
+    if (last) {
+      debut = last.fin;
+      const [h, m] = last.fin.split(":").map(Number);
+      fin = `${String(Math.min((h ?? 0) + 1, 23)).padStart(2, "0")}:${String(m ?? 0).padStart(2, "0")}`;
+    }
+    await api.createCreneau({ tacheId: tache.id, debut, fin, necessaires: 1 });
     await reload();
   };
   const reorderCreneaux = async (from: number, to: number) => {
