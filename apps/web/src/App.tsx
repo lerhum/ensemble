@@ -4,13 +4,11 @@ import { RequireAdmin } from "@/components/RequireAdmin";
 import InstallPage from "@/pages/InstallPage";
 import LoginPage from "@/pages/LoginPage";
 import EventParentPage from "@/pages/EventParentPage";
-import {
-  PoleSelectionPage,
-  AdminDashboardPage,
-  AdminPolesPage,
-  AdminVolunteersPage,
-  NotFoundPage,
-} from "@/pages/stubs";
+import PoleSelectionPage from "@/pages/PoleSelectionPage";
+import AdminDashboardPage from "@/pages/admin/AdminDashboardPage";
+import AdminPolesPage from "@/pages/admin/AdminPolesPage";
+import AdminVolunteersPage from "@/pages/admin/AdminVolunteersPage";
+import { NotFoundPage } from "@/pages/stubs";
 
 export default function App() {
   return (
