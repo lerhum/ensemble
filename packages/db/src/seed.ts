@@ -205,6 +205,9 @@ async function main() {
       orgNom: "Comité Vinalmont",
       statut: "publie",
       dateIso: "2026-06-14",
+      pourquoiTitre: "Une fête portée par les parents",
+      pourquoiTexte:
+        "Le comité et les bénévoles préparent cette journée avec le cœur. Chaque pôle a besoin de quelques mains pour tourner — tenir le bar une heure, accueillir les familles, ranger en fin de journée. Inscris-toi sur les créneaux qui t'arrangent : même une heure compte.",
     })
     .returning();
   const eventId = event!.id;

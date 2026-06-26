@@ -135,22 +135,23 @@ function DesktopView({ event }: { event: EventDetailDTO }) {
         </section>
 
         {/* Pourquoi participer */}
-        <section className="border-t border-hair py-12">
-          <p className="text-[11px] font-800 uppercase tracking-[.1em] text-label2">
-            Pourquoi participer
-          </p>
-          <div className="mt-3 grid grid-cols-[1fr_1.4fr] items-start gap-10">
-            <h2 className="text-[24px] font-800 leading-tight tracking-tighter2 text-ink">
-              Une fête portée par les parents
-            </h2>
-            <p className="leading-relaxed text-ink2">
-              Le comité et les bénévoles préparent cette journée avec le cœur. Chaque pôle a besoin
-              de quelques mains pour tourner — tenir le bar une heure, accueillir les familles,
-              ranger en fin de journée. Inscris-toi sur les créneaux qui t'arrangent : même une heure
-              compte.
+        {(event.pourquoiTitre || event.pourquoiTexte) && (
+          <section className="border-t border-hair py-12">
+            <p className="text-[11px] font-800 uppercase tracking-[.1em] text-label2">
+              Pourquoi participer
             </p>
-          </div>
-        </section>
+            <div className="mt-3 grid grid-cols-[1fr_1.4fr] items-start gap-10">
+              {event.pourquoiTitre && (
+                <h2 className="text-[24px] font-800 leading-tight tracking-tighter2 text-ink">
+                  {event.pourquoiTitre}
+                </h2>
+              )}
+              {event.pourquoiTexte && (
+                <p className="leading-relaxed text-ink2">{event.pourquoiTexte}</p>
+              )}
+            </div>
+          </section>
+        )}
 
         {/* Choisis ton pôle */}
         <section ref={polesRef} className="border-t border-hair py-12">

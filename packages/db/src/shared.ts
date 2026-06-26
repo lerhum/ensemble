@@ -87,6 +87,8 @@ export interface EventDTO {
   couleurTheme: string;
   orgNom: string;
   statut: EventStatut;
+  pourquoiTitre: string;
+  pourquoiTexte: string;
 }
 
 export interface EventDetailDTO extends EventDTO {
@@ -153,6 +155,8 @@ export const eventInputSchema = z.object({
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, "Format YYYY-MM-DD attendu")
     .nullish(),
+  pourquoiTitre: z.string().default(""),
+  pourquoiTexte: z.string().default(""),
 });
 export type EventInput = z.infer<typeof eventInputSchema>;
 export const eventUpdateSchema = eventInputSchema.partial();

@@ -32,6 +32,8 @@ export const events = pgTable(
     orgNom: text("org_nom").notNull().default(""),
     statut: eventStatut("statut").notNull().default("brouillon"),
     dateIso: text("date_iso"), // YYYY-MM-DD — auto-archive + tri
+    pourquoiTitre: text("pourquoi_titre").notNull().default(""),
+    pourquoiTexte: text("pourquoi_texte").notNull().default(""),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => ({

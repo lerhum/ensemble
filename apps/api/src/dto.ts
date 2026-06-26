@@ -33,6 +33,8 @@ export async function listEvents(db: Db): Promise<EventDTO[]> {
     couleurTheme: ev.couleurTheme,
     orgNom: ev.orgNom,
     statut: ev.statut,
+    pourquoiTitre: ev.pourquoiTitre,
+    pourquoiTexte: ev.pourquoiTexte,
   }));
 }
 
@@ -141,6 +143,8 @@ function assembleEventDetail(ev: EventWithTree): EventDetailDTO {
     couleurTheme: ev.couleurTheme,
     orgNom: ev.orgNom,
     statut: ev.statut,
+    pourquoiTitre: ev.pourquoiTitre,
+    pourquoiTexte: ev.pourquoiTexte,
     poles,
     counters: {
       inscrits: totalInscrits,

@@ -57,6 +57,8 @@ function DashboardInner({ event, reload }: { event: EventDetailDTO; reload: () =
     horaires: event.horaires,
     lieu: event.lieu,
     histoire: event.histoire,
+    pourquoiTitre: event.pourquoiTitre,
+    pourquoiTexte: event.pourquoiTexte,
     couleurTheme: event.couleurTheme,
   });
   const [banniere, setBanniere] = React.useState(event.banniere);
@@ -151,6 +153,30 @@ function DashboardInner({ event, reload }: { event: EventDetailDTO; reload: () =
                 {form.histoire.length} / 600 caractères
               </div>
             </Field>
+            <div className="mt-2 border-t border-hair pt-5">
+              <p className="mb-4 text-[11px] font-800 uppercase tracking-[.1em] text-label2">
+                Section « Pourquoi participer »
+              </p>
+              <div className="space-y-4">
+                <Field label="Titre">
+                  <Input
+                    value={form.pourquoiTitre}
+                    onChange={set("pourquoiTitre")}
+                    onBlur={() => persist({ pourquoiTitre: form.pourquoiTitre })}
+                    placeholder="Ex : Une fête portée par les parents"
+                  />
+                </Field>
+                <Field label="Texte">
+                  <Textarea
+                    value={form.pourquoiTexte}
+                    onChange={set("pourquoiTexte")}
+                    onBlur={() => persist({ pourquoiTexte: form.pourquoiTexte })}
+                    rows={4}
+                    placeholder="Expliquez pourquoi les parents devraient participer…"
+                  />
+                </Field>
+              </div>
+            </div>
           </div>
         </div>
 

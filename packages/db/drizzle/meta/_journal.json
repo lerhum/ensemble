@@ -15,6 +15,13 @@
       "when": 1782482748748,
       "tag": "0001_round_nicolaos",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1782483668632,
+      "tag": "0002_good_puppet_master",
+      "breakpoints": true
     }
   ]
 }
