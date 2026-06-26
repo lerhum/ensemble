@@ -5,7 +5,9 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./shared": "./src/shared.ts"
+    "./shared": "./src/shared.ts",
+    "./node": "./src/client.node.ts",
+    "./neon": "./src/client.neon.ts"
   },
   "scripts": {
     "generate": "drizzle-kit generate",
@@ -21,6 +23,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/node": "^22.10.1",
     "@types/pg": "^8.11.10",
     "drizzle-kit": "^0.28.1",
     "tsx": "^4.19.2",
