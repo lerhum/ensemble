@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Link, useParams } from "react-router-dom";
-import { ChevronLeft, CheckCircle2 } from "lucide-react";
+import { ChevronLeft, CheckCircle2, Mail } from "lucide-react";
 import type { EventDetailDTO, PoleDTO } from "@ensemble/db/shared";
 import { api } from "@/lib/api";
 import { useEvent } from "@/lib/useEvent";
@@ -40,7 +40,7 @@ function PoleInner({
 }) {
   const [selected, setSelected] = React.useState<Set<string>>(new Set());
   const [dialog, setDialog] = React.useState(false);
-  const [success, setSuccess] = React.useState(false);
+  const [success, setSuccess] = React.useState<{ token: string; needsConfirmation: boolean } | null>(null);
 
   const toggle = (id: string) =>
     setSelected((s) => {
@@ -49,13 +49,19 @@ function PoleInner({
       return next;
     });
 
+  const firstCreneauId = [...selected][0] ?? "";
+
   const confirm = async (identite: Identite) => {
+    let lastToken = "";
+    let needsConfirmation = false;
     for (const creneauId of selected) {
-      await api.inscrire(creneauId, identite);
+      const r = await api.inscrire(creneauId, identite);
+      lastToken = r.token;
+      if (r.needsConfirmation) needsConfirmation = true;
     }
     setDialog(false);
     setSelected(new Set());
-    setSuccess(true);
+    setSuccess({ token: lastToken, needsConfirmation });
     await reload();
   };
 
@@ -104,9 +110,26 @@ function PoleInner({
         </div>
 
         {success && (
-          <div className="mt-5 flex items-center gap-2 rounded-card border border-success bg-success-bg px-4 py-3 text-success">
-            <CheckCircle2 className="h-5 w-5" />
-            <span className="font-700">Merci ! Ton inscription est enregistrée.</span>
+          <div className="mt-5 rounded-card border border-success bg-success-bg px-4 py-4 text-success">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 shrink-0" />
+              <span className="font-700">Merci ! Ton inscription est enregistrée.</span>
+            </div>
+            {success.needsConfirmation && (
+              <div className="mt-2 flex items-start gap-2 text-[13px] text-ink2">
+                <Mail className="mt-0.5 h-4 w-4 shrink-0 text-label" />
+                <span>
+                  Un email de confirmation a été envoyé. Pense à cliquer sur le lien pour valider ta
+                  participation.
+                </span>
+              </div>
+            )}
+            <Link
+              to={`/mes-inscriptions/${success.token}`}
+              className="mt-3 inline-block text-[13px] font-700 text-navy underline-offset-2 hover:underline"
+            >
+              Voir mes inscriptions →
+            </Link>
           </div>
         )}
 
@@ -204,6 +227,7 @@ function PoleInner({
         open={dialog}
         onOpenChange={setDialog}
         count={selected.size}
+        creneauId={firstCreneauId}
         onConfirm={confirm}
       />
     </div>

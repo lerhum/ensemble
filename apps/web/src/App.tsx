@@ -6,6 +6,8 @@ import LoginPage from "@/pages/LoginPage";
 import EventParentPage from "@/pages/EventParentPage";
 import EventRedirectPage from "@/pages/EventRedirectPage";
 import PoleSelectionPage from "@/pages/PoleSelectionPage";
+import ConfirmPage from "@/pages/ConfirmPage";
+import MesInscriptionsPage from "@/pages/MesInscriptionsPage";
 import AdminEventsListPage from "@/pages/admin/AdminEventsListPage";
 import AdminDashboardPage from "@/pages/admin/AdminDashboardPage";
 import AdminPolesPage from "@/pages/admin/AdminPolesPage";
@@ -25,6 +27,8 @@ export default function App() {
           <Route path="/" element={<EventRedirectPage />} />
           <Route path="/e/:slug" element={<EventParentPage />} />
           <Route path="/e/:slug/pole/:poleId" element={<PoleSelectionPage />} />
+          <Route path="/confirmer/:token" element={<ConfirmPage />} />
+          <Route path="/mes-inscriptions/:token" element={<MesInscriptionsPage />} />
 
           {/* Auth / installeur */}
           <Route path="/install" element={<InstallPage />} />

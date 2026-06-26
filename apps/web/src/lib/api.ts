@@ -3,6 +3,7 @@ import type {
   EventDTO,
   EventDetailDTO,
   InscriptionInput,
+  MesInscriptionsDTO,
   SessionUserDTO,
   VolunteerDTO,
   VolunteerFilter,
@@ -62,13 +63,23 @@ export const api = {
   getCurrentEvent: () => req<EventDetailDTO | null>("/events/current"),
   getEvent: (slug: string) => req<EventDetailDTO>(`/events/${slug}`),
   inscrire: (creneauId: string, body: InscriptionInput) =>
-    req<{ ok: true; inscrits: number }>(`/creneaux/${creneauId}/inscriptions`, json(body)),
+    req<{ ok: true; inscrits: number; token: string; isNew: boolean; needsConfirmation: boolean }>(
+      `/creneaux/${creneauId}/inscriptions`,
+      json(body),
+    ),
   desinscrire: (creneauId: string, email: string) =>
     req<{ ok: true }>(`/creneaux/${creneauId}/inscriptions`, {
       method: "DELETE",
       body: JSON.stringify({ email }),
       headers: { "content-type": "application/json" },
     }),
+  lookupVolunteer: (creneauId: string, email: string) =>
+    req<{ nom: string; email: string; tel: string | null } | null>(
+      `/volunteers/lookup?creneauId=${encodeURIComponent(creneauId)}&email=${encodeURIComponent(email)}`,
+    ),
+  confirmerToken: (token: string) =>
+    req<{ ok: boolean; alreadyConfirmed?: boolean; error?: string }>(`/confirmer/${token}`),
+  getMesInscriptions: (token: string) => req<MesInscriptionsDTO>(`/mes-inscriptions/${token}`),
 
   // — Admin : événements —
   listAdminEvents: () => req<EventDTO[]>("/admin/events"),

@@ -19,6 +19,7 @@ export function createApp(config: AppConfig) {
   app.use("*", async (c, next) => {
     c.set("db", config.db);
     c.set("storage", config.storage);
+    c.set("email", config.email);
     c.set("sessionSecret", config.sessionSecret);
     c.set("webOrigin", config.webOrigin);
     await next();

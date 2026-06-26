@@ -105,6 +105,17 @@ export const inscriptions = pgTable(
   }),
 );
 
+// ── Tokens de confirmation (bénévoles) ───────────────────────────────────
+export const volunteerTokens = pgTable("volunteer_tokens", {
+  token: text("token").primaryKey(),
+  volunteerId: uuid("volunteer_id")
+    .notNull()
+    .references(() => volunteers.id, { onDelete: "cascade" }),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  confirmedAt: timestamp("confirmed_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 // ── Auth : users + sessions (installeur à la WordPress) ───────────────────
 export const users = pgTable(
   "users",
@@ -154,6 +165,11 @@ export const creneauxRelations = relations(creneaux, ({ one, many }) => ({
 export const volunteersRelations = relations(volunteers, ({ one, many }) => ({
   event: one(events, { fields: [volunteers.eventId], references: [events.id] }),
   inscriptions: many(inscriptions),
+  tokens: many(volunteerTokens),
+}));
+
+export const volunteerTokensRelations = relations(volunteerTokens, ({ one }) => ({
+  volunteer: one(volunteers, { fields: [volunteerTokens.volunteerId], references: [volunteers.id] }),
 }));
 
 export const inscriptionsRelations = relations(inscriptions, ({ one }) => ({
@@ -182,3 +198,4 @@ export type Volunteer = typeof volunteers.$inferSelect;
 export type Inscription = typeof inscriptions.$inferSelect;
 export type User = typeof users.$inferSelect;
 export type Session = typeof sessions.$inferSelect;
+export type VolunteerToken = typeof volunteerTokens.$inferSelect;

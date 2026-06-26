@@ -1,11 +1,12 @@
 // Construction des DTO dérivés (event détaillé, bénévoles filtrés) à partir des
 // requêtes relationnelles Drizzle. Partagé entre routes publiques et admin.
 import { desc, eq } from "drizzle-orm";
-import { events, volunteers } from "@ensemble/db";
+import { events, volunteers, volunteerTokens } from "@ensemble/db";
 import {
   slotStatus,
   type EventDTO,
   type EventDetailDTO,
+  type MesInscriptionsDTO,
   type PoleDTO,
   type VolunteerDTO,
   type VolunteerFilter,
@@ -153,6 +154,46 @@ function assembleEventDetail(ev: EventWithTree): EventDetailDTO {
       nbCreneaux,
       aCompleter,
     },
+  };
+}
+
+/** Récapitulatif des inscriptions d'un bénévole via son token. */
+export async function buildMesInscriptions(
+  db: Db,
+  token: string,
+): Promise<MesInscriptionsDTO | null> {
+  const row = await db.query.volunteerTokens.findFirst({
+    where: eq(volunteerTokens.token, token),
+    with: {
+      volunteer: {
+        with: {
+          event: true,
+          inscriptions: {
+            with: { creneau: { with: { tache: { with: { pole: true } } } } },
+          },
+        },
+      },
+    },
+  });
+  if (!row) return null;
+  const { volunteer } = row;
+  const { event } = volunteer;
+  return {
+    volunteer: { nom: volunteer.nom, email: volunteer.email, statut: volunteer.statut },
+    event: {
+      nom: event.nom,
+      date: event.date,
+      horaires: event.horaires,
+      lieu: event.lieu,
+      slug: event.slug,
+    },
+    inscriptions: volunteer.inscriptions.map((ins) => ({
+      poleNom: ins.creneau.tache.pole.nom,
+      tacheNom: ins.creneau.tache.nom,
+      debut: ins.creneau.debut,
+      fin: ins.creneau.fin,
+    })),
+    confirmed: row.confirmedAt !== null,
   };
 }
 

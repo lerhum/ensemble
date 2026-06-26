@@ -113,6 +113,13 @@ export interface SessionUserDTO {
   role: "admin";
 }
 
+export interface MesInscriptionsDTO {
+  volunteer: { nom: string; email: string; statut: VolunteerStatut };
+  event: { nom: string; date: string; horaires: string; lieu: string; slug: string };
+  inscriptions: { poleNom: string; tacheNom: string; debut: string; fin: string }[];
+  confirmed: boolean;
+}
+
 // ── Schémas zod (validation des bodies d'API) ────────────────────────────
 const hhmm = z
   .string()
