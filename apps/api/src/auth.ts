@@ -71,10 +71,14 @@ export async function createSession(c: Context<AppEnv>, userId: string): Promise
   const token = randomToken();
   const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
   await db.insert(sessions).values({ id: token, userId, expiresAt });
+  // En prod (https), web (Pages) et api (Worker) sont sur des domaines distincts :
+  // cookie SameSite=None + Secure pour qu'il soit envoyé en cross-site. En dev
+  // (http localhost), SameSite=Lax.
+  const secure = new URL(c.req.url).protocol === "https:";
   await setSignedCookie(c, SESSION_COOKIE, token, c.get("sessionSecret"), {
     httpOnly: true,
-    sameSite: "Lax",
-    secure: new URL(c.req.url).protocol === "https:",
+    sameSite: secure ? "None" : "Lax",
+    secure,
     path: "/",
     maxAge: Math.floor(SESSION_TTL_MS / 1000),
   });

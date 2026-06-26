@@ -7,7 +7,9 @@ import type {
   VolunteerFilter,
 } from "@ensemble/db/shared";
 
-const BASE = "/api";
+// En dev : "/api" (proxy Vite → service api). En prod (Pages) : définir
+// VITE_API_BASE = URL du Worker (ex. https://ensemble-api.<compte>.workers.dev).
+const BASE = (import.meta.env.VITE_API_BASE ?? "") + "/api";
 
 export class ApiError extends Error {
   status: number;

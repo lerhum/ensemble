@@ -1,0 +1,3 @@
+# SPA fallback (Cloudflare Pages) : sert index.html pour toutes les routes
+# client (react-router) sauf les fichiers statiques existants.
+/*    /index.html   200

@@ -1,0 +1,19 @@
+# Déploiement de l'API Hono sur Cloudflare Workers (free).
+# Le même code que l'entrée Node tourne ici via src/worker.ts (driver Neon).
+name = "ensemble-api"
+main = "src/worker.ts"
+compatibility_date = "2024-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Variables publiques (non secrètes). WEB_ORIGIN = URL du front Pages (CORS).
+[vars]
+WEB_ORIGIN = "https://ensemble-web.pages.dev"
+
+# Secrets (NE PAS mettre ici) — définir via `wrangler secret put` :
+#   wrangler secret put DATABASE_URL    # URL Neon (postgresql://...neon.tech/...)
+#   wrangler secret put SESSION_SECRET  # chaîne aléatoire 32+ caractères
+#
+# Optionnel : stockage des bannières sur R2 (free). Décommenter + adapter :
+# [[r2_buckets]]
+# binding = "BANNERS"
+# bucket_name = "ensemble-banners"
