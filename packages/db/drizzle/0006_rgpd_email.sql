@@ -1,0 +1,1 @@
+ALTER TABLE "settings" ADD COLUMN IF NOT EXISTS "rgpd_email" text DEFAULT '' NOT NULL;

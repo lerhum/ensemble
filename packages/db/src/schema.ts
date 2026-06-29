@@ -204,6 +204,14 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, { fields: [sessions.userId], references: [users.id] }),
 }));
 
+// ── Paramètres globaux de l'instance (table singleton, id=1) ─────────────
+export const settings = pgTable("settings", {
+  id: integer("id").primaryKey().default(1),
+  siteTitle: text("site_title").notNull().default(""),
+  siteLogo: text("site_logo"),
+  rgpdEmail: text("rgpd_email").notNull().default(""),
+});
+
 // ── Types de lignes (inférés) ────────────────────────────────────────────
 export type Event = typeof events.$inferSelect;
 export type NewEvent = typeof events.$inferInsert;

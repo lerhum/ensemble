@@ -113,6 +113,12 @@ export interface SessionUserDTO {
   role: "admin";
 }
 
+export interface SiteSettingsDTO {
+  siteTitle: string;
+  siteLogo: string | null;
+  rgpdEmail: string;
+}
+
 export interface MesInscriptionsDTO {
   volunteer: { nom: string; email: string; statut: VolunteerStatut };
   event: { nom: string; date: string; horaires: string; lieu: string; slug: string; orgNom: string; couleurTheme: string };
@@ -129,6 +135,13 @@ export interface VolunteerSessionDTO {
 }
 
 // ── Schémas zod (validation des bodies d'API) ────────────────────────────
+export const settingsUpdateSchema = z.object({
+  siteTitle: z.string().min(1).optional(),
+  siteLogo: z.string().url().nullish(),
+  rgpdEmail: z.string().email().optional(),
+});
+export type SettingsUpdateInput = z.infer<typeof settingsUpdateSchema>;
+
 const hhmm = z
   .string()
   .regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Heure attendue au format HH:MM");
@@ -140,6 +153,7 @@ const hexColor = z
 export const installSchema = z
   .object({
     orgNom: z.string().min(1, "Nom de l'organisation requis"),
+    rgpdEmail: z.string().email("Email RGPD invalide"),
     email: z.string().email("Email invalide"),
     password: z.string().min(8, "Mot de passe : 8 caractères minimum"),
     confirmPassword: z.string(),
