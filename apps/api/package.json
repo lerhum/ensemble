@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/node.ts",
+    "dev": "CHOKIDAR_USEPOLLING=1 tsx watch src/node.ts",
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "deploy": "wrangler deploy"
