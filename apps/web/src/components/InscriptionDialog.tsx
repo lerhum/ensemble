@@ -20,32 +20,39 @@ export interface Identite {
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  count: number;
-  creneauId: string; // pour le lookup email
+  creneauId: string;
+  initialIdentite?: Identite | null;
   onConfirm: (identite: Identite) => Promise<void>;
 }
 
-// Collecte l'identité du bénévole avant de valider l'inscription multi-créneaux.
-// Sur blur de l'email, tente de pré-remplir nom et tel si déjà connu.
-export function InscriptionDialog({ open, onOpenChange, count, creneauId, onConfirm }: Props) {
+export function InscriptionDialog({ open, onOpenChange, creneauId, initialIdentite, onConfirm }: Props) {
   const [form, setForm] = React.useState({ nom: "", email: "", tel: "" });
   const [prefilled, setPrefilled] = React.useState(false);
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  // Réinitialise quand on ferme.
   React.useEffect(() => {
-    if (!open) {
+    if (open) {
+      if (initialIdentite) {
+        setForm({
+          nom: initialIdentite.nom,
+          email: initialIdentite.email,
+          tel: initialIdentite.tel ?? "",
+        });
+        setPrefilled(true);
+      }
+    } else {
       setForm({ nom: "", email: "", tel: "" });
       setPrefilled(false);
       setError(null);
     }
-  }, [open]);
+  }, [open, initialIdentite]);
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
 
   async function onEmailBlur() {
+    if (initialIdentite) return;
     const email = form.email.trim();
     if (!email || !email.includes("@")) return;
     try {
@@ -81,9 +88,7 @@ export function InscriptionDialog({ open, onOpenChange, count, creneauId, onConf
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Confirme ta participation</DialogTitle>
-          <DialogDescription>
-            Tu t'inscris à {count} créneau{count > 1 ? "x" : ""}. Laisse-nous tes coordonnées.
-          </DialogDescription>
+          <DialogDescription>Laisse-nous tes coordonnées pour finaliser l'inscription.</DialogDescription>
         </DialogHeader>
         <form className="space-y-4" onSubmit={submit}>
           <div className="space-y-1.5">
@@ -95,11 +100,12 @@ export function InscriptionDialog({ open, onOpenChange, count, creneauId, onConf
               onChange={set("email")}
               onBlur={onEmailBlur}
               required
+              autoFocus={!initialIdentite}
             />
           </div>
           {prefilled && (
             <p className="rounded-md bg-[#EEF1F4] px-3 py-2 text-[13px] text-navy">
-              Nous t'avons retrouvé·e — tes infos sont pré-remplies.
+              {initialIdentite ? "Tes informations sont pré-remplies." : "Nous t'avons retrouvé·e — tes infos sont pré-remplies."}
             </p>
           )}
           <div className="space-y-1.5">
@@ -112,7 +118,7 @@ export function InscriptionDialog({ open, onOpenChange, count, creneauId, onConf
           </div>
           {error && <p className="text-sm font-600 text-danger">{error}</p>}
           <Button type="submit" variant="brand" size="lg" className="w-full" disabled={busy}>
-            {busy ? "Inscription…" : `Je participe (${count})`}
+            {busy ? "Inscription…" : "Je participe"}
           </Button>
         </form>
       </DialogContent>

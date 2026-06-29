@@ -115,9 +115,17 @@ export interface SessionUserDTO {
 
 export interface MesInscriptionsDTO {
   volunteer: { nom: string; email: string; statut: VolunteerStatut };
-  event: { nom: string; date: string; horaires: string; lieu: string; slug: string };
+  event: { nom: string; date: string; horaires: string; lieu: string; slug: string; orgNom: string; couleurTheme: string };
   inscriptions: { poleNom: string; tacheNom: string; debut: string; fin: string }[];
   confirmed: boolean;
+}
+
+export interface VolunteerSessionDTO {
+  volunteerId: string;
+  nom: string;
+  email: string;
+  tel: string | null;
+  eventSlug: string;
 }
 
 // ── Schémas zod (validation des bodies d'API) ────────────────────────────
@@ -196,6 +204,24 @@ export const reorderSchema = z.object({
   ids: z.array(z.string().uuid()).min(1),
 });
 export type ReorderInput = z.infer<typeof reorderSchema>;
+
+export const definePasswordSchema = z
+  .object({
+    token: z.string().min(1, "Token requis"),
+    password: z.string().min(8, "Mot de passe : 8 caractères minimum"),
+    confirmPassword: z.string(),
+  })
+  .refine((d) => d.password === d.confirmPassword, {
+    message: "Les mots de passe ne correspondent pas",
+    path: ["confirmPassword"],
+  });
+export type DefinePasswordInput = z.infer<typeof definePasswordSchema>;
+
+export const volunteerLoginSchema = z.object({
+  email: z.string().email("Email invalide"),
+  password: z.string().min(1, "Mot de passe requis"),
+});
+export type VolunteerLoginInput = z.infer<typeof volunteerLoginSchema>;
 
 // Inscription multi-créneaux : identité du bénévole (créée si nouvelle).
 export const inscriptionSchema = z.object({

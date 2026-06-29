@@ -10,8 +10,6 @@ import { PublicNav } from "@/components/public/PublicNav";
 import { Button } from "@/components/ui/button";
 import { Jauge } from "@/components/primitives/Jauge";
 
-const POSTER_FALLBACK = "/event-poster.jpg";
-
 export default function EventParentPage() {
   const { slug = "" } = useParams();
   const { event, loading, error } = useEvent(slug);
@@ -40,11 +38,10 @@ function MobileView({ event }: { event: EventDetailDTO }) {
         <Logo className="h-7" color={event.couleurTheme} />
       </header>
 
-      <img
-        src={event.banniere || POSTER_FALLBACK}
-        alt={event.nom}
-        className="aspect-[16/10] w-full object-cover"
-      />
+      {event.banniere
+        ? <img src={event.banniere} alt={event.nom} className="aspect-[16/10] w-full object-cover" />
+        : <div className="aspect-[16/10] w-full bg-hair" aria-hidden />
+      }
 
       <div className="px-4 pb-28 pt-5">
         <p className="text-[11px] font-800 uppercase tracking-[.1em] text-label2">Fête de l'école</p>
@@ -127,11 +124,10 @@ function DesktopView({ event }: { event: EventDetailDTO }) {
             </div>
             <Coverage event={event} className="mt-8 max-w-md" withAvatars />
           </div>
-          <img
-            src={event.banniere || POSTER_FALLBACK}
-            alt={event.nom}
-            className="h-[430px] w-full rounded-frame object-cover shadow-card"
-          />
+          {event.banniere
+            ? <img src={event.banniere} alt={event.nom} className="h-[430px] w-full rounded-frame object-cover shadow-card" />
+            : <div className="h-[430px] w-full rounded-frame shadow-card bg-hair" aria-hidden />
+          }
         </section>
 
         {/* Pourquoi participer */}

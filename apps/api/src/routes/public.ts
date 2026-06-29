@@ -7,6 +7,8 @@ import {
   volunteers,
   volunteerTokens,
 } from "@ensemble/db";
+import { resolveVolunteerSession } from "./volunteer-auth.js";
+import { buildMesInscriptionsByVolunteerId } from "../dto.js";
 import { inscriptionSchema } from "@ensemble/db/shared";
 import type { AppEnv } from "../context.js";
 import { conflict, notFound, validate } from "../errors.js";
@@ -161,10 +163,11 @@ publicRoutes.post("/creneaux/:id/inscriptions", async (c) => {
   if (needsConfirmation) {
     const confirmUrl = `${webOrigin}/confirmer/${token}`;
     const inscriptionsUrl = `${webOrigin}/mes-inscriptions/${token}`;
+    const definePasswordUrl = `${webOrigin}/definir-mot-de-passe/${token}`;
     await email.send(
       body.email,
       "Confirme ta participation — Ensemble",
-      confirmationHtml(body.nom, confirmUrl, inscriptionsUrl),
+      confirmationHtml(body.nom, confirmUrl, inscriptionsUrl, definePasswordUrl),
       confirmationText(body.nom, confirmUrl),
     );
   }
@@ -229,16 +232,25 @@ publicRoutes.get("/confirmer/:token", async (c) => {
   return c.json({ ok: true, alreadyConfirmed: row.confirmedAt !== null });
 });
 
-// Récapitulatif des inscriptions d'un bénévole.
+// Récapitulatif via token (lien email).
 publicRoutes.get("/mes-inscriptions/:token", async (c) => {
   const dto = await buildMesInscriptions(c.get("db"), c.req.param("token"));
   if (!dto) return c.json({ error: "Token introuvable." }, 404);
   return c.json(dto);
 });
 
+// Récapitulatif via session bénévole (connecté).
+publicRoutes.get("/mes-inscriptions", async (c) => {
+  const session = await resolveVolunteerSession(c);
+  if (!session) return c.json({ error: "Non authentifié." }, 401);
+  const dto = await buildMesInscriptionsByVolunteerId(c.get("db"), session.volunteerId);
+  if (!dto) return c.json({ error: "Bénévole introuvable." }, 404);
+  return c.json(dto);
+});
+
 // ── Templates email ───────────────────────────────────────────────────────
 
-function confirmationHtml(nom: string, confirmUrl: string, inscriptionsUrl: string): string {
+function confirmationHtml(nom: string, confirmUrl: string, inscriptionsUrl: string, definePasswordUrl: string): string {
   return `<!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="utf-8"><title>Confirme ta participation</title></head>
@@ -254,7 +266,12 @@ function confirmationHtml(nom: string, confirmUrl: string, inscriptionsUrl: stri
       <a href="${inscriptionsUrl}" style="color:#1C3A5E">${inscriptionsUrl}</a>
     </p>
     <hr style="border:none;border-top:1px solid #eee;margin:24px 0">
-    <p style="color:#aaa;font-size:12px;margin:0">Ce lien expire dans 7 jours. Si tu n'as pas demandé cette inscription, ignore cet email.</p>
+    <p style="color:#555;font-size:13px;margin:0 0 8px">
+      💡 Crée ton accès personnel pour retrouver tes inscriptions à tout moment :<br>
+      <a href="${definePasswordUrl}" style="color:#1C3A5E;font-weight:700">Définir mon mot de passe →</a>
+    </p>
+    <hr style="border:none;border-top:1px solid #eee;margin:24px 0">
+    <p style="color:#aaa;font-size:12px;margin:0">Ces liens expirent dans 7 jours. Si tu n'as pas demandé cette inscription, ignore cet email.</p>
   </div>
 </body>
 </html>`;

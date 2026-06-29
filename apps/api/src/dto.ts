@@ -157,6 +157,37 @@ function assembleEventDetail(ev: EventWithTree): EventDetailDTO {
   };
 }
 
+/** Récapitulatif des inscriptions d'un bénévole via son volunteerId (session). */
+export async function buildMesInscriptionsByVolunteerId(
+  db: Db,
+  volunteerId: string,
+): Promise<MesInscriptionsDTO | null> {
+  const vol = await db.query.volunteers.findFirst({
+    where: eq(volunteers.id, volunteerId),
+    with: {
+      event: true,
+      inscriptions: {
+        with: { creneau: { with: { tache: { with: { pole: true } } } } },
+      },
+      tokens: true,
+    },
+  });
+  if (!vol) return null;
+  const { event } = vol;
+  const hasConfirmedToken = vol.tokens.some((t) => t.confirmedAt !== null);
+  return {
+    volunteer: { nom: vol.nom, email: vol.email, statut: vol.statut },
+    event: { nom: event.nom, date: event.date, horaires: event.horaires, lieu: event.lieu, slug: event.slug, orgNom: event.orgNom, couleurTheme: event.couleurTheme },
+    inscriptions: vol.inscriptions.map((ins) => ({
+      poleNom: ins.creneau.tache.pole.nom,
+      tacheNom: ins.creneau.tache.nom,
+      debut: ins.creneau.debut,
+      fin: ins.creneau.fin,
+    })),
+    confirmed: vol.statut === "confirme" || hasConfirmedToken,
+  };
+}
+
 /** Récapitulatif des inscriptions d'un bénévole via son token. */
 export async function buildMesInscriptions(
   db: Db,
@@ -186,6 +217,8 @@ export async function buildMesInscriptions(
       horaires: event.horaires,
       lieu: event.lieu,
       slug: event.slug,
+      orgNom: event.orgNom,
+      couleurTheme: event.couleurTheme,
     },
     inscriptions: volunteer.inscriptions.map((ins) => ({
       poleNom: ins.creneau.tache.pole.nom,

@@ -1,12 +1,14 @@
 import * as React from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { CheckCircle2, XCircle, Loader2, KeyRound } from "lucide-react";
 import { api } from "@/lib/api";
+import { useVolunteer } from "@/lib/volunteer-context";
 import { Button } from "@/components/ui/button";
 
 export default function ConfirmPage() {
   const { token = "" } = useParams();
   const navigate = useNavigate();
+  const { session } = useVolunteer();
   const [state, setState] = React.useState<"loading" | "ok" | "already" | "error">("loading");
 
   React.useEffect(() => {
@@ -52,11 +54,26 @@ export default function ConfirmPage() {
           ? "Ta participation avait déjà été confirmée."
           : "Merci ! Ta participation est bien enregistrée."}
       </p>
-      <Link to={`/mes-inscriptions/${token}`}>
-        <Button variant="brand" className="mt-6">
-          Voir mes inscriptions
-        </Button>
+
+      <Link to={session ? "/mes-inscriptions" : `/mes-inscriptions/${token}`} className="mt-6">
+        <Button variant="brand">Voir mes inscriptions</Button>
       </Link>
+
+      {/* Proposer la création d'un compte si pas encore connecté */}
+      {!session && (
+        <div className="mt-6 w-full rounded-card border border-hair bg-[#F9F9F8] px-4 py-4 text-center">
+          <KeyRound className="mx-auto h-5 w-5 text-label" />
+          <p className="mt-2 text-sm font-700 text-ink">Crée ton accès personnel</p>
+          <p className="mt-0.5 text-[13px] text-label">
+            Définis un mot de passe pour retrouver tes inscriptions et t'inscrire en un clic.
+          </p>
+          <Link to={`/definir-mot-de-passe/${token}`} className="mt-3 inline-block">
+            <Button variant="outline" size="sm">
+              Définir mon mot de passe
+            </Button>
+          </Link>
+        </div>
+      )}
     </Center>
   );
 }

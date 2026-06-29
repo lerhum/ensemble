@@ -86,6 +86,7 @@ export const volunteers = pgTable("volunteers", {
   email: text("email").notNull(),
   tel: text("tel"),
   statut: volunteerStatut("statut").notNull().default("confirme"),
+  passwordHash: text("password_hash"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -113,6 +114,16 @@ export const volunteerTokens = pgTable("volunteer_tokens", {
     .references(() => volunteers.id, { onDelete: "cascade" }),
   expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
   confirmedAt: timestamp("confirmed_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ── Sessions bénévoles ────────────────────────────────────────────────────
+export const volunteerSessions = pgTable("volunteer_sessions", {
+  id: text("id").primaryKey(),
+  volunteerId: uuid("volunteer_id")
+    .notNull()
+    .references(() => volunteers.id, { onDelete: "cascade" }),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -166,6 +177,11 @@ export const volunteersRelations = relations(volunteers, ({ one, many }) => ({
   event: one(events, { fields: [volunteers.eventId], references: [events.id] }),
   inscriptions: many(inscriptions),
   tokens: many(volunteerTokens),
+  volunteerSessions: many(volunteerSessions),
+}));
+
+export const volunteerSessionsRelations = relations(volunteerSessions, ({ one }) => ({
+  volunteer: one(volunteers, { fields: [volunteerSessions.volunteerId], references: [volunteers.id] }),
 }));
 
 export const volunteerTokensRelations = relations(volunteerTokens, ({ one }) => ({
@@ -195,6 +211,7 @@ export type Pole = typeof poles.$inferSelect;
 export type Tache = typeof taches.$inferSelect;
 export type Creneau = typeof creneaux.$inferSelect;
 export type Volunteer = typeof volunteers.$inferSelect;
+export type VolunteerSession = typeof volunteerSessions.$inferSelect;
 export type Inscription = typeof inscriptions.$inferSelect;
 export type User = typeof users.$inferSelect;
 export type Session = typeof sessions.$inferSelect;

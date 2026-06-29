@@ -5,13 +5,14 @@ import type { EventDetailDTO, PoleDTO } from "@ensemble/db/shared";
 import { api } from "@/lib/api";
 import { useEvent } from "@/lib/useEvent";
 import { applyAccent } from "@/lib/theme";
-import { initials } from "@/lib/utils";
+import { initials, formatPlage } from "@/lib/utils";
+import { useVolunteer } from "@/lib/volunteer-context";
 import { PublicNav } from "@/components/public/PublicNav";
 import { Jauge } from "@/components/primitives/Jauge";
 import { CarteCreneau } from "@/components/primitives/CarteCreneau";
 import { LigneCreneau } from "@/components/primitives/LigneCreneau";
-import { Button } from "@/components/ui/button";
 import { InscriptionDialog, type Identite } from "@/components/InscriptionDialog";
+import { ConfirmationDialog } from "@/components/ConfirmationDialog";
 
 export default function PoleSelectionPage() {
   const { slug = "", poleId = "" } = useParams();
@@ -29,6 +30,8 @@ export default function PoleSelectionPage() {
   return <PoleInner event={event} pole={pole} reload={reload} />;
 }
 
+type DialogMode = "form" | "confirm" | null;
+
 function PoleInner({
   event,
   pole,
@@ -38,32 +41,35 @@ function PoleInner({
   pole: PoleDTO;
   reload: () => Promise<void>;
 }) {
-  const [selected, setSelected] = React.useState<Set<string>>(new Set());
-  const [dialog, setDialog] = React.useState(false);
+  const { identite, session, saveIdentite, saveToken } = useVolunteer();
+
+  const [activeCreneau, setActiveCreneau] = React.useState<{ id: string; label: string } | null>(null);
+  const [dialogMode, setDialogMode] = React.useState<DialogMode>(null);
+  const [inscribed, setInscribed] = React.useState<Set<string>>(new Set());
   const [success, setSuccess] = React.useState<{ token: string; needsConfirmation: boolean } | null>(null);
 
-  const toggle = (id: string) =>
-    setSelected((s) => {
-      const next = new Set(s);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
+  // Identité effective : session connectée > localStorage
+  const effectiveIdentite: Identite | null = session
+    ? { nom: session.nom, email: session.email, tel: session.tel ?? undefined }
+    : identite;
 
-  const firstCreneauId = [...selected][0] ?? "";
+  function openForCreneau(id: string, label: string) {
+    setActiveCreneau({ id, label });
+    setDialogMode(effectiveIdentite ? "confirm" : "form");
+  }
 
-  const confirm = async (identite: Identite) => {
-    let lastToken = "";
-    let needsConfirmation = false;
-    for (const creneauId of selected) {
-      const r = await api.inscrire(creneauId, identite);
-      lastToken = r.token;
-      if (r.needsConfirmation) needsConfirmation = true;
+  async function register(id: Identite) {
+    const r = await api.inscrire(activeCreneau!.id, id);
+    if (!session) {
+      saveIdentite(id);
+      saveToken(r.token);
     }
-    setDialog(false);
-    setSelected(new Set());
-    setSuccess({ token: lastToken, needsConfirmation });
+    setInscribed((prev) => new Set([...prev, activeCreneau!.id]));
+    setDialogMode(null);
+    setActiveCreneau(null);
+    setSuccess({ token: r.token, needsConfirmation: r.needsConfirmation });
     await reload();
-  };
+  }
 
   const nbCreneaux = pole.taches.reduce((n, t) => n + t.creneaux.length, 0);
 
@@ -71,7 +77,7 @@ function PoleInner({
     <div className="min-h-screen bg-white">
       {/* Desktop nav */}
       <div className="hidden md:block">
-        <PublicNav orgNom={event.orgNom} accent={event.couleurTheme} />
+        <PublicNav orgNom={event.orgNom} accent={event.couleurTheme} eventSlug={event.slug} />
       </div>
 
       {/* Mobile header */}
@@ -119,13 +125,12 @@ function PoleInner({
               <div className="mt-2 flex items-start gap-2 text-[13px] text-ink2">
                 <Mail className="mt-0.5 h-4 w-4 shrink-0 text-label" />
                 <span>
-                  Un email de confirmation a été envoyé. Pense à cliquer sur le lien pour valider ta
-                  participation.
+                  Un email a été envoyé. Clique sur le lien pour confirmer ta participation et protéger ton accès.
                 </span>
               </div>
             )}
             <Link
-              to={`/mes-inscriptions/${success.token}`}
+              to={session ? "/mes-inscriptions" : `/mes-inscriptions/${success.token}`}
               className="mt-3 inline-block text-[13px] font-700 text-navy underline-offset-2 hover:underline"
             >
               Voir mes inscriptions →
@@ -147,11 +152,11 @@ function PoleInner({
             <div className="mb-3 hidden items-baseline justify-between md:flex">
               <h2 className="text-lg font-800 tracking-tighter2 text-ink">Tâches &amp; créneaux</h2>
               <p className="text-[13px] text-label">
-                Une tâche peut compter plusieurs créneaux — inscris-toi sur ceux qui t'arrangent.
+                Clique sur « Je participe » pour t'inscrire directement.
               </p>
             </div>
             <p className="mb-4 text-sm text-ink2 md:hidden">
-              Choisis un ou plusieurs créneaux qui t'arrangent.
+              Clique sur « Je participe » pour le créneau qui t'arrange.
             </p>
 
             <div className="space-y-5">
@@ -177,8 +182,16 @@ function PoleInner({
                         fin={cr.fin}
                         inscrits={cr.inscrits}
                         necessaires={cr.necessaires}
-                        selected={selected.has(cr.id)}
-                        onToggle={() => toggle(cr.id)}
+                        selected={inscribed.has(cr.id)}
+                        onToggle={
+                          inscribed.has(cr.id)
+                            ? undefined
+                            : () =>
+                                openForCreneau(
+                                  cr.id,
+                                  `${pole.nom} · ${tache.nom} · ${formatPlage(cr.debut, cr.fin)}`,
+                                )
+                        }
                       />
                     ))}
                   </div>
@@ -193,43 +206,45 @@ function PoleInner({
                         fin={cr.fin}
                         inscrits={cr.inscrits}
                         necessaires={cr.necessaires}
-                        selected={selected.has(cr.id)}
-                        onToggle={() => toggle(cr.id)}
+                        selected={inscribed.has(cr.id)}
+                        onToggle={
+                          inscribed.has(cr.id)
+                            ? undefined
+                            : () =>
+                                openForCreneau(
+                                  cr.id,
+                                  `${pole.nom} · ${tache.nom} · ${formatPlage(cr.debut, cr.fin)}`,
+                                )
+                        }
                       />
                     ))}
                   </div>
                 </div>
               ))}
             </div>
-            <p className="mt-5 text-center text-[13px] text-label md:hidden">
-              Tu peux t'inscrire à plusieurs créneaux.
-            </p>
           </section>
         </div>
       </div>
 
-      {/* Barre CTA flottante quand des créneaux sont sélectionnés */}
-      {selected.size > 0 && (
-        <div className="sticky bottom-0 border-t border-hair bg-white/95 px-4 py-3 backdrop-blur">
-          <div className="mx-auto flex max-w-5xl items-center justify-between">
-            <span className="text-sm font-700 text-ink">
-              {selected.size} créneau{selected.size > 1 ? "x" : ""} sélectionné
-              {selected.size > 1 ? "s" : ""}
-            </span>
-            <Button variant="brand" onClick={() => setDialog(true)}>
-              Je participe ({selected.size})
-            </Button>
-          </div>
-        </div>
-      )}
-
+      {/* Dialogs */}
       <InscriptionDialog
-        open={dialog}
-        onOpenChange={setDialog}
-        count={selected.size}
-        creneauId={firstCreneauId}
-        onConfirm={confirm}
+        open={dialogMode === "form"}
+        onOpenChange={(open) => !open && setDialogMode(null)}
+        creneauId={activeCreneau?.id ?? ""}
+        initialIdentite={effectiveIdentite}
+        onConfirm={register}
       />
+
+      {effectiveIdentite && (
+        <ConfirmationDialog
+          open={dialogMode === "confirm"}
+          onOpenChange={(open) => !open && setDialogMode(null)}
+          creneauLabel={activeCreneau?.label ?? ""}
+          identite={effectiveIdentite}
+          onConfirm={() => register(effectiveIdentite)}
+          onEditIdentite={() => setDialogMode("form")}
+        />
+      )}
     </div>
   );
 }

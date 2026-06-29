@@ -1,8 +1,11 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/lib/auth-context";
+import { VolunteerProvider } from "@/lib/volunteer-context";
 import { RequireAdmin } from "@/components/RequireAdmin";
 import InstallPage from "@/pages/InstallPage";
 import LoginPage from "@/pages/LoginPage";
+import VolunteerLoginPage from "@/pages/VolunteerLoginPage";
+import SetPasswordPage from "@/pages/SetPasswordPage";
 import EventParentPage from "@/pages/EventParentPage";
 import EventRedirectPage from "@/pages/EventRedirectPage";
 import PoleSelectionPage from "@/pages/PoleSelectionPage";
@@ -21,30 +24,35 @@ function A({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Public */}
-          <Route path="/" element={<EventRedirectPage />} />
-          <Route path="/e/:slug" element={<EventParentPage />} />
-          <Route path="/e/:slug/pole/:poleId" element={<PoleSelectionPage />} />
-          <Route path="/confirmer/:token" element={<ConfirmPage />} />
-          <Route path="/mes-inscriptions/:token" element={<MesInscriptionsPage />} />
+      <VolunteerProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Public */}
+            <Route path="/" element={<EventRedirectPage />} />
+            <Route path="/e/:slug" element={<EventParentPage />} />
+            <Route path="/e/:slug/pole/:poleId" element={<PoleSelectionPage />} />
+            <Route path="/confirmer/:token" element={<ConfirmPage />} />
+            <Route path="/mes-inscriptions" element={<MesInscriptionsPage />} />
+            <Route path="/mes-inscriptions/:token" element={<MesInscriptionsPage />} />
+            <Route path="/definir-mot-de-passe/:token" element={<SetPasswordPage />} />
 
-          {/* Auth / installeur */}
-          <Route path="/install" element={<InstallPage />} />
-          <Route path="/login" element={<LoginPage />} />
+            {/* Auth / installeur */}
+            <Route path="/install" element={<InstallPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/benevole/connexion" element={<VolunteerLoginPage />} />
 
-          {/* Admin : liste des événements */}
-          <Route path="/admin" element={<A><AdminEventsListPage /></A>} />
+            {/* Admin : liste des événements */}
+            <Route path="/admin" element={<A><AdminEventsListPage /></A>} />
 
-          {/* Admin : édition d'un événement spécifique */}
-          <Route path="/admin/events/:id" element={<A><AdminDashboardPage /></A>} />
-          <Route path="/admin/events/:id/poles" element={<A><AdminPolesPage /></A>} />
-          <Route path="/admin/events/:id/volunteers" element={<A><AdminVolunteersPage /></A>} />
+            {/* Admin : édition d'un événement spécifique */}
+            <Route path="/admin/events/:id" element={<A><AdminDashboardPage /></A>} />
+            <Route path="/admin/events/:id/poles" element={<A><AdminPolesPage /></A>} />
+            <Route path="/admin/events/:id/volunteers" element={<A><AdminVolunteersPage /></A>} />
 
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </BrowserRouter>
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </BrowserRouter>
+      </VolunteerProvider>
     </AuthProvider>
   );
 }

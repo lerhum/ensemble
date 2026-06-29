@@ -5,6 +5,7 @@ import { ApiError } from "./errors.js";
 import { loadUser } from "./auth.js";
 import { installRoutes } from "./routes/install.js";
 import { authRoutes } from "./routes/auth.js";
+import { volunteerAuthRoutes } from "./routes/volunteer-auth.js";
 import { publicRoutes } from "./routes/public.js";
 import { adminRoutes } from "./routes/admin.js";
 
@@ -40,6 +41,7 @@ export function createApp(config: AppConfig) {
   app.get("/api/health", (c) => c.json({ ok: true }));
   app.route("/api/install", installRoutes);
   app.route("/api/auth", authRoutes);
+  app.route("/api/auth/volunteer", volunteerAuthRoutes);
   app.route("/api", publicRoutes);
   app.route("/api", adminRoutes);
 

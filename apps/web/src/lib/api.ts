@@ -7,6 +7,7 @@ import type {
   SessionUserDTO,
   VolunteerDTO,
   VolunteerFilter,
+  VolunteerSessionDTO,
 } from "@ensemble/db/shared";
 
 // En dev : "/api" (proxy Vite → service api). En prod (Pages) : définir
@@ -80,6 +81,16 @@ export const api = {
   confirmerToken: (token: string) =>
     req<{ ok: boolean; alreadyConfirmed?: boolean; error?: string }>(`/confirmer/${token}`),
   getMesInscriptions: (token: string) => req<MesInscriptionsDTO>(`/mes-inscriptions/${token}`),
+  getMesInscriptionsSession: () => req<MesInscriptionsDTO>("/mes-inscriptions"),
+
+  // — Auth bénévole —
+  volunteerDefinePassword: (body: { token: string; password: string; confirmPassword: string }) =>
+    req<{ ok: true; volunteer: { nom: string; email: string } }>("/auth/volunteer/define-password", json(body)),
+  volunteerLogin: (body: { email: string; password: string }) =>
+    req<{ ok: true; volunteer: VolunteerSessionDTO }>("/auth/volunteer/login", json(body)),
+  volunteerMe: () =>
+    req<{ volunteer: VolunteerSessionDTO | null }>("/auth/volunteer/me").then((r) => r.volunteer),
+  volunteerLogout: () => req<{ ok: true }>("/auth/volunteer/logout", { method: "POST" }),
 
   // — Admin : événements —
   listAdminEvents: () => req<EventDTO[]>("/admin/events"),
