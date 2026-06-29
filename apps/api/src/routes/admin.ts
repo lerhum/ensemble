@@ -1,7 +1,7 @@
 import { Hono, type Context } from "hono";
 import { z } from "zod";
 import { and, eq, isNotNull, lt, max, sql } from "drizzle-orm";
-import { creneaux, events, poles, taches } from "@ensemble/db";
+import { creneaux, events, poles, settings, taches, volunteers } from "@ensemble/db";
 import {
   creneauInputSchema,
   creneauUpdateSchema,
@@ -10,6 +10,7 @@ import {
   poleInputSchema,
   poleUpdateSchema,
   reorderSchema,
+  settingsUpdateSchema,
   tacheInputSchema,
   tacheUpdateSchema,
   volunteerFilterSchema,
@@ -186,6 +187,39 @@ adminRoutes.post("/events/:id/banner", async (c) => {
   return c.json({ url });
 });
 
+// ── Paramètres du site ────────────────────────────────────────────────────
+adminRoutes.get("/settings", async (c) => {
+  const db = c.get("db");
+  const [row] = await db.select().from(settings);
+  return c.json({ siteTitle: row?.siteTitle ?? "", siteLogo: row?.siteLogo ?? null, rgpdEmail: row?.rgpdEmail ?? "" });
+});
+
+adminRoutes.patch("/settings", async (c) => {
+  const db = c.get("db");
+  const body = validate(settingsUpdateSchema, await c.req.json().catch(() => ({})));
+  const patch: { siteTitle?: string; siteLogo?: string | null; rgpdEmail?: string } = {};
+  if (body.siteTitle !== undefined) patch.siteTitle = body.siteTitle;
+  if ("siteLogo" in body) patch.siteLogo = body.siteLogo ?? null;
+  if (body.rgpdEmail !== undefined) patch.rgpdEmail = body.rgpdEmail;
+  if (Object.keys(patch).length > 0) {
+    await db.update(settings).set(patch).where(eq(settings.id, 1));
+  }
+  const [row] = await db.select().from(settings);
+  return c.json({ siteTitle: row?.siteTitle ?? "", siteLogo: row?.siteLogo ?? null, rgpdEmail: row?.rgpdEmail ?? "" });
+});
+
+// Upload du logo du site (multipart) → storage → settings.site_logo.
+adminRoutes.post("/settings/logo", async (c) => {
+  const form = await c.req.formData();
+  const file = form.get("file");
+  if (!file || typeof file === "string") throw notFound("Fichier manquant");
+  const blob = file as unknown as { arrayBuffer(): Promise<ArrayBuffer>; type?: string };
+  const bytes = new Uint8Array(await blob.arrayBuffer());
+  const { url } = await c.get("storage").put("site-logo", bytes, blob.type || "image/png");
+  await c.get("db").update(settings).set({ siteLogo: url }).where(eq(settings.id, 1));
+  return c.json({ url });
+});
+
 // ── Réordonnancement (déclaré avant les routes :id) ────────────────────────
 function reorder(table: typeof poles | typeof taches | typeof creneaux) {
   return async (c: Context<AppEnv>) => {
@@ -324,4 +358,11 @@ adminRoutes.get("/events/:id/volunteers.csv", async (c) => {
   c.header("Content-Type", "text/csv; charset=utf-8");
   c.header("Content-Disposition", 'attachment; filename="benevoles.csv"');
   return c.body(volunteersToCsv(list));
+});
+
+adminRoutes.delete("/volunteers/:id", async (c) => {
+  const db = c.get("db");
+  const id = c.req.param("id");
+  await db.delete(volunteers).where(eq(volunteers.id, id));
+  return c.json({ ok: true });
 });

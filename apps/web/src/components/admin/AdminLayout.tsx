@@ -1,14 +1,14 @@
-import { NavLink, useParams, Link } from "react-router-dom";
-import { LayoutDashboard, ListTodo, Users, Megaphone, Settings, ChevronLeft, CalendarDays } from "lucide-react";
+import { NavLink, useParams, Link, useNavigate } from "react-router-dom";
+import { LayoutDashboard, ListTodo, Users, Megaphone, Settings, ChevronLeft, CalendarDays, LogOut } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/lib/auth-context";
+import { api } from "@/lib/api";
 import { initials } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
 const NAV_DISABLED = [
   { label: "Communications", icon: Megaphone },
-  { label: "Paramètres", icon: Settings },
 ];
 
 interface AdminLayoutProps {
@@ -19,8 +19,15 @@ interface AdminLayoutProps {
 }
 
 export function AdminLayout({ eyebrow, title, actions, children }: AdminLayoutProps) {
-  const { user } = useAuth();
+  const { user, refresh } = useAuth();
   const { id } = useParams<{ id?: string }>();
+  const navigate = useNavigate();
+
+  async function logout() {
+    await api.logout();
+    await refresh();
+    navigate("/login");
+  }
 
   const eventNav = id
     ? [
@@ -67,15 +74,6 @@ export function AdminLayout({ eyebrow, title, actions, children }: AdminLayoutPr
                   {item.label}
                 </NavLink>
               ))}
-              {NAV_DISABLED.map((item) => (
-                <span
-                  key={item.label}
-                  className="flex cursor-not-allowed items-center gap-3 rounded-[12px] px-3 py-2.5 text-sm font-700 text-label2"
-                >
-                  <item.icon className="h-[18px] w-[18px]" />
-                  {item.label}
-                </span>
-              ))}
             </nav>
           </>
         ) : (
@@ -101,13 +99,45 @@ export function AdminLayout({ eyebrow, title, actions, children }: AdminLayoutPr
           </>
         )}
 
-        <div className="mt-auto flex items-center gap-3 px-2 pt-6">
-          <Avatar className="h-9 w-9">
-            <AvatarFallback>{initials(user?.nom || "Comité")}</AvatarFallback>
-          </Avatar>
-          <div className="leading-tight">
-            <p className="text-sm font-700 text-ink">{user?.nom || "Comité"}</p>
-            <p className="text-[12px] text-label">Administrateur</p>
+        <div className="mt-auto">
+          <nav className="mb-2 flex flex-col gap-1">
+            <NavLink
+              to="/admin/settings"
+              className={({ isActive }) =>
+                cn(
+                  "flex items-center gap-3 rounded-[12px] px-3 py-2.5 text-sm font-700 transition-colors",
+                  isActive ? "bg-ink text-white" : "text-ink2 hover:bg-surface",
+                )
+              }
+            >
+              <Settings className="h-[18px] w-[18px]" />
+              Paramètres
+            </NavLink>
+            {NAV_DISABLED.map((item) => (
+              <span
+                key={item.label}
+                className="flex cursor-not-allowed items-center gap-3 rounded-[12px] px-3 py-2.5 text-sm font-700 text-label2"
+              >
+                <item.icon className="h-[18px] w-[18px]" />
+                {item.label}
+              </span>
+            ))}
+          </nav>
+          <div className="flex items-center gap-3 px-2 pt-4 border-t border-hair">
+            <Avatar className="h-9 w-9">
+              <AvatarFallback>{initials(user?.nom || "Comité")}</AvatarFallback>
+            </Avatar>
+            <div className="min-w-0 flex-1 leading-tight">
+              <p className="text-sm font-700 text-ink truncate">{user?.nom || "Comité"}</p>
+              <p className="text-[12px] text-label">Administrateur</p>
+            </div>
+            <button
+              onClick={logout}
+              className="shrink-0 rounded-lg p-1.5 text-label2 hover:bg-surface hover:text-danger"
+              title="Se déconnecter"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
           </div>
         </div>
       </aside>

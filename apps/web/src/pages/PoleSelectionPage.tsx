@@ -7,6 +7,7 @@ import { useEvent } from "@/lib/useEvent";
 import { applyAccent } from "@/lib/theme";
 import { initials, formatPlage } from "@/lib/utils";
 import { useVolunteer } from "@/lib/volunteer-context";
+import { useAuth } from "@/lib/auth-context";
 import { PublicNav } from "@/components/public/PublicNav";
 import { Jauge } from "@/components/primitives/Jauge";
 import { CarteCreneau } from "@/components/primitives/CarteCreneau";
@@ -42,6 +43,7 @@ function PoleInner({
   reload: () => Promise<void>;
 }) {
   const { identite, session, saveIdentite, saveToken } = useVolunteer();
+  const { siteTitle, siteLogo } = useAuth();
 
   const [activeCreneau, setActiveCreneau] = React.useState<{ id: string; label: string } | null>(null);
   const [dialogMode, setDialogMode] = React.useState<DialogMode>(null);
@@ -77,7 +79,7 @@ function PoleInner({
     <div className="min-h-screen bg-white">
       {/* Desktop nav */}
       <div className="hidden md:block">
-        <PublicNav orgNom={event.orgNom} accent={event.couleurTheme} eventSlug={event.slug} />
+        <PublicNav orgNom={siteTitle || event.orgNom} accent={event.couleurTheme} siteLogo={siteLogo} eventSlug={event.slug} />
       </div>
 
       {/* Mobile header */}

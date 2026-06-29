@@ -15,6 +15,8 @@ import AdminEventsListPage from "@/pages/admin/AdminEventsListPage";
 import AdminDashboardPage from "@/pages/admin/AdminDashboardPage";
 import AdminPolesPage from "@/pages/admin/AdminPolesPage";
 import AdminVolunteersPage from "@/pages/admin/AdminVolunteersPage";
+import AdminSettingsPage from "@/pages/admin/AdminSettingsPage";
+import PrivacyPage from "@/pages/PrivacyPage";
 import { NotFoundPage } from "@/pages/stubs";
 
 function A({ children }: { children: React.ReactNode }) {
@@ -35,6 +37,7 @@ export default function App() {
             <Route path="/mes-inscriptions" element={<MesInscriptionsPage />} />
             <Route path="/mes-inscriptions/:token" element={<MesInscriptionsPage />} />
             <Route path="/definir-mot-de-passe/:token" element={<SetPasswordPage />} />
+            <Route path="/confidentialite" element={<PrivacyPage />} />
 
             {/* Auth / installeur */}
             <Route path="/install" element={<InstallPage />} />
@@ -48,6 +51,7 @@ export default function App() {
             <Route path="/admin/events/:id" element={<A><AdminDashboardPage /></A>} />
             <Route path="/admin/events/:id/poles" element={<A><AdminPolesPage /></A>} />
             <Route path="/admin/events/:id/volunteers" element={<A><AdminVolunteersPage /></A>} />
+            <Route path="/admin/settings" element={<A><AdminSettingsPage /></A>} />
 
             <Route path="*" element={<NotFoundPage />} />
           </Routes>

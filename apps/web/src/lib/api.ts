@@ -5,6 +5,8 @@ import type {
   InscriptionInput,
   MesInscriptionsDTO,
   SessionUserDTO,
+  SiteSettingsDTO,
+  SettingsUpdateInput,
   VolunteerDTO,
   VolunteerFilter,
   VolunteerSessionDTO,
@@ -52,8 +54,8 @@ function qs(filter: VolunteerFilter): string {
 
 export const api = {
   // — Installeur / Auth —
-  installStatus: () => req<{ needsSetup: boolean }>("/install/status"),
-  install: (body: { orgNom: string; email: string; password: string; confirmPassword: string }) =>
+  installStatus: () => req<{ needsSetup: boolean } & SiteSettingsDTO>("/install/status"),
+  install: (body: { orgNom: string; rgpdEmail: string; email: string; password: string; confirmPassword: string }) =>
     req<{ user: SessionUserDTO }>("/install", json(body)),
   login: (body: { email: string; password: string }) =>
     req<{ user: SessionUserDTO }>("/auth/login", json(body)),
@@ -112,6 +114,21 @@ export const api = {
     if (!res.ok) throw new ApiError(res.status, "Échec de l'upload");
     return res.json();
   },
+  getSettings: () => req<SiteSettingsDTO>("/settings"),
+  updateSettings: (body: SettingsUpdateInput) =>
+    req<SiteSettingsDTO>("/settings", { method: "PATCH", body: JSON.stringify(body), headers: { "content-type": "application/json" } }),
+
+  uploadSiteLogo: async (file: File): Promise<{ url: string }> => {
+    const form = new FormData();
+    form.append("file", file);
+    const res = await fetch(`${BASE}/settings/logo`, {
+      method: "POST",
+      credentials: "include",
+      body: form,
+    });
+    if (!res.ok) throw new ApiError(res.status, "Échec de l'upload du logo");
+    return res.json();
+  },
 
   // — Admin : pôles / tâches / créneaux —
   createPole: (body: { eventId: string; nom: string; description?: string }) =>
@@ -138,7 +155,10 @@ export const api = {
   reorderCreneaux: (ids: string[]) =>
     req("/creneaux/reorder", { method: "PATCH", body: JSON.stringify({ ids }), headers: { "content-type": "application/json" } }),
 
+  deleteMyAccount: () => req<{ ok: true }>("/volunteers/me", { method: "DELETE" }),
+
   // — Admin : bénévoles —
+  deleteVolunteer: (id: string) => req<{ ok: true }>(`/admin/volunteers/${id}`, { method: "DELETE" }),
   getVolunteers: (eventId: string, filter: VolunteerFilter = {}) =>
     req<{ volunteers: VolunteerDTO[]; total: number }>(`/events/${eventId}/volunteers${qs(filter)}`),
   volunteersCsvUrl: (eventId: string, filter: VolunteerFilter = {}) =>

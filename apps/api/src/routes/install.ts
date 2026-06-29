@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { count } from "drizzle-orm";
-import { users } from "@ensemble/db";
+import { users, settings } from "@ensemble/db";
 import { installSchema } from "@ensemble/db/shared";
 import type { AppEnv } from "../context.js";
 import { conflict, validate } from "../errors.js";
@@ -15,7 +15,16 @@ async function adminCount(db: AppEnv["Variables"]["db"]): Promise<number> {
 
 // L'app a-t-elle besoin de l'installation initiale ? (aucun admin en base)
 installRoutes.get("/status", async (c) => {
-  return c.json({ needsSetup: (await adminCount(c.get("db"))) === 0 });
+  const db = c.get("db");
+  const needsSetup = (await adminCount(db)) === 0;
+  if (needsSetup) return c.json({ needsSetup: true, siteTitle: "", siteLogo: null, rgpdEmail: "" });
+  const [row] = await db.select().from(settings);
+  return c.json({
+    needsSetup: false,
+    siteTitle: row?.siteTitle ?? "",
+    siteLogo: row?.siteLogo ?? null,
+    rgpdEmail: row?.rgpdEmail ?? "",
+  });
 });
 
 // Crée le premier admin (à la WordPress). Verrouillé si un admin existe déjà.
@@ -28,6 +37,7 @@ installRoutes.post("/", async (c) => {
     .insert(users)
     .values({ email: body.email, passwordHash, nom: body.orgNom, role: "admin" })
     .returning();
+  await db.insert(settings).values({ id: 1, siteTitle: body.orgNom, siteLogo: null, rgpdEmail: body.rgpdEmail });
   await createSession(c, user!.id);
   return c.json(
     { user: { id: user!.id, email: user!.email, nom: user!.nom, role: user!.role } },

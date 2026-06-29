@@ -1,16 +1,24 @@
 import * as React from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { CheckCircle2, Clock, MapPin, Calendar, User } from "lucide-react";
 import type { MesInscriptionsDTO } from "@ensemble/db/shared";
 import { api } from "@/lib/api";
 import { applyAccent } from "@/lib/theme";
+import { useAuth } from "@/lib/auth-context";
+import { useVolunteer } from "@/lib/volunteer-context";
 import { PublicNav } from "@/components/public/PublicNav";
+import { Button } from "@/components/ui/button";
 
 export default function MesInscriptionsPage() {
   const { token } = useParams<{ token?: string }>();
+  const { siteTitle, siteLogo } = useAuth();
+  const { logout } = useVolunteer();
+  const navigate = useNavigate();
   const [data, setData] = React.useState<MesInscriptionsDTO | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = React.useState(false);
+  const [deleting, setDeleting] = React.useState(false);
 
   React.useEffect(() => {
     const fetch = token
@@ -44,7 +52,7 @@ export default function MesInscriptionsPage() {
   return (
     <div className="min-h-screen bg-[#F9F9F8]">
       <div className="hidden md:block">
-        <PublicNav orgNom={event.orgNom} accent={event.couleurTheme} eventSlug={event.slug} />
+        <PublicNav orgNom={siteTitle || event.orgNom} accent={event.couleurTheme} siteLogo={siteLogo} eventSlug={event.slug} />
       </div>
 
       <div className="py-10 px-4">
@@ -135,6 +143,57 @@ export default function MesInscriptionsPage() {
               Garde ce lien — il te permettra de retrouver tes inscriptions.
             </p>
           )}
+
+          {/* Droit à l'effacement */}
+          <div className="rounded-card border border-hair bg-white p-5">
+            <p className="text-[11px] font-800 uppercase tracking-[.1em] text-label2">Mes données</p>
+            <p className="mt-2 text-sm text-label">
+              Tu peux demander la suppression de toutes tes données personnelles (nom, email, téléphone et inscriptions).
+            </p>
+            {!deleteConfirm ? (
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-3 border-danger text-danger hover:bg-danger/5"
+                onClick={() => setDeleteConfirm(true)}
+              >
+                Supprimer mes données
+              </Button>
+            ) : (
+              <div className="mt-3 space-y-2">
+                <p className="text-sm font-700 text-danger">Cette action est irréversible. Confirmer ?</p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-danger text-danger hover:bg-danger/5"
+                    disabled={deleting}
+                    onClick={async () => {
+                      setDeleting(true);
+                      try {
+                        await api.deleteMyAccount();
+                        await logout();
+                        navigate("/");
+                      } catch {
+                        setDeleting(false);
+                        setDeleteConfirm(false);
+                      }
+                    }}
+                  >
+                    {deleting ? "Suppression…" : "Oui, supprimer"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={deleting}
+                    onClick={() => setDeleteConfirm(false)}
+                  >
+                    Annuler
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

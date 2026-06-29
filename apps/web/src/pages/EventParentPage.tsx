@@ -3,9 +3,9 @@ import { Link, useParams } from "react-router-dom";
 import { Calendar, ChevronRight, Clock, MapPin, Users } from "lucide-react";
 import type { EventDetailDTO, PoleDTO } from "@ensemble/db/shared";
 import { useEvent } from "@/lib/useEvent";
+import { useAuth } from "@/lib/auth-context";
 import { applyAccent } from "@/lib/theme";
 import { initials } from "@/lib/utils";
-import { Logo } from "@/components/Logo";
 import { PublicNav } from "@/components/public/PublicNav";
 import { Button } from "@/components/ui/button";
 import { Jauge } from "@/components/primitives/Jauge";
@@ -13,6 +13,7 @@ import { Jauge } from "@/components/primitives/Jauge";
 export default function EventParentPage() {
   const { slug = "" } = useParams();
   const { event, loading, error } = useEvent(slug);
+  const { siteTitle, siteLogo, rgpdEmail } = useAuth();
 
   React.useEffect(() => {
     if (event) applyAccent(event.couleurTheme);
@@ -23,19 +24,25 @@ export default function EventParentPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <MobileView event={event} />
-      <DesktopView event={event} />
+      <MobileView event={event} siteTitle={siteTitle} siteLogo={siteLogo} />
+      <DesktopView event={event} siteTitle={siteTitle} siteLogo={siteLogo} rgpdEmail={rgpdEmail} />
     </div>
   );
 }
 
 // ── Mobile (écran 1) ──────────────────────────────────────────────────────
-function MobileView({ event }: { event: EventDetailDTO }) {
+function MobileView({ event, siteTitle, siteLogo }: { event: EventDetailDTO; siteTitle: string; siteLogo: string | null }) {
   const polesRef = React.useRef<HTMLDivElement>(null);
   return (
     <div className="mx-auto max-w-md md:hidden">
       <header className="flex items-center justify-between px-4 py-3">
-        <Logo className="h-7" color={event.couleurTheme} />
+        {siteLogo ? (
+          <img src={siteLogo} alt={siteTitle} className="h-7 w-auto object-contain" />
+        ) : (
+          <span className="text-[15px] font-800 tracking-tighter2 text-ink" style={{ color: event.couleurTheme }}>
+            {siteTitle}
+          </span>
+        )}
       </header>
 
       {event.banniere
@@ -86,11 +93,11 @@ function MobileView({ event }: { event: EventDetailDTO }) {
 }
 
 // ── Desktop (écran 6) ─────────────────────────────────────────────────────
-function DesktopView({ event }: { event: EventDetailDTO }) {
+function DesktopView({ event, siteTitle, siteLogo, rgpdEmail }: { event: EventDetailDTO; siteTitle: string; siteLogo: string | null; rgpdEmail: string }) {
   const polesRef = React.useRef<HTMLDivElement>(null);
   return (
     <div className="hidden md:block">
-      <PublicNav orgNom={event.orgNom} accent={event.couleurTheme} />
+      <PublicNav orgNom={siteTitle || event.orgNom} accent={event.couleurTheme} siteLogo={siteLogo} />
 
       <div className="mx-auto max-w-6xl px-8">
         {/* Hero */}
@@ -166,7 +173,12 @@ function DesktopView({ event }: { event: EventDetailDTO }) {
 
         <footer className="flex items-center justify-between border-t border-hair py-8 text-[13px] text-label">
           <span>Ensemble — le bénévolat scolaire, simplement.</span>
-          <span>Aide · Contact · Confidentialité</span>
+          <span className="flex items-center gap-3">
+            {rgpdEmail && (
+              <a href={`mailto:${rgpdEmail}`} className="hover:underline">Contact</a>
+            )}
+            <Link to="/confidentialite" className="hover:underline">Confidentialité</Link>
+          </span>
         </footer>
       </div>
     </div>

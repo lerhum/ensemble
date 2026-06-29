@@ -1,14 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Logo } from "@/components/Logo";
 import { useVolunteer } from "@/lib/volunteer-context";
 
 interface Props {
   orgNom: string;
   accent: string;
+  siteLogo?: string | null;
   eventSlug?: string;
 }
 
-export function PublicNav({ orgNom, accent, eventSlug }: Props) {
+export function PublicNav({ orgNom, accent, siteLogo, eventSlug }: Props) {
   const { token, session, sessionLoading, logout } = useVolunteer();
   const navigate = useNavigate();
 
@@ -26,12 +26,12 @@ export function PublicNav({ orgNom, accent, eventSlug }: Props) {
   return (
     <nav className="flex items-center justify-between border-b border-hair px-8 py-4">
       <div className="flex items-center gap-3">
-        <Logo className="h-8" color={accent} />
-        {orgNom && (
-          <>
-            <span className="h-5 w-px bg-hair" />
-            <span className="text-[13px] font-700 text-label">{orgNom}</span>
-          </>
+        {siteLogo ? (
+          <img src={siteLogo} alt={orgNom} className="h-8 w-auto object-contain" />
+        ) : (
+          <span className="text-[17px] font-800 tracking-tighter2 text-ink" style={{ color: accent }}>
+            {orgNom}
+          </span>
         )}
       </div>
       <div className="flex items-center gap-6 text-sm font-700 text-ink2">

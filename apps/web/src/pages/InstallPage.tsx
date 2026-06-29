@@ -12,11 +12,13 @@ import { Logo } from "@/components/Logo";
 export default function InstallPage() {
   const { needsSetup, loading, refresh } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = React.useState({ orgNom: "", email: "", password: "", confirmPassword: "" });
+  const [form, setForm] = React.useState({ orgNom: "", rgpdEmail: "", email: "", password: "", confirmPassword: "" });
+  const [logoFile, setLogoFile] = React.useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
+  const [logoWarning, setLogoWarning] = React.useState<string | null>(null);
   const [busy, setBusy] = React.useState(false);
 
-  // Si l'app est déjà installée, l'installeur est verrouillé → login.
   React.useEffect(() => {
     if (!loading && !needsSetup) navigate("/login", { replace: true });
   }, [loading, needsSetup, navigate]);
@@ -24,19 +26,38 @@ export default function InstallPage() {
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
 
+  function handleLogoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0] ?? null;
+    setLogoFile(file);
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setLogoPreview(url);
+    } else {
+      setLogoPreview(null);
+    }
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setLogoWarning(null);
     setBusy(true);
     try {
-      await api.install(form);
-      await refresh();
-      navigate("/admin", { replace: true });
+      await api.install({ orgNom: form.orgNom, rgpdEmail: form.rgpdEmail, email: form.email, password: form.password, confirmPassword: form.confirmPassword });
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Échec de l'installation");
-    } finally {
       setBusy(false);
+      return;
     }
+    if (logoFile) {
+      try {
+        await api.uploadSiteLogo(logoFile);
+      } catch {
+        setLogoWarning("Le logo n'a pas pu être uploadé. Vous pourrez le configurer depuis les paramètres.");
+      }
+    }
+    await refresh();
+    navigate("/admin", { replace: true });
   }
 
   return (
@@ -53,11 +74,47 @@ export default function InstallPage() {
         </div>
         <form className="space-y-4" onSubmit={submit}>
           <div className="space-y-1.5">
-            <Label htmlFor="orgNom">Nom du comité</Label>
+            <Label htmlFor="orgNom">Nom de l'école / du comité</Label>
             <Input id="orgNom" value={form.orgNom} onChange={set("orgNom")} placeholder="Comité Vinalmont" required />
+            <p className="text-[12px] text-label">Affiché sur le site public.</p>
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="siteLogo">Logo de l'école (optionnel)</Label>
+            <div className="flex items-center gap-3">
+              {logoPreview && (
+                <img src={logoPreview} alt="Aperçu" className="h-10 w-auto rounded object-contain" />
+              )}
+              <label
+                htmlFor="siteLogo"
+                className="cursor-pointer rounded-[10px] border border-hair px-3.5 py-2 text-sm font-700 text-ink hover:bg-surface"
+              >
+                {logoFile ? "Changer…" : "Choisir un fichier"}
+              </label>
+              {logoFile && (
+                <button
+                  type="button"
+                  className="text-[12px] text-label hover:text-danger"
+                  onClick={() => { setLogoFile(null); setLogoPreview(null); }}
+                >
+                  Supprimer
+                </button>
+              )}
+            </div>
+            <input
+              id="siteLogo"
+              type="file"
+              accept="image/*"
+              className="sr-only"
+              onChange={handleLogoChange}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="rgpdEmail">Email de contact RGPD</Label>
+            <Input id="rgpdEmail" type="email" value={form.rgpdEmail} onChange={set("rgpdEmail")} placeholder="dpo@ecole.be" required />
+            <p className="text-[12px] text-label">Affiché aux bénévoles pour exercer leurs droits (accès, suppression). Peut être le même que l'email admin.</p>
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="email">Email de l'administrateur</Label>
             <Input id="email" type="email" value={form.email} onChange={set("email")} placeholder="admin@ecole.be" required />
           </div>
           <div className="space-y-1.5">
@@ -69,6 +126,7 @@ export default function InstallPage() {
             <Input id="confirm" type="password" value={form.confirmPassword} onChange={set("confirmPassword")} required />
           </div>
           {error && <p className="text-sm font-600 text-danger">{error}</p>}
+          {logoWarning && <p className="text-sm text-warn">{logoWarning}</p>}
           <Button type="submit" variant="brand" size="lg" className="w-full" disabled={busy}>
             {busy ? "Création…" : "Créer mon compte"}
           </Button>
