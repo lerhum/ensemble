@@ -248,6 +248,14 @@ publicRoutes.get("/mes-inscriptions", async (c) => {
   return c.json(dto);
 });
 
+// Suppression du compte bénévole (droit à l'effacement RGPD).
+publicRoutes.delete("/volunteers/me", async (c) => {
+  const session = await resolveVolunteerSession(c);
+  if (!session) return c.json({ error: "Non authentifié." }, 401);
+  await c.get("db").delete(volunteers).where(eq(volunteers.id, session.volunteerId));
+  return c.json({ ok: true });
+});
+
 // ── Templates email ───────────────────────────────────────────────────────
 
 function confirmationHtml(nom: string, confirmUrl: string, inscriptionsUrl: string, definePasswordUrl: string): string {

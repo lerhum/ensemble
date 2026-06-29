@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
 
 export interface Identite {
   nom: string;
@@ -26,6 +27,7 @@ interface Props {
 }
 
 export function InscriptionDialog({ open, onOpenChange, creneauId, initialIdentite, onConfirm }: Props) {
+  const { rgpdEmail } = useAuth();
   const [form, setForm] = React.useState({ nom: "", email: "", tel: "" });
   const [prefilled, setPrefilled] = React.useState(false);
   const [busy, setBusy] = React.useState(false);
@@ -120,6 +122,11 @@ export function InscriptionDialog({ open, onOpenChange, creneauId, initialIdenti
           <Button type="submit" variant="brand" size="lg" className="w-full" disabled={busy}>
             {busy ? "Inscription…" : "Je participe"}
           </Button>
+          <p className="text-[11px] leading-relaxed text-label2 text-center">
+            Tes coordonnées (nom, email, tél.) sont utilisées uniquement pour organiser cet événement.
+            Tu peux demander leur suppression depuis « Mes inscriptions »
+            {rgpdEmail ? <> ou en contactant <a href={`mailto:${rgpdEmail}`} className="underline">{rgpdEmail}</a></> : ""}.
+          </p>
         </form>
       </DialogContent>
     </Dialog>

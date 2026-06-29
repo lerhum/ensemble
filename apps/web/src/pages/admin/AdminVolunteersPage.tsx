@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Download, Plus, Search, X } from "lucide-react";
+import { Download, Plus, Search, Trash2, X } from "lucide-react";
 import type { EventDetailDTO, VolunteerDTO, VolunteerFilter } from "@ensemble/db/shared";
 import { useParams } from "react-router-dom";
 import { api } from "@/lib/api";
@@ -40,6 +40,8 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
   const [rows, setRows] = React.useState<VolunteerDTO[]>([]);
   const [filter, setFilter] = React.useState<VolunteerFilter>({});
   const [q, setQ] = React.useState("");
+  const [deletingId, setDeletingId] = React.useState<string | null>(null);
+  const [confirmId, setConfirmId] = React.useState<string | null>(null);
 
   const creneauOptions = React.useMemo(
     () =>
@@ -82,6 +84,19 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
 
   const poleName = (id?: string) => event.poles.find((p) => p.id === id)?.nom;
   const creneauName = (id?: string) => creneauOptions.find((c) => c.id === id)?.label;
+
+  async function deleteVolunteer(id: string) {
+    setDeletingId(id);
+    try {
+      await api.deleteVolunteer(id);
+      const refresh = () => api.getVolunteers(event.id, filter).then((r) => setRows(r.volunteers));
+      const refreshAll = () => api.getVolunteers(event.id).then((r) => setAll(r.volunteers));
+      await Promise.all([refresh(), refreshAll()]);
+    } finally {
+      setDeletingId(null);
+      setConfirmId(null);
+    }
+  }
 
   const chips = [
     filter.pole && { key: "pole", label: `Pôle : ${poleName(filter.pole)}` },
@@ -217,12 +232,13 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
               <TableHead>Créneaux</TableHead>
               <TableHead>Contact</TableHead>
               <TableHead>Statut</TableHead>
+              <TableHead className="w-10" />
             </TableRow>
           </TableHeader>
           <TableBody>
             {rows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="py-12 text-center text-label">
+                <TableCell colSpan={7} className="py-12 text-center text-label">
                   Aucun bénévole ne correspond aux filtres.
                 </TableCell>
               </TableRow>
@@ -257,6 +273,33 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
                       <Badge variant="success">Confirmé</Badge>
                     ) : (
                       <Badge variant="warn">En attente</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {confirmId === v.id ? (
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          className="rounded px-2 py-0.5 text-[12px] font-700 text-danger hover:bg-danger/5 disabled:opacity-50"
+                          disabled={deletingId === v.id}
+                          onClick={() => deleteVolunteer(v.id)}
+                        >
+                          {deletingId === v.id ? "…" : "Confirmer"}
+                        </button>
+                        <button
+                          className="text-[12px] text-label hover:text-ink"
+                          onClick={() => setConfirmId(null)}
+                        >
+                          Annuler
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        className="rounded p-1 text-label2 hover:text-danger"
+                        aria-label="Supprimer ce bénévole"
+                        onClick={() => setConfirmId(v.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
                     )}
                   </TableCell>
                 </TableRow>
