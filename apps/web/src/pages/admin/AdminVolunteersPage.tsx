@@ -122,7 +122,7 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
 
   return (
     <AdminLayout
-      eyebrow="Vinalmont Got's Talent"
+      eyebrow={event.nom}
       title="Bénévoles"
       actions={
         <>

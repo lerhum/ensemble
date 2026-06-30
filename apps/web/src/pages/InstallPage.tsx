@@ -75,7 +75,7 @@ export default function InstallPage() {
         <form className="space-y-4" onSubmit={submit}>
           <div className="space-y-1.5">
             <Label htmlFor="orgNom">Nom de l'école / du comité</Label>
-            <Input id="orgNom" value={form.orgNom} onChange={set("orgNom")} placeholder="Comité Vinalmont" required />
+            <Input id="orgNom" value={form.orgNom} onChange={set("orgNom")} placeholder="Comité scolaire" required />
             <p className="text-[12px] text-label">Affiché sur le site public.</p>
           </div>
           <div className="space-y-1.5">

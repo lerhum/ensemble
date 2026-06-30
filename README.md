@@ -1,7 +1,7 @@
 # Ensemble
 
 **Ensemble** est une application web de gestion du **bénévolat scolaire** (écoles belges,
-francophones). Les parents découvrent un événement d'école (ex. *Vinalmont Got's Talent*), lisent
+francophones). Les parents découvrent un événement d'école (ex. *Demo Got's Talent*), lisent
 son histoire, parcourent les **pôles** (Bar & Buvette, Pêche aux canards, Grimage…) et s'inscrivent
 à un ou plusieurs **créneaux**. Le comité administre l'événement : page publique personnalisable,
 configuration des pôles/tâches/créneaux, suivi des bénévoles (filtres + export CSV).
@@ -33,7 +33,7 @@ Puis ouvrir **http://localhost:5173**.
 
 Au **premier lancement**, l'app affiche un **installeur « à la WordPress »** (`/install`) : aucun
 admin n'est pré-créé, vous définissez le compte du comité (nom, email, mot de passe). Le seed crée
-le contenu de démo (*Vinalmont Got's Talent* : 6 pôles, 18 créneaux, 32 inscriptions).
+le contenu de démo (*Demo Got's Talent* : 6 pôles, 18 créneaux, 32 inscriptions).
 
 Raccourcis `make` :
 

@@ -45,7 +45,7 @@ function PolesInner({ event, reload }: { event: EventDetailDTO; reload: () => Pr
 
   return (
     <AdminLayout
-      eyebrow="Vinalmont Got's Talent · Configuration"
+      eyebrow={`${event.nom} · Configuration`}
       title="Pôles & créneaux"
       actions={
         <Button variant="default" onClick={addPole}>

@@ -68,7 +68,7 @@ export default function AdminSettingsPage() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 onBlur={saveTitle}
-                placeholder="Comité Vinalmont"
+                placeholder="Comité scolaire"
               />
               <p className="text-[12px] text-label">
                 Affiché dans la navigation publique à la place du logo Ensemble.

@@ -1,4 +1,4 @@
-// Seed = contenu exact du prototype (Vinalmont Got's Talent).
+// Seed = contenu de démo (événement fictif générique).
 // Idempotent : supprime l'événement (cascade sur pôles/tâches/créneaux/bénévoles/
 // inscriptions) puis recrée tout. NE TOUCHE PAS aux users/sessions (l'admin créé
 // via l'installeur survit au reseed).
@@ -193,16 +193,16 @@ async function main() {
   const [event] = await db
     .insert(s.events)
     .values({
-      slug: "vinalmont-gots-talent",
-      nom: "Vinalmont Got's Talent",
+      slug: "demo-gots-talent",
+      nom: "Demo Got's Talent",
       date: "Samedi 14 juin 2026",
       horaires: "14h00 – 20h00",
-      lieu: "Nouvelle école — 9 rue Charles Frère, Vinalmont",
+      lieu: "Nouvelle école — 1 rue de la Fête, Belgique",
       histoire:
         "Les enfants répètent depuis des semaines pour vous offrir un spectacle inoubliable. Le comité et les bénévoles préparent cette fête avec le cœur — il ne manque plus que vous. Quelques heures suffisent à faire toute la différence.",
       banniere: null,
       couleurTheme: "#DA4A40",
-      orgNom: "Comité Vinalmont",
+      orgNom: "Comité scolaire",
       statut: "publie",
       dateIso: "2026-06-14",
       pourquoiTitre: "Une fête portée par les parents",
