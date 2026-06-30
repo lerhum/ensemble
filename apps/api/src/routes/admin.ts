@@ -24,22 +24,12 @@ import {
   listEvents,
   volunteersToCsv,
 } from "../dto.js";
+import { slugify } from "../utils.js";
 
 export const adminRoutes = new Hono<AppEnv>();
 
 // Toutes les routes admin exigent un admin authentifié.
 adminRoutes.use("*", requireAdmin);
-
-/** Converts a string to a URL-safe ASCII slug (diacritics stripped, max 60 chars). */
-function slugify(s: string): string {
-  return s
-    .normalize("NFD") // sépare les diacritiques (U+0300–U+036F) puis les retire
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 60);
-}
 
 /** Returns the next available position integer for a child entity within its parent (max + 1). */
 async function nextPosition(

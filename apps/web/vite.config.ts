@@ -17,4 +17,7 @@ export default defineConfig({
       "/api": { target: apiProxy, changeOrigin: true },
     },
   },
+  test: {
+    environment: "node",
+  },
 });

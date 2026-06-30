@@ -66,7 +66,7 @@ export async function buildEventDetailBySlug(
   return assembleEventDetail(ev);
 }
 
-type EventWithTree = NonNullable<Awaited<ReturnType<typeof loadTree>>>;
+export type EventWithTree = NonNullable<Awaited<ReturnType<typeof loadTree>>>;
 /** Loads a raw event tree (poles→taches→creneaux + inscriptions) by id. */
 function loadTree(db: Db, id: string) {
   return db.query.events.findFirst({
@@ -86,7 +86,7 @@ export async function buildEventDetailById(db: Db, id: string): Promise<EventDet
 }
 
 /** Assembles an EventDetailDTO from a raw Drizzle event tree, computing per-slot status and aggregated counters. */
-function assembleEventDetail(ev: EventWithTree): EventDetailDTO {
+export function assembleEventDetail(ev: EventWithTree): EventDetailDTO {
   let totalInscrits = 0;
   let totalNecessaires = 0;
   let nbCreneaux = 0;
@@ -233,6 +233,18 @@ export async function buildMesInscriptions(
   };
 }
 
+/** Applies cumulative volunteer filters (statut, pole, creneau, q) to an in-memory list. */
+export function filterVolunteers(dtos: VolunteerDTO[], filter: VolunteerFilter): VolunteerDTO[] {
+  const q = filter.q?.trim().toLowerCase();
+  return dtos.filter((v) => {
+    if (filter.statut && v.statut !== filter.statut) return false;
+    if (filter.pole && !v.poles.some((p) => p.id === filter.pole)) return false;
+    if (filter.creneau && !v.creneaux.some((cr) => cr.id === filter.creneau)) return false;
+    if (q && !(v.nom.toLowerCase().includes(q) || v.email.toLowerCase().includes(q))) return false;
+    return true;
+  });
+}
+
 /** Returns filtered volunteers for an event (q + pole + creneau + statut filters are cumulative). */
 export async function buildVolunteers(
   db: Db,
@@ -247,8 +259,6 @@ export async function buildVolunteers(
       },
     },
   });
-
-  const q = filter.q?.trim().toLowerCase();
 
   const dtos = rows.map((v): VolunteerDTO => {
     const polesMap = new Map<string, string>();
@@ -269,13 +279,7 @@ export async function buildVolunteers(
     };
   });
 
-  return dtos.filter((v) => {
-    if (filter.statut && v.statut !== filter.statut) return false;
-    if (filter.pole && !v.poles.some((p) => p.id === filter.pole)) return false;
-    if (filter.creneau && !v.creneaux.some((cr) => cr.id === filter.creneau)) return false;
-    if (q && !(v.nom.toLowerCase().includes(q) || v.email.toLowerCase().includes(q))) return false;
-    return true;
-  });
+  return filterVolunteers(dtos, filter);
 }
 
 /** Serializes a volunteer list to CSV (UTF-8 BOM for Excel compatibility, comma-separated). */

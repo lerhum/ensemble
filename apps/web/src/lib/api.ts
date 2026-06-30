@@ -46,7 +46,7 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
 const json = (body: unknown): RequestInit => ({ method: "POST", body: JSON.stringify(body) });
 
 /** Serializes a VolunteerFilter to a URL query string, omitting empty/undefined fields. */
-function qs(filter: VolunteerFilter): string {
+export function qs(filter: VolunteerFilter): string {
   const p = new URLSearchParams();
   if (filter.q) p.set("q", filter.q);
   if (filter.pole) p.set("pole", filter.pole);
