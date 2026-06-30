@@ -1,49 +1,49 @@
 # Ensemble
 
-**Ensemble** est une application web de gestion du **bénévolat scolaire** (écoles belges,
-francophones). Les parents découvrent un événement d'école (ex. *Demo Got's Talent*), lisent
-son histoire, parcourent les **pôles** (Bar & Buvette, Pêche aux canards, Grimage…) et s'inscrivent
-à un ou plusieurs **créneaux**. Le comité administre l'événement : page publique personnalisable,
-configuration des pôles/tâches/créneaux, suivi des bénévoles (filtres + export CSV).
+**Ensemble** is a web app for managing **school volunteering** (French-language, Belgian schools).
+Parents discover a school event (e.g. *Demo Got's Talent*), read its story, browse **pôles**
+(Bar & Buvette, Pêche aux canards, Grimage…) and sign up for one or more **créneaux**.
+The school committee manages the event: customizable public page, pôle/tâche/créneau
+configuration, volunteer tracking (filters + CSV export).
 
 ## Stack
 
-Monorepo **pnpm** (un schéma de données, deux drivers selon l'environnement) :
+**pnpm** monorepo (one data schema, two drivers depending on environment):
 
-| Workspace | Stack | Rôle |
+| Workspace | Stack | Role |
 | --------- | ----- | ---- |
-| `apps/web` | React + Vite + TypeScript + Tailwind + shadcn/ui | Front (Manrope, thème par école) |
-| `apps/api` | Hono + TypeScript + zod | API REST — tourne sur **Node** (dev) **et Cloudflare Workers** (prod) |
-| `packages/db` | Drizzle ORM + PostgreSQL | Schéma, migrations, seed, types + schémas zod partagés |
+| `apps/web` | React + Vite + TypeScript + Tailwind + shadcn/ui | Frontend (Manrope, per-school theming) |
+| `apps/api` | Hono + TypeScript + zod | REST API — runs on **Node** (dev) **and Cloudflare Workers** (prod) |
+| `packages/db` | Drizzle ORM + PostgreSQL | Schema, migrations, seed, shared types + zod schemas |
 
-- **Dev local** : Postgres via Docker, driver `pg`.
-- **Prod** : Cloudflare Pages (web) + Worker (api) + **Neon** (Postgres managé), driver
-  `@neondatabase/serverless`. Même schéma, même code de routes.
+- **Local dev**: Postgres via Docker, `pg` driver.
+- **Prod**: Cloudflare Pages (web) + Worker (api) + **Neon** (managed Postgres), driver
+  `@neondatabase/serverless`. Same schema, same route code.
 
-## Démarrage rapide (Docker)
+## Quick start (Docker)
 
-Prérequis : Docker + Docker Compose.
+Prerequisites: Docker + Docker Compose.
 
 ```bash
-cp .env.example .env      # variables par défaut (OK pour le dev)
+cp .env.example .env      # default variables (fine for dev)
 docker compose up         # db → migrate (migrations + seed) → api (:8787) → web (:5173)
 ```
 
-Puis ouvrir **http://localhost:5173**.
+Then open **http://localhost:5173**.
 
-Au **premier lancement**, l'app affiche un **installeur « à la WordPress »** (`/install`) : aucun
-admin n'est pré-créé, vous définissez le compte du comité (nom, email, mot de passe). Le seed crée
-le contenu de démo (*Demo Got's Talent* : 6 pôles, 18 créneaux, 32 inscriptions).
+On **first launch**, the app shows a **WordPress-style installer** (`/install`): no admin is
+pre-created — you define the committee account (name, email, password). The seed creates demo
+content (*Demo Got's Talent*: 6 pôles, 18 créneaux, 32 signups).
 
-Raccourcis `make` :
+`make` shortcuts:
 
 ```bash
-make up        # démarre toute la stack
-make down      # arrête
-make seed      # (re)seed le contenu de démo
-make migrate   # applique les migrations
-make logs      # suit les logs
-make clean     # arrête + supprime le volume Postgres (réinitialise tout → installeur)
+make up        # start the full stack
+make down      # stop
+make seed      # (re)seed demo content
+make migrate   # apply migrations
+make logs      # follow logs
+make clean     # stop + delete Postgres volume (resets everything → installer)
 ```
 
 ## Structure
@@ -54,61 +54,60 @@ ensemble/
 │  ├─ web/   React + Vite + Tailwind + shadcn/ui
 │  └─ api/   Hono (src/node.ts = Node, src/worker.ts = Cloudflare Worker)
 ├─ packages/
-│  └─ db/    Drizzle : schema.ts, migrations, seed.ts, shared.ts (types + zod), clients node/neon
+│  └─ db/    Drizzle: schema.ts, migrations, seed.ts, shared.ts (types + zod), node/neon clients
 ├─ docker-compose.yml   db + migrate + api + web
 ├─ Makefile · .env.example
-└─ DEPLOY.md            déploiement Cloudflare Pages + Worker + Neon
+└─ DEPLOY.md            Cloudflare Pages + Worker + Neon deployment
 ```
 
-## Modèle de données
+## Data model
 
 ```
-Événement → Pôles → Tâches → Créneaux        +  inscriptions (jointure créneau ↔ bénévole)
+Event → Pôles → Tâches → Créneaux        +  signups (créneau ↔ bénévole join)
 ```
 
-- Une **tâche** est définie une fois et contient **plusieurs créneaux**.
-- `creneau = { debut, fin, necessaires }` ; un bénévole peut s'inscrire à **plusieurs** créneaux.
-- Le **statut d'un créneau** est dérivé de `inscrits / necessaires` et pilote la couleur partout
-  (jauges, pastilles, badges) : vert = complet, marine = en cours, ambre = 1 place, corail = urgent.
-  Un créneau complet masque son bouton et affiche « Complet ».
+- A **tâche** is defined once and contains **multiple créneaux**.
+- `creneau = { debut, fin, necessaires }` ; a bénévole can sign up for **multiple** créneaux.
+- A **créneau's status** is derived from `inscrits / necessaires` and drives the color everywhere
+  (gauges, badges): green = full, navy = in progress, amber = 1 spot left, coral = urgent.
+  A full créneau hides its button and shows "Complet".
 
-## API (extrait)
+## API (excerpt)
 
-| Méthode | Route | Accès |
-| ------- | ----- | ----- |
-| `GET` | `/api/install/status` · `POST /api/install` | installeur (verrou 409 si déjà installé) |
-| `POST` | `/api/auth/login` · `/api/auth/logout` · `GET /api/auth/me` | session (cookie signé) |
-| `GET` | `/api/events/:slug` | public (event + pôles/tâches/créneaux + compteurs) |
-| `POST`/`DELETE` | `/api/creneaux/:id/inscriptions` | public (inscription multi-créneaux) |
-| `*` | `/api/poles\|taches\|creneaux` (+ `/reorder`) | admin (CRUD + réordonnancement) |
+| Method | Route | Access |
+| ------ | ----- | ------ |
+| `GET` | `/api/install/status` · `POST /api/install` | installer (409 if already installed) |
+| `POST` | `/api/auth/login` · `/api/auth/logout` · `GET /api/auth/me` | session (signed cookie) |
+| `GET` | `/api/events/:slug` | public (event + pôles/tâches/créneaux + counters) |
+| `POST`/`DELETE` | `/api/creneaux/:id/inscriptions` | public (multi-créneau signup) |
+| `*` | `/api/poles\|taches\|creneaux` (+ `/reorder`) | admin (CRUD + reordering) |
 | `POST`/`PATCH` | `/api/events` (+ `/:id/banner`) | admin |
-| `GET` | `/api/events/:id/volunteers[.csv]?q=&pole=&creneau=&statut=` | admin (filtres + export CSV) |
+| `GET` | `/api/events/:id/volunteers[.csv]?q=&pole=&creneau=&statut=` | admin (filters + CSV export) |
 
-Authentification portable Node/Workers (hachage PBKDF2 via WebCrypto, sessions en base). Validation
-zod, erreurs JSON.
+Portable Node/Workers authentication (PBKDF2 via WebCrypto, DB-backed sessions). Zod validation, JSON errors.
 
-## Écrans (Direction B)
+## Screens (Direction B)
 
-Page événement (parent, mobile + desktop) · Sélection de créneaux (mobile + desktop) · Admin :
-tableau de bord & création (upload bannière + couleur de thème + aperçu live), Pôles & créneaux
-(édition inline, +créneau/+tâche/+pôle, drag-and-drop), Bénévoles (filtres cumulables + chips +
-export CSV) · Installeur + connexion.
+Event page (parent, mobile + desktop) · Créneau selection (mobile + desktop) · Admin:
+dashboard & creation (banner upload + theme color + live preview), Pôles & créneaux
+(inline editing, +créneau/+tâche/+pôle, drag-and-drop), Bénévoles (cumulative filters + chips +
+CSV export) · Installer + login.
 
-## Commandes utiles (hors Docker)
+## Useful commands (outside Docker)
 
 ```bash
 pnpm install
 pnpm -r typecheck
 pnpm --filter @ensemble/web dev|build
-pnpm --filter @ensemble/api dev            # requiert DATABASE_URL
+pnpm --filter @ensemble/api dev            # requires DATABASE_URL
 pnpm --filter @ensemble/db generate|migrate|seed
 ```
 
-## Déploiement
+## Deployment
 
-Voir **[DEPLOY.md](./DEPLOY.md)** — Neon + Cloudflare Worker (`wrangler deploy`) + Cloudflare Pages,
-sur les offres gratuites.
+See **[DEPLOY.md](./DEPLOY.md)** — Neon + Cloudflare Worker (`wrangler deploy`) + Cloudflare Pages,
+on free tiers.
 
-## Licence
+## License
 
-Voir [LICENSE](./LICENSE).
+See [LICENSE](./LICENSE).
