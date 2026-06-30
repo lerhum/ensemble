@@ -13,12 +13,13 @@ import {
 } from "@ensemble/db/shared";
 import type { Db } from "@ensemble/db/node";
 
+/** Sort comparator for entities with a position field, ascending. */
 const asc =
   <T extends { position: number }>() =>
   (a: T, b: T) =>
     a.position - b.position;
 
-/** Liste légère de tous les événements (sans l'arbre de pôles). */
+/** Returns a lightweight list of all events (no pole tree, ordered by creation date). */
 export async function listEvents(db: Db): Promise<EventDTO[]> {
   const rows = await db.query.events.findMany({ orderBy: desc(events.createdAt) });
   return rows.map((ev) => ({
@@ -39,7 +40,7 @@ export async function listEvents(db: Db): Promise<EventDTO[]> {
   }));
 }
 
-/** Charge un événement complet (pôles→tâches→créneaux + inscriptions) par slug. */
+/** Loads a full event (poles→taches→creneaux + inscriptions) by slug. Pass publicOnly=true to restrict to published events. */
 export async function buildEventDetailBySlug(
   db: Db,
   slug: string,
@@ -66,6 +67,7 @@ export async function buildEventDetailBySlug(
 }
 
 type EventWithTree = NonNullable<Awaited<ReturnType<typeof loadTree>>>;
+/** Loads a raw event tree (poles→taches→creneaux + inscriptions) by id. */
 function loadTree(db: Db, id: string) {
   return db.query.events.findFirst({
     where: eq(events.id, id),
@@ -77,12 +79,13 @@ function loadTree(db: Db, id: string) {
   });
 }
 
-/** Variante par id (utilisée après création/édition admin). */
+/** Loads a full event detail by id (used after admin create/edit). */
 export async function buildEventDetailById(db: Db, id: string): Promise<EventDetailDTO | null> {
   const ev = await loadTree(db, id);
   return ev ? assembleEventDetail(ev) : null;
 }
 
+/** Assembles an EventDetailDTO from a raw Drizzle event tree, computing per-slot status and aggregated counters. */
 function assembleEventDetail(ev: EventWithTree): EventDetailDTO {
   let totalInscrits = 0;
   let totalNecessaires = 0;
@@ -157,7 +160,7 @@ function assembleEventDetail(ev: EventWithTree): EventDetailDTO {
   };
 }
 
-/** Récapitulatif des inscriptions d'un bénévole via son volunteerId (session). */
+/** Returns a volunteer's signup summary by volunteerId (used for authenticated volunteer sessions). */
 export async function buildMesInscriptionsByVolunteerId(
   db: Db,
   volunteerId: string,
@@ -188,7 +191,7 @@ export async function buildMesInscriptionsByVolunteerId(
   };
 }
 
-/** Récapitulatif des inscriptions d'un bénévole via son token. */
+/** Returns a volunteer's signup summary by email-link token. */
 export async function buildMesInscriptions(
   db: Db,
   token: string,
@@ -230,7 +233,7 @@ export async function buildMesInscriptions(
   };
 }
 
-/** Bénévoles d'un événement, filtrés (q + pôle + créneau + statut, cumulatifs). */
+/** Returns filtered volunteers for an event (q + pole + creneau + statut filters are cumulative). */
 export async function buildVolunteers(
   db: Db,
   eventId: string,
@@ -275,7 +278,7 @@ export async function buildVolunteers(
   });
 }
 
-/** Sérialise les bénévoles filtrés en CSV (respecte les filtres). */
+/** Serializes a volunteer list to CSV (UTF-8 BOM for Excel compatibility, comma-separated). */
 export function volunteersToCsv(list: VolunteerDTO[]): string {
   const esc = (s: string) => `"${s.replace(/"/g, '""')}"`;
   const header = ["Nom", "Email", "Téléphone", "Pôle(s)", "Créneaux", "Statut"];

@@ -16,6 +16,7 @@ interface AuthState {
 
 const AuthContext = React.createContext<AuthState | null>(null);
 
+/** Provides auth state (current user, site settings, login/logout) to the component tree. */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = React.useState<SessionUserDTO | null>(null);
   const [needsSetup, setNeedsSetup] = React.useState(false);
@@ -54,6 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+/** Returns the current auth state and methods. Must be used inside &lt;AuthProvider&gt;. */
 export function useAuth(): AuthState {
   const ctx = React.useContext(AuthContext);
   if (!ctx) throw new Error("useAuth doit être utilisé dans <AuthProvider>");

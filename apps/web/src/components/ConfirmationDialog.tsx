@@ -17,6 +17,7 @@ interface Props {
   onEditIdentite: () => void;
 }
 
+/** Modal that shows slot and identity details and asks the volunteer to confirm their signup. */
 export function ConfirmationDialog({
   open,
   onOpenChange,

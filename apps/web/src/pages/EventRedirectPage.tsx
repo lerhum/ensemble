@@ -3,6 +3,7 @@ import { Navigate } from "react-router-dom";
 import { api } from "@/lib/api";
 import type { EventDetailDTO } from "@ensemble/db/shared";
 
+/** Root redirect: fetches the current active event and navigates to its public page. Shows nothing while loading. */
 export default function EventRedirectPage() {
   const [event, setEvent] = React.useState<EventDetailDTO | null | undefined>(undefined);
 

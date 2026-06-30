@@ -1,21 +1,22 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+/** Merges class names with Tailwind CSS conflict resolution via clsx + tailwind-merge. */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-/** Formate une heure "13:00" → "13h00" (style FR). */
+/** Formats a "HH:MM" time string as "HHhMM" (French style). */
 export function formatHeure(hhmm: string): string {
   return hhmm.replace(":", "h");
 }
 
-/** Plage horaire "13:00"–"14:00" → "13h00 – 14h00". */
+/** Formats a time range as "HHhMM – HHhMM". */
 export function formatPlage(debut: string, fin: string): string {
   return `${formatHeure(debut)} – ${formatHeure(fin)}`;
 }
 
-/** Initiales (max 2 lettres) à partir d'un nom complet. */
+/** Returns up to 2 initials (uppercased) from a full name. */
 export function initials(nom: string): string {
   return nom
     .split(/\s+/)

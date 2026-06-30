@@ -8,12 +8,13 @@ export interface StatusMeta {
   fill: string;
   fg: string;
   bg: string;
-  /** Libellé de pastille de statut (« Complet », « 1 place », « 2 places »…). */
+  /** Status badge label ("Complet", "1 place", "N places", etc.). */
   label: string;
   placesLibres: number;
   badgeVariant: "success" | "warn" | "danger" | "default";
 }
 
+/** Derives display metadata (color tokens, label, badge variant) from signup counts. */
 export function statusMeta(inscrits: number, necessaires: number): StatusMeta {
   const status = slotStatus(inscrits, necessaires);
   const c = STATUS_COLORS[status];

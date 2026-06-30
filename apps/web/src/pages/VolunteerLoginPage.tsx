@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+/** Volunteer login page with email/password form. */
 export default function VolunteerLoginPage() {
   const navigate = useNavigate();
   const { refreshSession } = useVolunteer();

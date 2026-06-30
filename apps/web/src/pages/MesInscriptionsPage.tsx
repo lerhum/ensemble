@@ -9,6 +9,7 @@ import { useVolunteer } from "@/lib/volunteer-context";
 import { PublicNav } from "@/components/public/PublicNav";
 import { Button } from "@/components/ui/button";
 
+/** Volunteer's signup summary page, accessible via email-link token or session cookie. */
 export default function MesInscriptionsPage() {
   const { token } = useParams<{ token?: string }>();
   const { siteTitle, siteLogo } = useAuth();
@@ -200,6 +201,7 @@ export default function MesInscriptionsPage() {
   );
 }
 
+/** Full-screen centered wrapper for loading and error states. */
 function Center({ children }: { children: React.ReactNode }) {
   return (
     <div className="grid min-h-screen place-items-center bg-white">

@@ -1,10 +1,9 @@
-// Abstraction du service d'envoi d'emails.
-// Node dev : SmtpEmailService (Mailpit). Worker prod : ResendEmailService.
+/** Email sending abstraction. Node dev: SmtpEmailService (Mailpit); Worker prod: ResendEmailService. */
 export interface EmailService {
   send(to: string, subject: string, html: string, text: string): Promise<void>;
 }
 
-// Fallback : log dans la console (aucune dépendance externe).
+/** Development fallback that logs emails to the console instead of sending them. */
 export class LogEmailService implements EmailService {
   async send(to: string, subject: string, _html: string, text: string) {
     console.log(`\n📧 Email → ${to}`);
@@ -13,7 +12,7 @@ export class LogEmailService implements EmailService {
   }
 }
 
-// Resend (HTTP, compatible Workers). Nécessite RESEND_API_KEY + RESEND_FROM.
+/** Production email service using the Resend HTTP API (compatible with Cloudflare Workers). Requires RESEND_API_KEY and RESEND_FROM env vars. */
 export class ResendEmailService implements EmailService {
   constructor(
     private readonly apiKey: string,

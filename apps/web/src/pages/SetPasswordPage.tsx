@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+/** Page for volunteers to define their password via an email token (first login). */
 export default function DefinirMotDePassePage() {
   const { token = "" } = useParams();
   const navigate = useNavigate();

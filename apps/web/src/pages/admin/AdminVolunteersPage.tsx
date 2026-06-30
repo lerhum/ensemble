@@ -22,6 +22,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 const ALL = "all";
 
+/** Admin volunteer management page: filterable list with CSV export and delete action. */
 export default function AdminVolunteersPage() {
   const { id = "" } = useParams<{ id: string }>();
   const { event, loading } = useAdminEvent(id);
@@ -35,6 +36,7 @@ export default function AdminVolunteersPage() {
   return <VolunteersInner event={event} />;
 }
 
+/** Inner component for the volunteer list, rendered once event data is loaded. Manages filters, table, and CSV export. */
 function VolunteersInner({ event }: { event: EventDetailDTO }) {
   const [all, setAll] = React.useState<VolunteerDTO[]>([]);
   const [rows, setRows] = React.useState<VolunteerDTO[]>([]);

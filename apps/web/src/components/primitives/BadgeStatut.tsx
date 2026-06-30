@@ -7,8 +7,7 @@ interface BadgeStatutProps {
   className?: string;
 }
 
-// Pastille de statut : « Complet » (vert), « 1 place » / « N places » (ambre/
-// gris), « Urgent » (corail). Couleur dérivée de inscrits/necessaires.
+/** Status badge showing "Complet", "N places", or "Urgent" with color derived from signup counts. */
 export function BadgeStatut({ inscrits, necessaires, className }: BadgeStatutProps) {
   const { label, badgeVariant } = statusMeta(inscrits, necessaires);
   return (

@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/Logo";
 
-// Installeur « à la WordPress » : crée le premier admin au premier lancement.
+/** First-time setup wizard. Creates the first admin account and site settings (WordPress-style). */
 export default function InstallPage() {
   const { needsSetup, loading, refresh } = useAuth();
   const navigate = useNavigate();

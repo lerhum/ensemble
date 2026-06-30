@@ -6,11 +6,11 @@ import { z } from "zod";
 export type SlotStatus = "complet" | "cours" | "ambre" | "urgent";
 
 /**
- * Couleur d'un créneau selon le remplissage :
- * - complet (vert)  : inscrits >= necessaires → bouton masqué + "Complet"
- * - urgent  (rouge) : 0 inscrit
- * - ambre           : il ne reste qu'1 place
- * - cours   (marine): en cours de remplissage
+ * Derives the fill status of a slot from signup counts:
+ * - complet (green) : inscrits >= necessaires — sign-up button hidden, shows "Complet"
+ * - urgent  (red)   : 0 signups
+ * - ambre   (amber) : exactly 1 spot remaining
+ * - cours   (navy)  : filling up
  */
 export function slotStatus(inscrits: number, necessaires: number): SlotStatus {
   if (necessaires <= 0 || inscrits >= necessaires) return "complet";

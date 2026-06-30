@@ -8,12 +8,13 @@ import { createSession, hashPassword } from "../auth.js";
 
 export const installRoutes = new Hono<AppEnv>();
 
+/** Returns the number of admin users in the database. */
 async function adminCount(db: AppEnv["Variables"]["db"]): Promise<number> {
   const [row] = await db.select({ n: count() }).from(users);
   return row?.n ?? 0;
 }
 
-// L'app a-t-elle besoin de l'installation initiale ? (aucun admin en base)
+/** Returns whether first-time setup is needed and site settings if already configured. */
 installRoutes.get("/status", async (c) => {
   const db = c.get("db");
   const needsSetup = (await adminCount(db)) === 0;
@@ -27,7 +28,7 @@ installRoutes.get("/status", async (c) => {
   });
 });
 
-// Crée le premier admin (à la WordPress). Verrouillé si un admin existe déjà.
+/** Creates the first admin account (WordPress-style setup). Locked if an admin already exists. */
 installRoutes.post("/", async (c) => {
   const db = c.get("db");
   if ((await adminCount(db)) > 0) throw conflict("L'installation a déjà été effectuée.");

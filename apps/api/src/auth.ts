@@ -16,11 +16,13 @@ const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 30; // 30 jours
 
 const enc = new TextEncoder();
 
+/** Encodes a Uint8Array as a base64 string. */
 function toB64(bytes: Uint8Array): string {
   let bin = "";
   for (const b of bytes) bin += String.fromCharCode(b);
   return btoa(bin);
 }
+/** Decodes a base64 string to a Uint8Array. */
 function fromB64(b64: string): Uint8Array {
   const bin = atob(b64);
   const out = new Uint8Array(bin.length);
@@ -28,6 +30,7 @@ function fromB64(b64: string): Uint8Array {
   return out;
 }
 
+/** Derives a 256-bit key from a password and salt using PBKDF2-SHA256 via the WebCrypto API. */
 async function pbkdf2(password: string, salt: Uint8Array, iterations: number): Promise<Uint8Array> {
   const key = await crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, [
     "deriveBits",
@@ -40,14 +43,14 @@ async function pbkdf2(password: string, salt: Uint8Array, iterations: number): P
   return new Uint8Array(bits);
 }
 
-/** Hache un mot de passe → "pbkdf2$<iter>$<saltb64>$<hashb64>". */
+/** Hashes a password to "pbkdf2$<iter>$<saltb64>$<hashb64>". */
 export async function hashPassword(password: string): Promise<string> {
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const hash = await pbkdf2(password, salt, PBKDF2_ITERATIONS);
   return `pbkdf2$${PBKDF2_ITERATIONS}$${toB64(salt)}$${toB64(hash)}`;
 }
 
-/** Vérifie un mot de passe en temps constant. */
+/** Verifies a password against a stored hash using constant-time comparison to prevent timing attacks. */
 export async function verifyPassword(password: string, stored: string): Promise<boolean> {
   const parts = stored.split("$");
   if (parts.length !== 4 || parts[0] !== "pbkdf2") return false;
@@ -61,11 +64,12 @@ export async function verifyPassword(password: string, stored: string): Promise<
   return diff === 0;
 }
 
+/** Generates a URL-safe alphanumeric random token (~43 chars). */
 function randomToken(): string {
   return toB64(crypto.getRandomValues(new Uint8Array(32))).replace(/[^a-zA-Z0-9]/g, "");
 }
 
-/** Crée une session en base et pose le cookie signé. */
+/** Creates a session row in the DB and sets a signed HTTP-only session cookie. */
 export async function createSession(c: Context<AppEnv>, userId: string): Promise<void> {
   const db = c.get("db");
   const token = randomToken();
@@ -84,13 +88,14 @@ export async function createSession(c: Context<AppEnv>, userId: string): Promise
   });
 }
 
-/** Détruit la session courante (DB + cookie). */
+/** Deletes the current session from the DB and clears the session cookie. */
 export async function destroySession(c: Context<AppEnv>): Promise<void> {
   const token = await getSignedCookie(c, c.get("sessionSecret"), SESSION_COOKIE);
   if (token) await c.get("db").delete(sessions).where(eq(sessions.id, token));
   deleteCookie(c, SESSION_COOKIE, { path: "/" });
 }
 
+/** Resolves the session cookie to an admin user, or null if the cookie is missing or the session has expired. */
 async function resolveUser(c: Context<AppEnv>): Promise<SessionUserDTO | null> {
   const token = await getSignedCookie(c, c.get("sessionSecret"), SESSION_COOKIE);
   if (!token) return null;
@@ -110,13 +115,13 @@ async function resolveUser(c: Context<AppEnv>): Promise<SessionUserDTO | null> {
   return u ? { id: u.id, email: u.email, nom: u.nom, role: u.role } : null;
 }
 
-/** Middleware : charge l'utilisateur courant (ou null) dans le contexte. */
+/** Middleware: resolves the session cookie and sets the current user (or null) on the context. */
 export const loadUser: MiddlewareHandler<AppEnv> = async (c, next) => {
   c.set("user", await resolveUser(c));
   await next();
 };
 
-/** Middleware : exige un admin authentifié, sinon 401. */
+/** Middleware: requires an authenticated admin; throws 401 if unauthenticated. */
 export const requireAdmin: MiddlewareHandler<AppEnv> = async (c, next) => {
   let user = c.get("user");
   if (user === undefined || user === null) user = await resolveUser(c);

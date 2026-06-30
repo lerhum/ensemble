@@ -16,7 +16,7 @@ import { buildEventDetailBySlug, buildMesInscriptions } from "../dto.js";
 
 export const publicRoutes = new Hono<AppEnv>();
 
-// Token de confirmation : hex 64 caractères, Web Crypto (Node ≥ 18 + Workers).
+/** Generates a random hex string (default 64 chars for 32 bytes) using WebCrypto. */
 function randomHex(bytes = 32): string {
   const arr = new Uint8Array(bytes);
   crypto.getRandomValues(arr);
@@ -25,7 +25,7 @@ function randomHex(bytes = 32): string {
 
 const TOKEN_TTL_DAYS = 7;
 
-// Événement "en cours" : le prochain publié (dateIso ≥ aujourd'hui), ou le plus récent si aucun futur.
+/** Returns the current active event: the next upcoming published event by date, or the most recent if none are upcoming. */
 publicRoutes.get("/events/current", async (c) => {
   const db = c.get("db");
   const today = new Date().toISOString().slice(0, 10);
@@ -39,14 +39,14 @@ publicRoutes.get("/events/current", async (c) => {
   return c.json(detail);
 });
 
-// Page événement publique : event + pôles→tâches→créneaux + compteurs dérivés.
+/** Returns a published event's full detail by slug; 404 if not found or not published. */
 publicRoutes.get("/events/:slug", async (c) => {
   const detail = await buildEventDetailBySlug(c.get("db"), c.req.param("slug"), true);
   if (!detail) throw notFound("Événement introuvable");
   return c.json(detail);
 });
 
-// Pré-remplissage : retrouve un bénévole par email pour un créneau (event déduit).
+/** Looks up a volunteer by email and creneauId for pre-filling the signup form. */
 publicRoutes.get("/volunteers/lookup", async (c) => {
   const db = c.get("db");
   const creneauId = c.req.query("creneauId");
@@ -68,7 +68,7 @@ publicRoutes.get("/volunteers/lookup", async (c) => {
   return c.json(vol ?? null);
 });
 
-// Charge un créneau avec son arbre (pour eventId) et ses inscriptions.
+/** Loads a slot with its task/pole tree (to derive eventId) and existing inscriptions. */
 async function loadCreneau(db: AppEnv["Variables"]["db"], id: string) {
   return db.query.creneaux.findFirst({
     where: eq(creneaux.id, id),
@@ -76,7 +76,7 @@ async function loadCreneau(db: AppEnv["Variables"]["db"], id: string) {
   });
 }
 
-// Assure qu'un token valide existe pour le bénévole ; en crée un si nécessaire.
+/** Returns an existing valid email token for the volunteer, or creates a new one with a 7-day TTL. */
 async function ensureToken(
   db: AppEnv["Variables"]["db"],
   volunteerId: string,
@@ -100,7 +100,7 @@ async function ensureToken(
   return token;
 }
 
-// Inscription d'un bénévole à un créneau (multi-créneaux : un appel par créneau).
+/** Signs up a volunteer for a slot; creates the volunteer if new, sends a confirmation email. One call per slot for multi-slot signups. */
 publicRoutes.post("/creneaux/:id/inscriptions", async (c) => {
   const db = c.get("db");
   const email = c.get("email");
@@ -178,7 +178,7 @@ publicRoutes.post("/creneaux/:id/inscriptions", async (c) => {
   );
 });
 
-// Désinscription d'un bénévole (par email) d'un créneau.
+/** Removes a volunteer's signup from a slot, identified by email. */
 publicRoutes.delete("/creneaux/:id/inscriptions", async (c) => {
   const db = c.get("db");
   const id = c.req.param("id");
@@ -203,7 +203,7 @@ publicRoutes.delete("/creneaux/:id/inscriptions", async (c) => {
   return c.json({ ok: true });
 });
 
-// Confirmation de participation via token (lien email).
+/** Confirms a volunteer's participation via the email link token; idempotent. */
 publicRoutes.get("/confirmer/:token", async (c) => {
   const db = c.get("db");
   const token = c.req.param("token");
@@ -232,14 +232,14 @@ publicRoutes.get("/confirmer/:token", async (c) => {
   return c.json({ ok: true, alreadyConfirmed: row.confirmedAt !== null });
 });
 
-// Récapitulatif via token (lien email).
+/** Returns a volunteer's signup summary via their email-link token. */
 publicRoutes.get("/mes-inscriptions/:token", async (c) => {
   const dto = await buildMesInscriptions(c.get("db"), c.req.param("token"));
   if (!dto) return c.json({ error: "Token introuvable." }, 404);
   return c.json(dto);
 });
 
-// Récapitulatif via session bénévole (connecté).
+/** Returns the signed-in volunteer's signup summary via their session cookie. */
 publicRoutes.get("/mes-inscriptions", async (c) => {
   const session = await resolveVolunteerSession(c);
   if (!session) return c.json({ error: "Non authentifié." }, 401);
@@ -248,7 +248,7 @@ publicRoutes.get("/mes-inscriptions", async (c) => {
   return c.json(dto);
 });
 
-// Suppression du compte bénévole (droit à l'effacement RGPD).
+/** Deletes the current volunteer's account and all their data (GDPR right to erasure). */
 publicRoutes.delete("/volunteers/me", async (c) => {
   const session = await resolveVolunteerSession(c);
   if (!session) return c.json({ error: "Non authentifié." }, 401);
@@ -258,6 +258,7 @@ publicRoutes.delete("/volunteers/me", async (c) => {
 
 // ── Templates email ───────────────────────────────────────────────────────
 
+/** Generates the HTML body for the participation confirmation email. */
 function confirmationHtml(nom: string, confirmUrl: string, inscriptionsUrl: string, definePasswordUrl: string): string {
   return `<!DOCTYPE html>
 <html lang="fr">
@@ -285,6 +286,7 @@ function confirmationHtml(nom: string, confirmUrl: string, inscriptionsUrl: stri
 </html>`;
 }
 
+/** Generates the plain-text body for the participation confirmation email. */
 function confirmationText(nom: string, confirmUrl: string): string {
   return `Bonjour ${nom},
 

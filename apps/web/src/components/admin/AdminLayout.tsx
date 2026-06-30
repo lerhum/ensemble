@@ -18,11 +18,13 @@ interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
+/** Admin shell: left sidebar with navigation and user card, main content area with a page header. */
 export function AdminLayout({ eyebrow, title, actions, children }: AdminLayoutProps) {
   const { user, refresh } = useAuth();
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
 
+  /** Signs out the current admin and redirects to the login page. */
   async function logout() {
     await api.logout();
     await refresh();
@@ -161,7 +163,7 @@ export function AdminLayout({ eyebrow, title, actions, children }: AdminLayoutPr
   );
 }
 
-// Carte de statistique (barre de stats admin).
+/** Stat card used in the admin dashboard stats bar. */
 export function StatCard({
   value,
   label,

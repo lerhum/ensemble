@@ -2,6 +2,7 @@
 import nodemailer from "nodemailer";
 import type { EmailService } from "./email.js";
 
+/** SMTP email service for local development via Mailpit. Imported only from node.ts. */
 export class SmtpEmailService implements EmailService {
   private transporter: nodemailer.Transporter;
 

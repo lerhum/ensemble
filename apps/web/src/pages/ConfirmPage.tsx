@@ -5,6 +5,7 @@ import { api } from "@/lib/api";
 import { useVolunteer } from "@/lib/volunteer-context";
 import { Button } from "@/components/ui/button";
 
+/** Page displayed when a volunteer clicks the email confirmation link. Confirms participation via token. */
 export default function ConfirmPage() {
   const { token = "" } = useParams();
   const navigate = useNavigate();

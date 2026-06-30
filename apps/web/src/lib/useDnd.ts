@@ -1,7 +1,6 @@
 import * as React from "react";
 
-// Petit utilitaire de réordonnancement par glisser-déposer (HTML5 natif).
-// onReorder(from, to) reçoit les index source/cible dans la même liste.
+/** Native HTML5 drag-and-drop hook for list reordering. Calls onReorder(from, to) with source and target indices. */
 export function useDnd(onReorder: (from: number, to: number) => void) {
   const from = React.useRef<number | null>(null);
   return (index: number) => ({
@@ -19,7 +18,7 @@ export function useDnd(onReorder: (from: number, to: number) => void) {
   });
 }
 
-/** Déplace l'élément d'index `from` vers `to` (copie). */
+/** Moves the element at index `from` to index `to` in a copy of the array. */
 export function move<T>(arr: T[], from: number, to: number): T[] {
   const copy = arr.slice();
   const [item] = copy.splice(from, 1);

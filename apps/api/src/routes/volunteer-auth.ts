@@ -17,6 +17,7 @@ export const volunteerAuthRoutes = new Hono<AppEnv>();
 const VOL_SESSION_COOKIE = "ens_vol_session";
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 30; // 30 jours
 
+/** Generates a URL-safe alphanumeric random token (~43 chars). */
 function randomToken(): string {
   const bytes = crypto.getRandomValues(new Uint8Array(32));
   let bin = "";
@@ -24,6 +25,7 @@ function randomToken(): string {
   return btoa(bin).replace(/[^a-zA-Z0-9]/g, "");
 }
 
+/** Creates a volunteer session row in the DB and sets a signed HTTP-only cookie. */
 async function createVolunteerSession(c: Context<AppEnv>, volunteerId: string) {
   const db = c.get("db");
   const token = randomToken();
@@ -39,6 +41,7 @@ async function createVolunteerSession(c: Context<AppEnv>, volunteerId: string) {
   });
 }
 
+/** Resolves the volunteer session cookie; returns the session DTO or null if missing or expired. */
 export async function resolveVolunteerSession(c: Context<AppEnv>): Promise<VolunteerSessionDTO | null> {
   const token = await getSignedCookie(c, c.get("sessionSecret"), VOL_SESSION_COOKIE);
   if (!token) return null;
@@ -59,7 +62,7 @@ export async function resolveVolunteerSession(c: Context<AppEnv>): Promise<Volun
   };
 }
 
-// POST /auth/volunteer/define-password — Définit le mot de passe via token email.
+/** Sets a volunteer's password via an email token and opens a session. */
 volunteerAuthRoutes.post("/define-password", async (c) => {
   const db = c.get("db");
   const body = validate(definePasswordSchema, await c.req.json().catch(() => ({})));
@@ -83,7 +86,7 @@ volunteerAuthRoutes.post("/define-password", async (c) => {
   return c.json({ ok: true, volunteer: { nom: tokenRow.volunteer.nom, email: tokenRow.volunteer.email } });
 });
 
-// POST /auth/volunteer/login — Connexion bénévole (email + mot de passe).
+/** Authenticates a volunteer by email and password; creates a session cookie. */
 volunteerAuthRoutes.post("/login", async (c) => {
   const db = c.get("db");
   const body = validate(volunteerLoginSchema, await c.req.json().catch(() => ({})));
@@ -123,13 +126,13 @@ volunteerAuthRoutes.post("/login", async (c) => {
   });
 });
 
-// GET /auth/volunteer/me — Retourne la session courante ou null.
+/** Returns the currently authenticated volunteer session, or null. */
 volunteerAuthRoutes.get("/me", async (c) => {
   const data = await resolveVolunteerSession(c);
   return c.json({ volunteer: data });
 });
 
-// POST /auth/volunteer/logout — Détruit la session.
+/** Destroys the volunteer session and clears the session cookie. */
 volunteerAuthRoutes.post("/logout", async (c) => {
   const token = await getSignedCookie(c, c.get("sessionSecret"), VOL_SESSION_COOKIE);
   if (token) await c.get("db").delete(volunteerSessions).where(eq(volunteerSessions.id, token));

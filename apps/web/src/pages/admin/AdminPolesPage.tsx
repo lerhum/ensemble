@@ -13,6 +13,7 @@ import { Jauge } from "@/components/primitives/Jauge";
 import { BadgeStatut } from "@/components/primitives/BadgeStatut";
 import { statusMeta } from "@/components/primitives/status";
 
+/** Admin poles and slots editor: create/edit/reorder poles, tasks, and slots with drag-and-drop. */
 export default function AdminPolesPage() {
   const { id = "" } = useParams<{ id: string }>();
   const { event, loading, reload } = useAdminEvent(id);
@@ -26,6 +27,7 @@ export default function AdminPolesPage() {
   return <PolesInner event={event} reload={reload} />;
 }
 
+/** Inner component for the poles editor, rendered once event data is loaded. */
 function PolesInner({ event, reload }: { event: EventDetailDTO; reload: () => Promise<void> }) {
   const c = event.counters;
   const [open, setOpen] = React.useState<string | null>(event.poles[0]?.id ?? null);
@@ -77,6 +79,7 @@ function PolesInner({ event, reload }: { event: EventDetailDTO; reload: () => Pr
   );
 }
 
+/** Expandable card for a pole: inline name/description editing, task list, drag-to-reorder, and delete. */
 function PoleCard({
   pole,
   expanded,
@@ -196,6 +199,7 @@ function PoleCard({
   );
 }
 
+/** Task group within a pole: inline name editing, slot rows, add slot button, and drag-to-reorder slots. */
 function TacheGroup({ tache, reload }: { tache: TacheDTO; reload: () => Promise<void> }) {
   const [nom, setNom] = React.useState(tache.nom);
 
@@ -246,6 +250,7 @@ function TacheGroup({ tache, reload }: { tache: TacheDTO; reload: () => Promise<
   );
 }
 
+/** Slot row within a task: inline editing of start/end time and capacity, with a delete button. */
 function CreneauRow({
   creneau,
   reload,

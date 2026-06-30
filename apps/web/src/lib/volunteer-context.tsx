@@ -35,6 +35,7 @@ const VolunteerContext = React.createContext<VolunteerCtx>({
   logout: async () => {},
 });
 
+/** Provides volunteer identity (persisted to localStorage), email-link token, and session state to the component tree. */
 export function VolunteerProvider({ children }: { children: React.ReactNode }) {
   const [identite, setIdentite] = React.useState<Identite | null>(() => {
     try {
@@ -96,6 +97,7 @@ export function VolunteerProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+/** Returns the current volunteer context (identity, token, session, and session controls). */
 export function useVolunteer() {
   return React.useContext(VolunteerContext);
 }

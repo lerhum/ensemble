@@ -29,6 +29,7 @@ const STATUS_CLASS: Record<string, string> = {
   archive: "bg-surface text-label",
 };
 
+/** Formats a date for display: uses ISO date if available, falls back to the free-text date string. */
 function formatDate(dateIso: string | null, dateTxt: string): string {
   if (dateIso) {
     return new Intl.DateTimeFormat("fr-BE", { dateStyle: "full" }).format(new Date(dateIso + "T12:00:00"));
@@ -36,6 +37,7 @@ function formatDate(dateIso: string | null, dateTxt: string): string {
   return dateTxt || "—";
 }
 
+/** Admin events list: create, duplicate, and navigate to individual events. */
 export default function AdminEventsListPage() {
   const navigate = useNavigate();
   const [events, setEvents] = React.useState<EventDTO[]>([]);

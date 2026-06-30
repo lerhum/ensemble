@@ -26,6 +26,7 @@ interface Props {
   onConfirm: (identite: Identite) => Promise<void>;
 }
 
+/** Modal form for volunteer sign-up; pre-fills identity from a prior lookup or from the parent's initialIdentite prop. */
 export function InscriptionDialog({ open, onOpenChange, creneauId, initialIdentite, onConfirm }: Props) {
   const { rgpdEmail } = useAuth();
   const [form, setForm] = React.useState({ nom: "", email: "", tel: "" });

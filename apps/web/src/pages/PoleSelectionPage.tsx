@@ -15,6 +15,7 @@ import { LigneCreneau } from "@/components/primitives/LigneCreneau";
 import { InscriptionDialog, type Identite } from "@/components/InscriptionDialog";
 import { ConfirmationDialog } from "@/components/ConfirmationDialog";
 
+/** Slot selection page for a specific pole: shows tasks, slots (mobile cards or desktop rows), and handles the sign-up flow. */
 export default function PoleSelectionPage() {
   const { slug = "", poleId = "" } = useParams();
   const { event, loading, error, reload } = useEvent(slug);
@@ -33,6 +34,7 @@ export default function PoleSelectionPage() {
 
 type DialogMode = "form" | "confirm" | null;
 
+/** Inner component for slot selection within a pole; handles the sign-up dialog flow and selected slots state. */
 function PoleInner({
   event,
   pole,
@@ -251,6 +253,7 @@ function PoleInner({
   );
 }
 
+/** Full-screen centered wrapper for loading and error states. */
 function Center({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return <div className={`grid min-h-screen place-items-center text-label ${className}`}>{children}</div>;
 }

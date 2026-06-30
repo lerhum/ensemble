@@ -14,12 +14,14 @@ import { Textarea } from "@/components/ui/textarea";
 
 const SWATCHES = ["#1C3A5E", "#DA4A40", "#2F7E59", "#E8A13A", "#7A5CC0"];
 
+/** Formats an ISO date string as a full French-Belgian date (e.g. "jeudi 15 mai 2025"). */
 function toFrenchDate(iso: string): string {
   return new Intl.DateTimeFormat("fr-BE", { dateStyle: "full" }).format(
     new Date(iso + "T12:00:00"),
   );
 }
 
+/** Admin event dashboard: edit event details, banner, theme color, and view live coverage stats. */
 export default function AdminDashboardPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -49,6 +51,7 @@ export default function AdminDashboardPage() {
   return <DashboardInner event={event} reload={reload} />;
 }
 
+/** Inner component for the event dashboard, rendered once event data is loaded. */
 function DashboardInner({ event, reload }: { event: EventDetailDTO; reload: () => Promise<void> }) {
   const [form, setForm] = React.useState({
     nom: event.nom,
@@ -261,6 +264,7 @@ function DashboardInner({ event, reload }: { event: EventDetailDTO; reload: () =
   );
 }
 
+/** Form field wrapper with a label and child input. */
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">

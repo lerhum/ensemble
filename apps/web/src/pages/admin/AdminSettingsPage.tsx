@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
+/** Admin settings page for site title, logo, and GDPR contact email. */
 export default function AdminSettingsPage() {
   const { siteTitle, siteLogo, rgpdEmail, refresh } = useAuth();
   const [title, setTitle] = React.useState(siteTitle);

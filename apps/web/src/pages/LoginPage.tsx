@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/Logo";
 
+/** Admin login page with email/password form. */
 export default function LoginPage() {
   const { needsSetup, loading, login } = useAuth();
   const navigate = useNavigate();

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "@/lib/auth-context";
 
+/** GDPR privacy policy page, referencing the site title and RGPD contact email from settings. */
 export default function PrivacyPage() {
   const { siteTitle, rgpdEmail } = useAuth();
   const org = siteTitle || "le comité organisateur";

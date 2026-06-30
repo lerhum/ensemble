@@ -10,8 +10,8 @@ import { publicRoutes } from "./routes/public.js";
 import { adminRoutes } from "./routes/admin.js";
 
 /**
- * Construit l'app Hono. Appelée une fois côté Node (db = pool singleton) et
- * une fois par requête côté Worker (db = neon par requête).
+ * Builds the Hono app. Called once in Node (db = singleton pool) and
+ * once per request in the Worker (db = per-request Neon connection).
  */
 export function createApp(config: AppConfig) {
   const app = new Hono<AppEnv>();

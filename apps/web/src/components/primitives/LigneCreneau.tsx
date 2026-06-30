@@ -14,8 +14,7 @@ export interface LigneCreneauProps {
   className?: string;
 }
 
-// Ligne de créneau (desktop, écran 7 — créneaux regroupés sous une tâche).
-// Format : heure · pastilles · « x/y · statut » · bouton (ou « Complet »).
+/** Desktop slot row (screen 7, slots grouped under a task). Shows time range, pastilles, signup count/status, and a toggle button. */
 export function LigneCreneau({
   debut,
   fin,

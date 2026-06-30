@@ -30,6 +30,7 @@ export const adminRoutes = new Hono<AppEnv>();
 // Toutes les routes admin exigent un admin authentifié.
 adminRoutes.use("*", requireAdmin);
 
+/** Converts a string to a URL-safe ASCII slug (diacritics stripped, max 60 chars). */
 function slugify(s: string): string {
   return s
     .normalize("NFD") // sépare les diacritiques (U+0300–U+036F) puis les retire
@@ -40,6 +41,7 @@ function slugify(s: string): string {
     .slice(0, 60);
 }
 
+/** Returns the next available position integer for a child entity within its parent (max + 1). */
 async function nextPosition(
   db: AppEnv["Variables"]["db"],
   table: typeof poles | typeof taches | typeof creneaux,
@@ -52,6 +54,7 @@ async function nextPosition(
 
 // ── Liste et duplication des événements (préfixe /admin/) ─────────────────
 
+/** Lists all events, auto-archiving published events whose date has passed. */
 adminRoutes.get("/admin/events", async (c) => {
   const db = c.get("db");
   // Auto-archivage : publie dont la date est passée → archive
@@ -68,12 +71,14 @@ adminRoutes.get("/admin/events", async (c) => {
   return c.json(await listEvents(db));
 });
 
+/** Returns a single event's full detail by id. */
 adminRoutes.get("/admin/events/:id", async (c) => {
   const detail = await buildEventDetailById(c.get("db"), c.req.param("id"));
   if (!detail) throw notFound("Événement introuvable");
   return c.json(detail);
 });
 
+/** Duplicates an event with all its poles, tasks, and slots as a new draft. */
 adminRoutes.post("/admin/events/:id/duplicate", async (c) => {
   const db = c.get("db");
   const src = await db.query.events.findFirst({
@@ -134,6 +139,7 @@ adminRoutes.post("/admin/events/:id/duplicate", async (c) => {
 });
 
 // ── Événements ────────────────────────────────────────────────────────────
+/** Creates a new event with an auto-generated slug derived from the event name. */
 adminRoutes.post("/events", async (c) => {
   const db = c.get("db");
   const body = validate(eventInputSchema, await c.req.json().catch(() => ({})));
@@ -159,6 +165,7 @@ adminRoutes.post("/events", async (c) => {
   return c.json(await buildEventDetailById(db, ev!.id), 201);
 });
 
+/** Partially updates an event's fields; returns the updated full detail. */
 adminRoutes.patch("/events/:id", async (c) => {
   const db = c.get("db");
   const id = c.req.param("id");
@@ -170,7 +177,7 @@ adminRoutes.patch("/events/:id", async (c) => {
   return c.json(await buildEventDetailById(db, ev.id));
 });
 
-// Upload de bannière (multipart) → storage abstrait → event.banniere.
+/** Uploads an event banner image via multipart form; stores it via the storage abstraction and saves the URL. */
 adminRoutes.post("/events/:id/banner", async (c) => {
   const db = c.get("db");
   const id = c.req.param("id");
@@ -188,12 +195,14 @@ adminRoutes.post("/events/:id/banner", async (c) => {
 });
 
 // ── Paramètres du site ────────────────────────────────────────────────────
+/** Returns the current site settings (title, logo URL, GDPR email). */
 adminRoutes.get("/settings", async (c) => {
   const db = c.get("db");
   const [row] = await db.select().from(settings);
   return c.json({ siteTitle: row?.siteTitle ?? "", siteLogo: row?.siteLogo ?? null, rgpdEmail: row?.rgpdEmail ?? "" });
 });
 
+/** Partially updates site settings (siteTitle, siteLogo, rgpdEmail). */
 adminRoutes.patch("/settings", async (c) => {
   const db = c.get("db");
   const body = validate(settingsUpdateSchema, await c.req.json().catch(() => ({})));
@@ -208,7 +217,7 @@ adminRoutes.patch("/settings", async (c) => {
   return c.json({ siteTitle: row?.siteTitle ?? "", siteLogo: row?.siteLogo ?? null, rgpdEmail: row?.rgpdEmail ?? "" });
 });
 
-// Upload du logo du site (multipart) → storage → settings.site_logo.
+/** Uploads the site logo via multipart form; stores it via the storage abstraction and saves the URL. */
 adminRoutes.post("/settings/logo", async (c) => {
   const form = await c.req.formData();
   const file = form.get("file");
@@ -221,6 +230,7 @@ adminRoutes.post("/settings/logo", async (c) => {
 });
 
 // ── Réordonnancement (déclaré avant les routes :id) ────────────────────────
+/** Returns a Hono handler that updates position for each id in the provided ordered array. */
 function reorder(table: typeof poles | typeof taches | typeof creneaux) {
   return async (c: Context<AppEnv>) => {
     const db = c.get("db");
@@ -236,6 +246,7 @@ adminRoutes.patch("/taches/reorder", reorder(taches));
 adminRoutes.patch("/creneaux/reorder", reorder(creneaux));
 
 // ── Pôles ──────────────────────────────────────────────────────────────────
+/** Creates a new pole at the next available position within an event. */
 adminRoutes.post("/poles", async (c) => {
   const db = c.get("db");
   const body = validate(
@@ -250,6 +261,7 @@ adminRoutes.post("/poles", async (c) => {
   return c.json(row, 201);
 });
 
+/** Updates a pole's name or description. */
 adminRoutes.patch("/poles/:id", async (c) => {
   const db = c.get("db");
   const body = validate(poleUpdateSchema, await c.req.json().catch(() => ({})));
@@ -258,6 +270,7 @@ adminRoutes.patch("/poles/:id", async (c) => {
   return c.json(row);
 });
 
+/** Deletes a pole and all its tasks and slots (cascades in DB). */
 adminRoutes.delete("/poles/:id", async (c) => {
   const [row] = await c
     .get("db")
@@ -269,6 +282,7 @@ adminRoutes.delete("/poles/:id", async (c) => {
 });
 
 // ── Tâches ───────────────────────────────────────────────────────────────
+/** Creates a new task at the next available position within a pole. */
 adminRoutes.post("/taches", async (c) => {
   const db = c.get("db");
   const body = validate(tacheInputSchema, await c.req.json().catch(() => ({})));
@@ -280,6 +294,7 @@ adminRoutes.post("/taches", async (c) => {
   return c.json(row, 201);
 });
 
+/** Updates a task's name or description. */
 adminRoutes.patch("/taches/:id", async (c) => {
   const db = c.get("db");
   const body = validate(tacheUpdateSchema, await c.req.json().catch(() => ({})));
@@ -288,6 +303,7 @@ adminRoutes.patch("/taches/:id", async (c) => {
   return c.json(row);
 });
 
+/** Deletes a task and all its slots (cascades in DB). */
 adminRoutes.delete("/taches/:id", async (c) => {
   const [row] = await c
     .get("db")
@@ -299,6 +315,7 @@ adminRoutes.delete("/taches/:id", async (c) => {
 });
 
 // ── Créneaux ─────────────────────────────────────────────────────────────
+/** Creates a new slot at the next available position within a task. */
 adminRoutes.post("/creneaux", async (c) => {
   const db = c.get("db");
   const body = validate(creneauInputSchema, await c.req.json().catch(() => ({})));
@@ -316,6 +333,7 @@ adminRoutes.post("/creneaux", async (c) => {
   return c.json(row, 201);
 });
 
+/** Updates a slot's start time, end time, or volunteer capacity. */
 adminRoutes.patch("/creneaux/:id", async (c) => {
   const db = c.get("db");
   const body = validate(creneauUpdateSchema, await c.req.json().catch(() => ({})));
@@ -328,6 +346,7 @@ adminRoutes.patch("/creneaux/:id", async (c) => {
   return c.json(row);
 });
 
+/** Deletes a slot and its inscriptions (cascades in DB). */
 adminRoutes.delete("/creneaux/:id", async (c) => {
   const [row] = await c
     .get("db")
@@ -339,6 +358,7 @@ adminRoutes.delete("/creneaux/:id", async (c) => {
 });
 
 // ── Bénévoles (liste filtrée + export CSV) ─────────────────────────────────
+/** Parses volunteer filter query parameters (q, pole, creneau, statut) from the request. */
 function parseFilter(c: { req: { query: (k: string) => string | undefined } }) {
   return validate(volunteerFilterSchema, {
     q: c.req.query("q") || undefined,
@@ -348,11 +368,13 @@ function parseFilter(c: { req: { query: (k: string) => string | undefined } }) {
   });
 }
 
+/** Returns filtered volunteers for an event with a total count. */
 adminRoutes.get("/events/:id/volunteers", async (c) => {
   const list = await buildVolunteers(c.get("db"), c.req.param("id"), parseFilter(c));
   return c.json({ volunteers: list, total: list.length });
 });
 
+/** Streams filtered volunteers as a CSV download (UTF-8 BOM for Excel). */
 adminRoutes.get("/events/:id/volunteers.csv", async (c) => {
   const list = await buildVolunteers(c.get("db"), c.req.param("id"), parseFilter(c));
   c.header("Content-Type", "text/csv; charset=utf-8");
@@ -360,6 +382,7 @@ adminRoutes.get("/events/:id/volunteers.csv", async (c) => {
   return c.body(volunteersToCsv(list));
 });
 
+/** Deletes a volunteer and all their inscriptions (admin action). */
 adminRoutes.delete("/volunteers/:id", async (c) => {
   const db = c.get("db");
   const id = c.req.param("id");

@@ -8,6 +8,7 @@ import { createSession, destroySession, verifyPassword } from "../auth.js";
 
 export const authRoutes = new Hono<AppEnv>();
 
+/** Authenticates an admin by email and password; sets a session cookie on success. */
 authRoutes.post("/login", async (c) => {
   const body = validate(loginSchema, await c.req.json().catch(() => ({})));
   const db = c.get("db");
@@ -19,10 +20,11 @@ authRoutes.post("/login", async (c) => {
   return c.json({ user: { id: u.id, email: u.email, nom: u.nom, role: u.role } });
 });
 
+/** Destroys the current admin session and clears the session cookie. */
 authRoutes.post("/logout", async (c) => {
   await destroySession(c);
   return c.json({ ok: true });
 });
 
-// Utilisateur courant (null si non connecté) — chargé par le middleware loadUser.
+/** Returns the currently authenticated admin user, or null if not logged in. */
 authRoutes.get("/me", (c) => c.json({ user: c.get("user") }));

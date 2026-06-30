@@ -5,15 +5,14 @@ import { cn } from "@/lib/utils";
 interface JaugeProps {
   inscrits: number;
   necessaires: number;
-  /** Libellé à gauche (ex. « Couverture du pôle »). */
+  /** Optional label displayed on the left (e.g. "Couverture du pôle"). */
   label?: string;
-  /** Affiche « inscrits / necessaires » à droite. */
+  /** Show "inscrits / necessaires" on the right. */
   showValue?: boolean;
   className?: string;
 }
 
-// Jauge de couverture colorée selon le remplissage (vert plein, marine en cours,
-// ambre 1 place, corail urgent).
+/** Color-coded coverage gauge: green when full, navy while filling, amber at 1 spot, coral when urgent. */
 export function Jauge({ inscrits, necessaires, label, showValue = true, className }: JaugeProps) {
   const { fill } = statusMeta(inscrits, necessaires);
   const pct = necessaires ? Math.round((inscrits / necessaires) * 100) : 0;

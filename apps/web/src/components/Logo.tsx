@@ -1,17 +1,16 @@
 import { cn } from "@/lib/utils";
 
 interface LogoProps {
-  /** Couleur d'accent (défaut : thème de l'école via --accent-brand). */
+  /** Accent color (default: school theme via --accent-brand). */
   color?: string;
   className?: string;
-  /** Afficher le mot « Ensemble » à côté du symbole. */
+  /** Show the word "Ensemble" next to the symbol. */
   withWordmark?: boolean;
 }
 
 const NAVY = "#1C3A5E";
 
-// Symbole « plusieurs mains, un seul élan » : six mains en cercle (alternance
-// navy / accent) autour d'un cœur central. Recréé en SVG (pas de CSS du proto).
+/** SVG logo: six hands in a circle (alternating navy/accent) around a central heart. Pass withWordmark to show the "Ensemble" wordmark. */
 export function Logo({ color = "var(--accent-brand)", className, withWordmark = true }: LogoProps) {
   return (
     <span className={cn("inline-flex items-center gap-2.5 text-ink", className)}>

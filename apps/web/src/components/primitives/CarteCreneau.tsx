@@ -11,13 +11,13 @@ export interface CarteCreneauProps {
   fin: string;
   inscrits: number;
   necessaires: number;
-  /** Le bénévole a déjà choisi/est inscrit à ce créneau. */
+  /** Whether the volunteer has already selected or is signed up for this slot. */
   selected?: boolean;
   onToggle?: () => void;
   className?: string;
 }
 
-// Carte de créneau (mobile, écran 2). Créneau plein → bouton masqué + « Complet ».
+/** Mobile slot card (screen 2). Shows task name, time range, pastilles, and status badge. Hides the sign-up button and shows "Complet" when the slot is full. */
 export function CarteCreneau({
   tacheNom,
   debut,

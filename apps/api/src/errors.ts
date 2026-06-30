@@ -1,6 +1,6 @@
 import type { z } from "zod";
 
-// Erreur applicative → réponse JSON propre (gérée par app.onError).
+/** Application-level HTTP error. Handled by app.onError to produce a clean JSON response. */
 export class ApiError extends Error {
   status: number;
   issues?: unknown;
@@ -11,12 +11,16 @@ export class ApiError extends Error {
   }
 }
 
+/** Creates a 404 ApiError. */
 export const notFound = (msg = "Ressource introuvable") => new ApiError(404, msg);
+/** Creates a 401 ApiError. */
 export const unauthorized = (msg = "Non authentifié") => new ApiError(401, msg);
+/** Creates a 403 ApiError. */
 export const forbidden = (msg = "Accès refusé") => new ApiError(403, msg);
+/** Creates a 409 ApiError. */
 export const conflict = (msg: string) => new ApiError(409, msg);
 
-// Valide des données avec un schéma zod, ou lève une ApiError 400 avec les issues.
+/** Validates data against a Zod schema; throws a 400 ApiError with flattened issues on failure. */
 export function validate<T>(schema: z.ZodType<T>, data: unknown): T {
   const result = schema.safeParse(data);
   if (!result.success) {

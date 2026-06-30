@@ -1,7 +1,7 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/lib/auth-context";
 
-// Garde des routes admin : redirige vers /install (premier lancement) ou /login.
+/** Route guard: redirects to /install if setup is needed, or /login if the user is not authenticated. */
 export function RequireAdmin({ children }: { children: React.ReactNode }) {
   const { user, needsSetup, loading } = useAuth();
   const location = useLocation();

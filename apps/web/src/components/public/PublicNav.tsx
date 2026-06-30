@@ -8,6 +8,7 @@ interface Props {
   eventSlug?: string;
 }
 
+/** Top navigation bar for the public event page: school branding, "Mes inscriptions" link, and volunteer session controls. */
 export function PublicNav({ orgNom, accent, siteLogo, eventSlug }: Props) {
   const { token, session, sessionLoading, logout } = useVolunteer();
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ export function PublicNav({ orgNom, accent, siteLogo, eventSlug }: Props) {
       ? `/mes-inscriptions/${token}`
       : null;
 
+  /** Signs out the volunteer and navigates to the home page. */
   async function handleLogout() {
     await logout();
     navigate("/");

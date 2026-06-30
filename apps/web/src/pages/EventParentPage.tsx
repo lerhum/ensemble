@@ -10,6 +10,7 @@ import { PublicNav } from "@/components/public/PublicNav";
 import { Button } from "@/components/ui/button";
 import { Jauge } from "@/components/primitives/Jauge";
 
+/** Public event page: shows the event story, poles with coverage gauges, and links to slot selection. */
 export default function EventParentPage() {
   const { slug = "" } = useParams();
   const { event, loading, error } = useEvent(slug);
@@ -31,6 +32,7 @@ export default function EventParentPage() {
 }
 
 // ── Mobile (écran 1) ──────────────────────────────────────────────────────
+/** Mobile layout for the public event page (screen 1): story, poles with coverage, and CTAs. */
 function MobileView({ event, siteTitle, siteLogo }: { event: EventDetailDTO; siteTitle: string; siteLogo: string | null }) {
   const polesRef = React.useRef<HTMLDivElement>(null);
   return (
@@ -93,6 +95,7 @@ function MobileView({ event, siteTitle, siteLogo }: { event: EventDetailDTO; sit
 }
 
 // ── Desktop (écran 6) ─────────────────────────────────────────────────────
+/** Desktop layout for the public event page (screen 6): two-column with story, poles table, and signup links. */
 function DesktopView({ event, siteTitle, siteLogo, rgpdEmail }: { event: EventDetailDTO; siteTitle: string; siteLogo: string | null; rgpdEmail: string }) {
   const polesRef = React.useRef<HTMLDivElement>(null);
   return (
@@ -186,6 +189,7 @@ function DesktopView({ event, siteTitle, siteLogo, rgpdEmail }: { event: EventDe
 }
 
 // ── Sous-composants ───────────────────────────────────────────────────────
+/** Icon + text row used in the event metadata section (date, time, location). */
 function Meta({ icon: Icon, children }: { icon: typeof Calendar; children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-2.5">
@@ -195,6 +199,7 @@ function Meta({ icon: Icon, children }: { icon: typeof Calendar; children: React
   );
 }
 
+/** Overall volunteer coverage bar: shows total signups vs. capacity with the Jauge component. */
 function Coverage({
   event,
   className = "",
@@ -236,6 +241,7 @@ function Coverage({
   );
 }
 
+/** Desktop table row for a pole: shows name, slot count, and available spots with a link to the pole selection page. */
 function PoleRow({ slug, pole }: { slug: string; pole: PoleDTO }) {
   const libres = pole.placesLibres;
   const color = libres === 0 ? "#2F7E59" : libres <= 1 ? "#B5781E" : "#C7443A";
@@ -259,6 +265,7 @@ function PoleRow({ slug, pole }: { slug: string; pole: PoleDTO }) {
   );
 }
 
+/** Mobile card for a pole: shows name, spot count, coverage gauge, and links to slot selection. */
 function PoleCard({ slug, pole }: { slug: string; pole: PoleDTO }) {
   return (
     <Link
@@ -289,6 +296,7 @@ function PoleCard({ slug, pole }: { slug: string; pole: PoleDTO }) {
   );
 }
 
+/** Full-screen centered wrapper for loading and error states. */
 function Center({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return <div className={`grid min-h-screen place-items-center text-label ${className}`}>{children}</div>;
 }
