@@ -3,6 +3,7 @@ import { z } from "zod";
 import { and, eq, isNotNull, lt, max, sql } from "drizzle-orm";
 import { creneaux, events, poles, settings, taches, volunteers } from "@ensemble/db";
 import {
+  broadcastSchema,
   creneauInputSchema,
   creneauUpdateSchema,
   eventInputSchema,
@@ -373,6 +374,26 @@ adminRoutes.get("/events/:id/volunteers.csv", async (c) => {
   return c.body(volunteersToCsv(list));
 });
 
+/** Sends an email to a targeted group of volunteers — either explicit ids or the given filter. */
+adminRoutes.post("/events/:id/volunteers/broadcast", async (c) => {
+  const db = c.get("db");
+  const eventId = c.req.param("id");
+  const body = validate(broadcastSchema, await c.req.json().catch(() => ({})));
+
+  const targets = body.volunteerIds
+    ? (await buildVolunteers(db, eventId, {})).filter((v) => body.volunteerIds!.includes(v.id))
+    : await buildVolunteers(db, eventId, body.filter ?? {});
+
+  const email = c.get("email");
+  await Promise.all(
+    targets.map((v) =>
+      email.send(v.email, body.subject, broadcastHtml(v.nom, body.message), broadcastText(v.nom, body.message)),
+    ),
+  );
+
+  return c.json({ ok: true, sent: targets.length });
+});
+
 /** Deletes a volunteer and all their inscriptions (admin action). */
 adminRoutes.delete("/volunteers/:id", async (c) => {
   const db = c.get("db");
@@ -380,3 +401,33 @@ adminRoutes.delete("/volunteers/:id", async (c) => {
   await db.delete(volunteers).where(eq(volunteers.id, id));
   return c.json({ ok: true });
 });
+
+// ── Templates email (diffusion admin) ───────────────────────────────────────
+
+/** Escapes HTML special characters and converts newlines to <br> for a plain-text message. */
+function escapeMessageHtml(message: string): string {
+  return message
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\n/g, "<br>");
+}
+
+/** Generates the HTML body for an admin broadcast email. */
+function broadcastHtml(nom: string, message: string): string {
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="utf-8"><title>Message</title></head>
+<body style="font-family:system-ui,sans-serif;background:#f9f9f9;margin:0;padding:40px 0">
+  <div style="max-width:520px;margin:0 auto;background:#fff;border-radius:12px;padding:36px;border:1px solid #e8e8e8">
+    <p style="font-size:22px;font-weight:800;color:#111;margin:0 0 8px">Bonjour ${nom} 👋</p>
+    <p style="color:#555;margin:0;white-space:pre-line">${escapeMessageHtml(message)}</p>
+  </div>
+</body>
+</html>`;
+}
+
+/** Generates the plain-text body for an admin broadcast email. */
+function broadcastText(nom: string, message: string): string {
+  return `Bonjour ${nom},\n\n${message}\n\nEnsemble`;
+}

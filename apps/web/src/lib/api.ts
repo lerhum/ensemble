@@ -1,5 +1,6 @@
 // Typed API client. All types come from @ensemble/db/shared (single source of truth).
 import type {
+  BroadcastInput,
   EventDTO,
   EventDetailDTO,
   InscriptionInput,
@@ -210,4 +211,7 @@ export const api = {
   /** Returns the URL for a filtered volunteer CSV export (for direct download via anchor). */
   volunteersCsvUrl: (eventId: string, filter: VolunteerFilter = {}) =>
     `${BASE}/events/${eventId}/volunteers.csv${qs(filter)}`,
+  /** Sends an email to a targeted group of volunteers (explicit ids take priority over filter). */
+  broadcastVolunteers: (eventId: string, body: BroadcastInput) =>
+    req<{ ok: true; sent: number }>(`/events/${eventId}/volunteers/broadcast`, json(body)),
 };

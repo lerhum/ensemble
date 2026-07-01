@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Download, Plus, Search, Trash2, X } from "lucide-react";
+import { Download, Mail, Plus, Search, Trash2, X } from "lucide-react";
 import type { EventDetailDTO, VolunteerDTO, VolunteerFilter } from "@ensemble/db/shared";
 import { useParams } from "react-router-dom";
 import { api } from "@/lib/api";
@@ -10,7 +10,15 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -19,6 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Textarea } from "@/components/ui/textarea";
 
 const ALL = "all";
 
@@ -44,6 +53,12 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
   const [q, setQ] = React.useState("");
   const [deletingId, setDeletingId] = React.useState<string | null>(null);
   const [confirmId, setConfirmId] = React.useState<string | null>(null);
+  const [selected, setSelected] = React.useState<Set<string>>(new Set());
+  const [showBroadcast, setShowBroadcast] = React.useState(false);
+  const [subject, setSubject] = React.useState("");
+  const [message, setMessage] = React.useState("");
+  const [sending, setSending] = React.useState(false);
+  const [lastSent, setLastSent] = React.useState<number | null>(null);
 
   const creneauOptions = React.useMemo(
     () =>
@@ -62,6 +77,11 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
     () => event.poles.flatMap((p) => p.taches.map((t) => ({ id: t.id, label: t.nom }))),
     [event],
   );
+
+  // Une sélection ne survit pas à un changement de filtre ou d'événement (ids potentiellement obsolètes).
+  React.useEffect(() => {
+    setSelected(new Set());
+  }, [event.id, filter]);
 
   // Liste non filtrée → statistiques.
   React.useEffect(() => {
@@ -129,12 +149,44 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
   const setSel = (key: keyof VolunteerFilter) => (v: string) =>
     setFilter((f) => ({ ...f, [key]: v === ALL ? undefined : v }));
 
+  const toggleAll = (checked: boolean) =>
+    setSelected(checked ? new Set(rows.map((v) => v.id)) : new Set());
+  const toggleOne = (id: string, checked: boolean) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (checked) next.add(id);
+      else next.delete(id);
+      return next;
+    });
+
+  const recipientCount = selected.size > 0 ? selected.size : rows.length;
+
+  async function handleBroadcast() {
+    setSending(true);
+    try {
+      const { sent } = await api.broadcastVolunteers(event.id, {
+        subject,
+        message,
+        ...(selected.size > 0 ? { volunteerIds: [...selected] } : { filter }),
+      });
+      setLastSent(sent);
+      setShowBroadcast(false);
+      setSubject("");
+      setMessage("");
+    } finally {
+      setSending(false);
+    }
+  }
+
   return (
     <AdminLayout
       eyebrow={event.nom}
       title="Bénévoles"
       actions={
         <>
+          <Button variant="outline" onClick={() => setShowBroadcast(true)}>
+            <Mail className="h-4 w-4" /> Envoyer un message
+          </Button>
           <Button variant="outline" asChild>
             <a href={api.volunteersCsvUrl(event.id, filter)}>
               <Download className="h-4 w-4" /> Exporter CSV
@@ -241,13 +293,23 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
         </div>
       )}
 
+      {lastSent !== null && (
+        <p className="mt-3 text-[13px] font-600 text-[#2F7E59]">
+          Message envoyé à {lastSent} bénévole{lastSent > 1 ? "s" : ""}.
+        </p>
+      )}
+
       {/* Table */}
       <div className="mt-5 overflow-hidden rounded-card border border-hair bg-white">
         <Table>
           <TableHeader>
             <TableRow className="bg-surface hover:bg-surface">
               <TableHead className="w-10">
-                <Checkbox aria-label="Tout sélectionner" />
+                <Checkbox
+                  aria-label="Tout sélectionner"
+                  checked={rows.length > 0 && selected.size === rows.length}
+                  onCheckedChange={(checked) => toggleAll(checked === true)}
+                />
               </TableHead>
               <TableHead>Bénévole</TableHead>
               <TableHead>Pôle</TableHead>
@@ -268,7 +330,11 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
               rows.map((v) => (
                 <TableRow key={v.id} className={v.statut === "attente" ? "bg-surface2" : ""}>
                   <TableCell>
-                    <Checkbox aria-label={`Sélectionner ${v.nom}`} />
+                    <Checkbox
+                      aria-label={`Sélectionner ${v.nom}`}
+                      checked={selected.has(v.id)}
+                      onCheckedChange={(checked) => toggleOne(v.id, checked === true)}
+                    />
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-3">
@@ -330,6 +396,52 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
           </TableBody>
         </Table>
       </div>
+
+      <Dialog open={showBroadcast} onOpenChange={setShowBroadcast}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Envoyer un message</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <p className="text-[13px] text-label">
+              {selected.size > 0
+                ? `${recipientCount} bénévole${recipientCount > 1 ? "s" : ""} sélectionné${recipientCount > 1 ? "s" : ""}`
+                : `${recipientCount} bénévole${recipientCount > 1 ? "s" : ""} filtré${recipientCount > 1 ? "s" : ""}`}
+            </p>
+            <div className="space-y-1.5">
+              <Label htmlFor="broadcast-subject">Sujet *</Label>
+              <Input
+                id="broadcast-subject"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                placeholder="Ex : Rappel pour ton créneau"
+                autoFocus
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="broadcast-message">Message *</Label>
+              <Textarea
+                id="broadcast-message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Ton message…"
+                rows={6}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowBroadcast(false)}>
+              Annuler
+            </Button>
+            <Button
+              onClick={handleBroadcast}
+              disabled={!subject.trim() || !message.trim() || sending || recipientCount === 0}
+            >
+              {sending ? "Envoi…" : "Envoyer"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }

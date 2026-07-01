@@ -83,6 +83,7 @@ Event → Pôles → Tâches → Créneaux        +  signups (créneau ↔ bén�
 | `*` | `/api/poles\|taches\|creneaux` (+ `/reorder`) | admin (CRUD + reordering) |
 | `POST`/`PATCH` | `/api/events` (+ `/:id/banner`) | admin |
 | `GET` | `/api/events/:id/volunteers[.csv]?q=&pole=&tache=&creneau=&statut=` | admin (filters + CSV export) |
+| `POST` | `/api/events/:id/volunteers/broadcast` | admin (email a filtered group or explicit ids) |
 
 Portable Node/Workers authentication (PBKDF2 via WebCrypto, DB-backed sessions). Zod validation, JSON errors.
 
@@ -91,6 +92,7 @@ Portable Node/Workers authentication (PBKDF2 via WebCrypto, DB-backed sessions).
 ```bash
 pnpm install
 pnpm -r typecheck
+pnpm -r test                               # Vitest across all 3 workspaces
 pnpm --filter @ensemble/web dev|build
 pnpm --filter @ensemble/api dev            # requires DATABASE_URL
 pnpm --filter @ensemble/db generate|migrate|seed

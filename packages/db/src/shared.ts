@@ -254,3 +254,12 @@ export const volunteerFilterSchema = z.object({
   statut: z.enum(["confirme", "attente"]).optional(),
 });
 export type VolunteerFilter = z.infer<typeof volunteerFilterSchema>;
+
+// Diffusion admin ciblée : soit un filtre bénévoles, soit une liste explicite d'ids.
+export const broadcastSchema = z.object({
+  subject: z.string().min(1, "Sujet requis"),
+  message: z.string().min(1, "Message requis"),
+  filter: volunteerFilterSchema.optional(),
+  volunteerIds: z.array(z.string().uuid()).optional(),
+});
+export type BroadcastInput = z.infer<typeof broadcastSchema>;

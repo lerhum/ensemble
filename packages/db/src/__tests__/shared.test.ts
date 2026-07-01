@@ -6,6 +6,7 @@ import {
   eventInputSchema,
   creneauInputSchema,
   volunteerFilterSchema,
+  broadcastSchema,
 } from "../shared.js";
 
 describe("slotStatus", () => {
@@ -196,5 +197,38 @@ describe("volunteerFilterSchema", () => {
   it("rejects non-UUID tache", () => {
     const r = volunteerFilterSchema.safeParse({ tache: "not-a-uuid" });
     expect(r.success).toBe(false);
+  });
+});
+
+describe("broadcastSchema", () => {
+  it("accepts subject + message with no targeting (defaults to filter: {})", () => {
+    const r = broadcastSchema.safeParse({ subject: "Rappel", message: "Merci !" });
+    expect(r.success).toBe(true);
+  });
+
+  it("accepts an explicit filter", () => {
+    const r = broadcastSchema.safeParse({
+      subject: "Rappel",
+      message: "Merci !",
+      filter: { pole: "00000000-0000-0000-0000-000000000001" },
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it("accepts explicit volunteerIds", () => {
+    const r = broadcastSchema.safeParse({
+      subject: "Rappel",
+      message: "Merci !",
+      volunteerIds: ["00000000-0000-0000-0000-000000000001"],
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it("rejects an empty subject", () => {
+    expect(broadcastSchema.safeParse({ subject: "", message: "Merci !" }).success).toBe(false);
+  });
+
+  it("rejects an empty message", () => {
+    expect(broadcastSchema.safeParse({ subject: "Rappel", message: "" }).success).toBe(false);
   });
 });
