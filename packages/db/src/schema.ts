@@ -99,6 +99,7 @@ export const inscriptions = pgTable(
     volunteerId: uuid("volunteer_id")
       .notNull()
       .references(() => volunteers.id, { onDelete: "cascade" }),
+    reminderSentAt: timestamp("reminder_sent_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => ({
@@ -210,6 +211,7 @@ export const settings = pgTable("settings", {
   siteTitle: text("site_title").notNull().default(""),
   siteLogo: text("site_logo"),
   rgpdEmail: text("rgpd_email").notNull().default(""),
+  reminderHoursBefore: integer("reminder_hours_before").notNull().default(24),
 });
 
 // ── Types de lignes (inférés) ────────────────────────────────────────────

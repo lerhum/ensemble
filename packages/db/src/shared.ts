@@ -117,6 +117,7 @@ export interface SiteSettingsDTO {
   siteTitle: string;
   siteLogo: string | null;
   rgpdEmail: string;
+  reminderHoursBefore: number;
 }
 
 export interface MesInscriptionsDTO {
@@ -139,6 +140,7 @@ export const settingsUpdateSchema = z.object({
   siteTitle: z.string().min(1).optional(),
   siteLogo: z.string().url().nullish(),
   rgpdEmail: z.string().email().optional(),
+  reminderHoursBefore: z.number().int().min(1).max(168).optional(),
 });
 export type SettingsUpdateInput = z.infer<typeof settingsUpdateSchema>;
 

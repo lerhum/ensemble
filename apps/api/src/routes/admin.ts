@@ -25,6 +25,7 @@ import {
   listEvents,
   volunteersToCsv,
 } from "../dto.js";
+import { sendDueReminders } from "../reminders.js";
 import { slugify } from "../utils.js";
 
 export const adminRoutes = new Hono<AppEnv>();
@@ -185,27 +186,45 @@ adminRoutes.post("/events/:id/banner", async (c) => {
   return c.json({ url });
 });
 
+// ── Rappels de créneaux ──────────────────────────────────────────────────
+/** Manually triggers the due-reminders job (used locally where no Cron Trigger runs, and as an ops escape hatch). */
+adminRoutes.post("/reminders/run", async (c) => {
+  const sent = await sendDueReminders(c.get("db"), c.get("email"));
+  return c.json({ ok: true, sent });
+});
+
 // ── Paramètres du site ────────────────────────────────────────────────────
-/** Returns the current site settings (title, logo URL, GDPR email). */
+/** Returns the current site settings (title, logo URL, GDPR email, reminder lead time). */
 adminRoutes.get("/settings", async (c) => {
   const db = c.get("db");
   const [row] = await db.select().from(settings);
-  return c.json({ siteTitle: row?.siteTitle ?? "", siteLogo: row?.siteLogo ?? null, rgpdEmail: row?.rgpdEmail ?? "" });
+  return c.json({
+    siteTitle: row?.siteTitle ?? "",
+    siteLogo: row?.siteLogo ?? null,
+    rgpdEmail: row?.rgpdEmail ?? "",
+    reminderHoursBefore: row?.reminderHoursBefore ?? 24,
+  });
 });
 
-/** Partially updates site settings (siteTitle, siteLogo, rgpdEmail). */
+/** Partially updates site settings (siteTitle, siteLogo, rgpdEmail, reminderHoursBefore). */
 adminRoutes.patch("/settings", async (c) => {
   const db = c.get("db");
   const body = validate(settingsUpdateSchema, await c.req.json().catch(() => ({})));
-  const patch: { siteTitle?: string; siteLogo?: string | null; rgpdEmail?: string } = {};
+  const patch: { siteTitle?: string; siteLogo?: string | null; rgpdEmail?: string; reminderHoursBefore?: number } = {};
   if (body.siteTitle !== undefined) patch.siteTitle = body.siteTitle;
   if ("siteLogo" in body) patch.siteLogo = body.siteLogo ?? null;
   if (body.rgpdEmail !== undefined) patch.rgpdEmail = body.rgpdEmail;
+  if (body.reminderHoursBefore !== undefined) patch.reminderHoursBefore = body.reminderHoursBefore;
   if (Object.keys(patch).length > 0) {
     await db.update(settings).set(patch).where(eq(settings.id, 1));
   }
   const [row] = await db.select().from(settings);
-  return c.json({ siteTitle: row?.siteTitle ?? "", siteLogo: row?.siteLogo ?? null, rgpdEmail: row?.rgpdEmail ?? "" });
+  return c.json({
+    siteTitle: row?.siteTitle ?? "",
+    siteLogo: row?.siteLogo ?? null,
+    rgpdEmail: row?.rgpdEmail ?? "",
+    reminderHoursBefore: row?.reminderHoursBefore ?? 24,
+  });
 });
 
 /** Uploads the site logo via multipart form; stores it via the storage abstraction and saves the URL. */

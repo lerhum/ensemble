@@ -7,6 +7,7 @@ import {
   creneauInputSchema,
   volunteerFilterSchema,
   broadcastSchema,
+  settingsUpdateSchema,
 } from "../shared.js";
 
 describe("slotStatus", () => {
@@ -230,5 +231,23 @@ describe("broadcastSchema", () => {
 
   it("rejects an empty message", () => {
     expect(broadcastSchema.safeParse({ subject: "Rappel", message: "" }).success).toBe(false);
+  });
+});
+
+describe("settingsUpdateSchema", () => {
+  it("accepts a valid reminderHoursBefore", () => {
+    expect(settingsUpdateSchema.safeParse({ reminderHoursBefore: 24 }).success).toBe(true);
+  });
+
+  it("rejects reminderHoursBefore below 1", () => {
+    expect(settingsUpdateSchema.safeParse({ reminderHoursBefore: 0 }).success).toBe(false);
+  });
+
+  it("rejects reminderHoursBefore above 168", () => {
+    expect(settingsUpdateSchema.safeParse({ reminderHoursBefore: 200 }).success).toBe(false);
+  });
+
+  it("rejects a non-integer reminderHoursBefore", () => {
+    expect(settingsUpdateSchema.safeParse({ reminderHoursBefore: 2.5 }).success).toBe(false);
   });
 });

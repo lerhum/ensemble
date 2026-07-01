@@ -13,6 +13,7 @@ export default function AdminSettingsPage() {
   const [title, setTitle] = React.useState(siteTitle);
   const [logo, setLogo] = React.useState<string | null>(siteLogo);
   const [rgpd, setRgpd] = React.useState(rgpdEmail);
+  const [reminderHoursBefore, setReminderHoursBefore] = React.useState(24);
   const [uploading, setUploading] = React.useState(false);
   const fileRef = React.useRef<HTMLInputElement>(null);
 
@@ -20,6 +21,10 @@ export default function AdminSettingsPage() {
   React.useEffect(() => { setTitle(siteTitle); }, [siteTitle]);
   React.useEffect(() => { setLogo(siteLogo); }, [siteLogo]);
   React.useEffect(() => { setRgpd(rgpdEmail); }, [rgpdEmail]);
+
+  React.useEffect(() => {
+    api.getSettings().then((s) => setReminderHoursBefore(s.reminderHoursBefore));
+  }, []);
 
   async function saveTitle() {
     if (!title.trim()) return;
@@ -52,6 +57,11 @@ export default function AdminSettingsPage() {
     await api.updateSettings({ siteLogo: null });
     setLogo(null);
     await refresh();
+  }
+
+  async function saveReminderHoursBefore() {
+    if (!Number.isInteger(reminderHoursBefore) || reminderHoursBefore < 1) return;
+    await api.updateSettings({ reminderHoursBefore });
   }
 
   return (
@@ -126,6 +136,27 @@ export default function AdminSettingsPage() {
                 Affiché à la place du nom dans la navigation publique si défini.
               </p>
             </div>
+          </div>
+        </section>
+
+        <section>
+          <p className="mb-4 text-[11px] font-800 uppercase tracking-[.1em] text-label2">
+            Rappels
+          </p>
+          <div className="space-y-1.5">
+            <Label htmlFor="reminderHoursBefore">Délai de rappel (heures avant le créneau)</Label>
+            <Input
+              id="reminderHoursBefore"
+              type="number"
+              min={1}
+              max={168}
+              value={reminderHoursBefore}
+              onChange={(e) => setReminderHoursBefore(Number(e.target.value))}
+              onBlur={saveReminderHoursBefore}
+            />
+            <p className="text-[12px] text-label">
+              Email de rappel automatique envoyé aux bénévoles confirmés ce nombre d'heures avant le début de leur créneau.
+            </p>
           </div>
         </section>
       </div>

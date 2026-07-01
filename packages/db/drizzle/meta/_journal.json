@@ -50,6 +50,13 @@
       "when": 1751200000000,
       "tag": "0006_rgpd_email",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1782904109376,
+      "tag": "0007_marvelous_justice",
+      "breakpoints": true
     }
   ]
 }

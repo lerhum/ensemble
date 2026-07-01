@@ -9,6 +9,10 @@ compatibility_flags = ["nodejs_compat"]
 [vars]
 WEB_ORIGIN = "https://ensemble-web.pages.dev"
 
+# Rappels de créneaux : déclenche `scheduled()` (src/worker.ts) toutes les 30 min.
+[triggers]
+crons = ["*/30 * * * *"]
+
 # Secrets (NE PAS mettre ici) — définir via `wrangler secret put` :
 #   wrangler secret put DATABASE_URL    # URL Neon (postgresql://...neon.tech/...)
 #   wrangler secret put SESSION_SECRET  # chaîne aléatoire 32+ caractères

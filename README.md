@@ -84,8 +84,12 @@ Event → Pôles → Tâches → Créneaux        +  signups (créneau ↔ bén�
 | `POST`/`PATCH` | `/api/events` (+ `/:id/banner`) | admin |
 | `GET` | `/api/events/:id/volunteers[.csv]?q=&pole=&tache=&creneau=&statut=` | admin (filters + CSV export) |
 | `POST` | `/api/events/:id/volunteers/broadcast` | admin (email a filtered group or explicit ids) |
+| `POST` | `/api/reminders/run` | admin (manual trigger for due slot-reminder emails; runs on a Cron Trigger in prod) |
 
 Portable Node/Workers authentication (PBKDF2 via WebCrypto, DB-backed sessions). Zod validation, JSON errors.
+
+Transactional email (confirmations, slot reminders, admin broadcasts) goes through Mailpit in dev and
+Resend in prod — see **[DEPLOY.md](./DEPLOY.md#transactional-email--resend)**.
 
 ## Useful commands (outside Docker)
 
