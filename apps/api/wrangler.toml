@@ -1,6 +1,6 @@
 # Déploiement de l'API Hono sur Cloudflare Workers (free).
 # Le même code que l'entrée Node tourne ici via src/worker.ts (driver Neon).
-name = "ensemble-api"
+name = "empty-rain-c131"
 main = "src/worker.ts"
 compatibility_date = "2024-11-01"
 compatibility_flags = ["nodejs_compat"]
