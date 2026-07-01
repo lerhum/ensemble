@@ -31,7 +31,7 @@ docker compose up         # db → migrate (migrations + seed) → api (:8787) �
 
 Then open **http://localhost:5173**.
 
-On **first launch**, the app shows a **WordPress-style installer** (`/install`): no admin is
+On **first launch**, the app shows a first-run setup wizard (`/install`): no admin is
 pre-created — you define the committee account (name, email, password). The seed creates demo
 content (*Demo Got's Talent*: 6 pôles, 18 créneaux, 32 signups).
 
@@ -85,13 +85,6 @@ Event → Pôles → Tâches → Créneaux        +  signups (créneau ↔ bén�
 | `GET` | `/api/events/:id/volunteers[.csv]?q=&pole=&creneau=&statut=` | admin (filters + CSV export) |
 
 Portable Node/Workers authentication (PBKDF2 via WebCrypto, DB-backed sessions). Zod validation, JSON errors.
-
-## Screens (Direction B)
-
-Event page (parent, mobile + desktop) · Créneau selection (mobile + desktop) · Admin:
-dashboard & creation (banner upload + theme color + live preview), Pôles & créneaux
-(inline editing, +créneau/+tâche/+pôle, drag-and-drop), Bénévoles (cumulative filters + chips +
-CSV export) · Installer + login.
 
 ## Useful commands (outside Docker)
 
