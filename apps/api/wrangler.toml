@@ -5,9 +5,9 @@ main = "src/worker.ts"
 compatibility_date = "2024-11-01"
 compatibility_flags = ["nodejs_compat"]
 
-# Variables publiques (non secrètes). WEB_ORIGIN = URL du front Pages (CORS).
+# Variables publiques (non secrètes). WEB_ORIGIN = URL du front (CORS).
 [vars]
-WEB_ORIGIN = "https://ensemble-web.pages.dev"
+WEB_ORIGIN = "https://ensemble.romain-luyten.workers.dev"
 
 # Rappels de créneaux : déclenche `scheduled()` (src/worker.ts) toutes les 30 min.
 [triggers]
