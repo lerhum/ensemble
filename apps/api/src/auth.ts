@@ -10,7 +10,8 @@ import { getSignedCookie, setSignedCookie, deleteCookie } from "hono/cookie";
 import type { AppEnv } from "./context.js";
 import { unauthorized } from "./errors.js";
 
-const PBKDF2_ITERATIONS = 210_000;
+// Cloudflare Workers' WebCrypto caps PBKDF2 at 100_000 iterations (Node/browsers allow more).
+const PBKDF2_ITERATIONS = 100_000;
 const SESSION_COOKIE = "ens_session";
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 30; // 30 jours
 
