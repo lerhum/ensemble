@@ -1,0 +1,9 @@
+# Déploiement du front (build Vite statique) sur Cloudflare Workers (assets-only,
+# pas de script Worker — Pages a été fusionné dans Workers).
+name = "ensemble"
+compatibility_date = "2024-11-01"
+
+[assets]
+directory = "./dist"
+# SPA (react-router-dom) : toute route inconnue retombe sur index.html.
+not_found_handling = "single-page-application"

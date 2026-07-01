@@ -148,6 +148,9 @@ importers:
       vitest:
         specifier: ^3.0.0
         version: 3.2.6(@types/node@22.20.0)(jiti@1.21.7)(tsx@4.22.4)
+      wrangler:
+        specifier: ^3.91.0
+        version: 3.114.17(@cloudflare/workers-types@4.20260625.1)
 
   packages/db:
     dependencies:

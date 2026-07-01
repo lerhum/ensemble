@@ -4,7 +4,7 @@ The app deploys on Cloudflare's **free tier**:
 
 | Component | Hosting | Why |
 | --------- | ------- | --- |
-| `apps/web` (Vite frontend) | **Cloudflare Pages** | static, Vite build |
+| `apps/web` (Vite frontend) | **Cloudflare Worker** (static assets) | static, Vite build |
 | `apps/api` (Hono) | **Cloudflare Worker** | same code as dev, Neon driver |
 | Database | **Neon** (managed Postgres, free) | Cloudflare free tier doesn't host Postgres |
 
@@ -17,11 +17,12 @@ vs `apps/api/src/worker.ts`).
 
 ## Deployment method: Cloudflare native Git integration
 
-Both the API and the frontend deploy via **Cloudflare's own Git integration** (Workers Builds for
-`apps/api`, Pages Git integration for `apps/web`) — every push to `main` triggers a build/deploy
-directly on Cloudflare, no GitHub Actions involved. The CLI steps below (`wrangler deploy`, `wrangler
-pages deploy`) remain useful for the **first-time setup** (secrets, initial deploy before the Git
-integration exists) and as a manual fallback.
+Both the API and the frontend deploy via **Cloudflare's own Git integration** (Workers Builds) —
+every push to `main` triggers a build/deploy directly on Cloudflare, no GitHub Actions involved.
+Pages has been folded into Workers: the frontend deploys as an **assets-only Worker** (see §3), not
+a separate Pages project. The CLI steps below (`wrangler deploy`) remain useful for the
+**first-time setup** (secrets, initial deploy before the Git integration exists) and as a manual
+fallback.
 
 The only GitHub Actions workflow in this repo is `.github/workflows/db-migrate.yml` — Drizzle
 migrations against Neon are **never automatic**, always triggered by hand from the GitHub Actions tab
@@ -72,12 +73,19 @@ cd apps/api
 npx wrangler secret put DATABASE_URL     # paste the Neon URL
 npx wrangler secret put SESSION_SECRET   # random 32+ char string (openssl rand -base64 32)
 
-# Public variable: edit WEB_ORIGIN in wrangler.toml with the final Pages URL.
+# Public variable: edit WEB_ORIGIN in wrangler.toml with the final web Worker's URL.
 
 npx wrangler deploy
 ```
 
 The Worker is served at `https://ensemble-api.<account>.workers.dev`. Note this URL.
+
+> **Workers Builds dashboard gotcha**: if you're deploying via the Git integration instead of the
+> CLI above, the "Variables and secrets" shown on the Worker's **Builds** settings tab are
+> **build-time only** and never reach the running Worker — `env.DATABASE_URL` etc. will be
+> `undefined` at runtime (causing an immediate "Worker threw exception" on every request). Set
+> `DATABASE_URL`, `SESSION_SECRET`, `RESEND_API_KEY` instead under the Worker's **Settings →
+> Variables and Secrets** tab (as type **Secret**), which is a different screen from Builds.
 
 > Banners: stored as data-URIs by default (`events.banniere` column). For real images,
 > enable an **R2** bucket (free) in `wrangler.toml` and implement an `R2Storage`
@@ -125,25 +133,41 @@ npx wrangler deployments list   # or check the Cloudflare dashboard → Workers 
 
 ---
 
-## 3. Frontend — Cloudflare Pages
+## 3. Frontend — Cloudflare Workers (static assets)
 
-The frontend queries the API via `VITE_API_BASE` (empty in dev → proxy; Worker URL in prod).
+Cloudflare has folded Pages into Workers: static sites now deploy as an **assets-only Worker**
+(no Worker script needed), configured via `apps/web/wrangler.toml`:
 
-**Option A — Pages dashboard (Git CI, recommended)**
-- Connect the repo. Build settings:
-  - **Build command**: `pnpm install && pnpm --filter @ensemble/web build`
-  - **Build output directory**: `apps/web/dist`
-  - **Environment variable**: `VITE_API_BASE = https://ensemble-api.<account>.workers.dev`
+```toml
+name = "ensemble-web"          # pick your own — must match the Worker created in the dashboard
+compatibility_date = "2024-11-01"
+
+[assets]
+directory = "./dist"
+not_found_handling = "single-page-application"   # client-side routing (react-router-dom)
+```
+
+The frontend queries the API via `VITE_API_BASE` (empty in dev → proxy; Worker URL in prod) —
+this is a **build-time** var (baked into the JS bundle by Vite), unlike the API's runtime secrets.
+
+**Option A — Workers Builds dashboard (Git CI, recommended)**
+- Workers & Pages → Create → connect the same repo as a Worker (not a script — the dashboard
+  detects the static build). Build settings:
+  - **Root directory**: `apps/web`
+  - **Build command**: `pnpm run build`
+  - **Deploy command**: `npx wrangler deploy`
+  - **Build variable**: `VITE_API_BASE = https://<api-worker-name>.<account>.workers.dev`
+- Under **Settings → Domains**, enable the `workers.dev` route to get a public URL.
 
 **Option B — CLI**
 ```bash
-VITE_API_BASE="https://ensemble-api.<account>.workers.dev" pnpm --filter @ensemble/web build
-npx wrangler pages deploy apps/web/dist --project-name ensemble-web
+VITE_API_BASE="https://<api-worker-name>.<account>.workers.dev" pnpm --filter @ensemble/web build
+cd apps/web && npx wrangler deploy
 ```
 
-Pages publishes to `https://ensemble-web.pages.dev`. Update this URL in
-`apps/api/wrangler.toml` (`WEB_ORIGIN`) then **redeploy the Worker** (`npx wrangler deploy`) so
-CORS and cross-site cookies work.
+The site publishes to `https://<name>.<account>.workers.dev` (the `name` in `apps/web/wrangler.toml`).
+Update this URL in `apps/api/wrangler.toml` (`WEB_ORIGIN`) then **redeploy the Worker**
+(`npx wrangler deploy` from `apps/api`) so CORS and cross-site cookies work.
 
 > Cookies: in production (https, separate domains), the session uses `SameSite=None; Secure`
 > (handled automatically, see `apps/api/src/auth.ts`). In local dev (http), `SameSite=Lax`.
@@ -152,9 +176,9 @@ CORS and cross-site cookies work.
 
 ## 4. URL sync checklist
 
-1. Worker deployed → `*.workers.dev` URL.
-2. `VITE_API_BASE` (Pages) = Worker URL → rebuild/redeploy Pages.
-3. `WEB_ORIGIN` (wrangler.toml) = Pages URL → redeploy Worker.
+1. API Worker deployed → `*.workers.dev` URL.
+2. `VITE_API_BASE` (web Worker's build variable) = API Worker URL → rebuild/redeploy the web Worker.
+3. `WEB_ORIGIN` (`apps/api/wrangler.toml`) = web Worker's URL → redeploy the API Worker.
 
 ## 5. Ongoing migrations
 
