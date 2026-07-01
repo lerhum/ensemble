@@ -58,6 +58,11 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
     [event],
   );
 
+  const tacheOptions = React.useMemo(
+    () => event.poles.flatMap((p) => p.taches.map((t) => ({ id: t.id, label: t.nom }))),
+    [event],
+  );
+
   // Liste non filtrée → statistiques.
   React.useEffect(() => {
     api.getVolunteers(event.id).then((r) => setAll(r.volunteers));
@@ -85,6 +90,7 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
   );
 
   const poleName = (id?: string) => event.poles.find((p) => p.id === id)?.nom;
+  const tacheName = (id?: string) => tacheOptions.find((t) => t.id === id)?.label;
   const creneauName = (id?: string) => creneauOptions.find((c) => c.id === id)?.label;
 
   async function deleteVolunteer(id: string) {
@@ -102,6 +108,7 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
 
   const chips = [
     filter.pole && { key: "pole", label: `Pôle : ${poleName(filter.pole)}` },
+    filter.tache && { key: "tache", label: `Tâche : ${tacheName(filter.tache)}` },
     filter.creneau && { key: "creneau", label: `Créneau : ${creneauName(filter.creneau)}` },
     filter.statut && {
       key: "statut",
@@ -167,6 +174,19 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
             {event.poles.map((p) => (
               <SelectItem key={p.id} value={p.id}>
                 {p.nom}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={filter.tache ?? ALL} onValueChange={setSel("tache")}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Tâche : Toutes" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ALL}>Tâche : Toutes</SelectItem>
+            {tacheOptions.map((t) => (
+              <SelectItem key={t.id} value={t.id}>
+                {t.label}
               </SelectItem>
             ))}
           </SelectContent>

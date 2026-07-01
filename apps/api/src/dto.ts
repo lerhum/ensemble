@@ -239,6 +239,7 @@ export function filterVolunteers(dtos: VolunteerDTO[], filter: VolunteerFilter):
   return dtos.filter((v) => {
     if (filter.statut && v.statut !== filter.statut) return false;
     if (filter.pole && !v.poles.some((p) => p.id === filter.pole)) return false;
+    if (filter.tache && !v.creneaux.some((cr) => cr.tacheId === filter.tache)) return false;
     if (filter.creneau && !v.creneaux.some((cr) => cr.id === filter.creneau)) return false;
     if (q && !(v.nom.toLowerCase().includes(q) || v.email.toLowerCase().includes(q))) return false;
     return true;
@@ -266,7 +267,7 @@ export async function buildVolunteers(
       const cr = ins.creneau;
       const pole = cr.tache.pole;
       polesMap.set(pole.id, pole.nom);
-      return { id: cr.id, tache: cr.tache.nom, debut: cr.debut, fin: cr.fin };
+      return { id: cr.id, tacheId: cr.tache.id, tache: cr.tache.nom, debut: cr.debut, fin: cr.fin };
     });
     return {
       id: v.id,

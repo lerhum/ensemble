@@ -348,11 +348,12 @@ adminRoutes.delete("/creneaux/:id", async (c) => {
 });
 
 // ── Bénévoles (liste filtrée + export CSV) ─────────────────────────────────
-/** Parses volunteer filter query parameters (q, pole, creneau, statut) from the request. */
+/** Parses volunteer filter query parameters (q, pole, tache, creneau, statut) from the request. */
 function parseFilter(c: { req: { query: (k: string) => string | undefined } }) {
   return validate(volunteerFilterSchema, {
     q: c.req.query("q") || undefined,
     pole: c.req.query("pole") || undefined,
+    tache: c.req.query("tache") || undefined,
     creneau: c.req.query("creneau") || undefined,
     statut: c.req.query("statut") || undefined,
   });

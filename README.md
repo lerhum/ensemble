@@ -82,7 +82,7 @@ Event → Pôles → Tâches → Créneaux        +  signups (créneau ↔ bén�
 | `POST`/`DELETE` | `/api/creneaux/:id/inscriptions` | public (multi-créneau signup) |
 | `*` | `/api/poles\|taches\|creneaux` (+ `/reorder`) | admin (CRUD + reordering) |
 | `POST`/`PATCH` | `/api/events` (+ `/:id/banner`) | admin |
-| `GET` | `/api/events/:id/volunteers[.csv]?q=&pole=&creneau=&statut=` | admin (filters + CSV export) |
+| `GET` | `/api/events/:id/volunteers[.csv]?q=&pole=&tache=&creneau=&statut=` | admin (filters + CSV export) |
 
 Portable Node/Workers authentication (PBKDF2 via WebCrypto, DB-backed sessions). Zod validation, JSON errors.
 
@@ -100,6 +100,11 @@ pnpm --filter @ensemble/db generate|migrate|seed
 
 See **[DEPLOY.md](./DEPLOY.md)** — Neon + Cloudflare Worker (`wrangler deploy`) + Cloudflare Pages,
 on free tiers.
+
+## Contributing
+
+See **[CONTRIBUTING.md](./CONTRIBUTING.md)** for the dev workflow, naming/commit conventions, and
+PR process.
 
 ## License
 

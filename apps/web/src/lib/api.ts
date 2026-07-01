@@ -50,6 +50,7 @@ export function qs(filter: VolunteerFilter): string {
   const p = new URLSearchParams();
   if (filter.q) p.set("q", filter.q);
   if (filter.pole) p.set("pole", filter.pole);
+  if (filter.tache) p.set("tache", filter.tache);
   if (filter.creneau) p.set("creneau", filter.creneau);
   if (filter.statut) p.set("statut", filter.statut);
   const s = p.toString();

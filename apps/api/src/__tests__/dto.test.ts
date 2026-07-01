@@ -17,7 +17,7 @@ function makeVolunteer(overrides: Partial<VolunteerDTO> = {}): VolunteerDTO {
     tel: null,
     statut: "confirme",
     poles: [{ id: "p-1", nom: "Bar" }],
-    creneaux: [{ id: "cr-1", tache: "Serveur", debut: "10:00", fin: "12:00" }],
+    creneaux: [{ id: "cr-1", tacheId: "t-1", tache: "Serveur", debut: "10:00", fin: "12:00" }],
     ...overrides,
   };
 }
@@ -110,8 +110,8 @@ describe("volunteersToCsv", () => {
     const csv = volunteersToCsv([
       makeVolunteer({
         creneaux: [
-          { id: "cr-1", tache: "Serveur", debut: "10:00", fin: "12:00" },
-          { id: "cr-2", tache: "Caisse", debut: "14:00", fin: "16:00" },
+          { id: "cr-1", tacheId: "t-1", tache: "Serveur", debut: "10:00", fin: "12:00" },
+          { id: "cr-2", tacheId: "t-2", tache: "Caisse", debut: "14:00", fin: "16:00" },
         ],
       }),
     ]);
@@ -126,9 +126,15 @@ describe("volunteersToCsv", () => {
 // ── filterVolunteers ──────────────────────────────────────────────────────────
 
 describe("filterVolunteers", () => {
-  const alice = makeVolunteer({ statut: "confirme", poles: [{ id: "p-1", nom: "Bar" }], creneaux: [{ id: "cr-1", tache: "Serveur", debut: "10:00", fin: "12:00" }] });
-  const bob = makeVolunteer({ id: "v-2", nom: "Bob Martin", email: "bob@example.com", statut: "attente", poles: [{ id: "p-2", nom: "Grimage" }], creneaux: [{ id: "cr-2", tache: "Maquillage", debut: "14:00", fin: "16:00" }] });
+  const alice = makeVolunteer({ statut: "confirme", poles: [{ id: "p-1", nom: "Bar" }], creneaux: [{ id: "cr-1", tacheId: "t-1", tache: "Serveur", debut: "10:00", fin: "12:00" }] });
+  const bob = makeVolunteer({ id: "v-2", nom: "Bob Martin", email: "bob@example.com", statut: "attente", poles: [{ id: "p-2", nom: "Grimage" }], creneaux: [{ id: "cr-2", tacheId: "t-2", tache: "Maquillage", debut: "14:00", fin: "16:00" }] });
   const list = [alice, bob];
+
+  it("filters by tache UUID", () => {
+    const result = filterVolunteers(list, { tache: "t-2" });
+    expect(result).toHaveLength(1);
+    expect(result[0]?.nom).toBe("Bob Martin");
+  });
 
   it("returns all when filter is empty", () => {
     expect(filterVolunteers(list, {})).toHaveLength(2);

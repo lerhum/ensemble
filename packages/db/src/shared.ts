@@ -103,7 +103,7 @@ export interface VolunteerDTO {
   tel: string | null;
   statut: VolunteerStatut;
   poles: { id: string; nom: string }[];
-  creneaux: { id: string; tache: string; debut: string; fin: string }[];
+  creneaux: { id: string; tacheId: string; tache: string; debut: string; fin: string }[];
 }
 
 export interface SessionUserDTO {
@@ -249,6 +249,7 @@ export type InscriptionInput = z.infer<typeof inscriptionSchema>;
 export const volunteerFilterSchema = z.object({
   q: z.string().optional(),
   pole: z.string().uuid().optional(),
+  tache: z.string().uuid().optional(),
   creneau: z.string().uuid().optional(),
   statut: z.enum(["confirme", "attente"]).optional(),
 });

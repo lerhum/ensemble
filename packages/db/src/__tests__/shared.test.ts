@@ -187,4 +187,14 @@ describe("volunteerFilterSchema", () => {
     const r = volunteerFilterSchema.safeParse({ statut: "invalide" });
     expect(r.success).toBe(false);
   });
+
+  it("accepts valid UUID for tache", () => {
+    const r = volunteerFilterSchema.safeParse({ tache: "00000000-0000-0000-0000-000000000001" });
+    expect(r.success).toBe(true);
+  });
+
+  it("rejects non-UUID tache", () => {
+    const r = volunteerFilterSchema.safeParse({ tache: "not-a-uuid" });
+    expect(r.success).toBe(false);
+  });
 });
