@@ -1,13 +1,11 @@
 {
   "mcpServers": {
     "code-review-graph": {
-      "command": "/home/romain/.local/share/pipx/venvs/code-review-graph/bin/python",
+      "command": "/Users/romain/.local/bin/code-review-graph",
       "args": [
-        "-m",
-        "code_review_graph",
         "serve"
       ],
-      "cwd": "/home/romain/Repositories/ensemble",
+      "cwd": "/Users/romain/Repositories/ensemble",
       "type": "stdio"
     }
   }

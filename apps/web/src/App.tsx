@@ -12,7 +12,8 @@ import PoleSelectionPage from "@/pages/PoleSelectionPage";
 import ConfirmPage from "@/pages/ConfirmPage";
 import MesInscriptionsPage from "@/pages/MesInscriptionsPage";
 import AdminEventsListPage from "@/pages/admin/AdminEventsListPage";
-import AdminDashboardPage from "@/pages/admin/AdminDashboardPage";
+import AdminPilotagePage from "@/pages/admin/AdminPilotagePage";
+import AdminEventEditPage from "@/pages/admin/AdminEventEditPage";
 import AdminPolesPage from "@/pages/admin/AdminPolesPage";
 import AdminVolunteersPage from "@/pages/admin/AdminVolunteersPage";
 import AdminSettingsPage from "@/pages/admin/AdminSettingsPage";
@@ -47,8 +48,9 @@ export default function App() {
             {/* Admin : liste des événements */}
             <Route path="/admin" element={<A><AdminEventsListPage /></A>} />
 
-            {/* Admin : édition d'un événement spécifique */}
-            <Route path="/admin/events/:id" element={<A><AdminDashboardPage /></A>} />
+            {/* Admin : pilotage + édition d'un événement spécifique */}
+            <Route path="/admin/events/:id" element={<A><AdminPilotagePage /></A>} />
+            <Route path="/admin/events/:id/edition" element={<A><AdminEventEditPage /></A>} />
             <Route path="/admin/events/:id/poles" element={<A><AdminPolesPage /></A>} />
             <Route path="/admin/events/:id/volunteers" element={<A><AdminVolunteersPage /></A>} />
             <Route path="/admin/settings" element={<A><AdminSettingsPage /></A>} />

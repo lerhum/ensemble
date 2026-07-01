@@ -1,5 +1,5 @@
 import { NavLink, useParams, Link, useNavigate } from "react-router-dom";
-import { LayoutDashboard, ListTodo, Users, Megaphone, Settings, ChevronLeft, CalendarDays, LogOut } from "lucide-react";
+import { LayoutDashboard, ListTodo, Users, Megaphone, Settings, ChevronLeft, CalendarDays, LogOut, Pencil } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/lib/auth-context";
@@ -34,6 +34,7 @@ export function AdminLayout({ eyebrow, title, actions, children }: AdminLayoutPr
   const eventNav = id
     ? [
         { to: `/admin/events/${id}`, label: "Tableau de bord", icon: LayoutDashboard, end: true },
+        { to: `/admin/events/${id}/edition`, label: "Éditer l'événement", icon: Pencil, end: false },
         { to: `/admin/events/${id}/poles`, label: "Pôles & créneaux", icon: ListTodo, end: false },
         { to: `/admin/events/${id}/volunteers`, label: "Bénévoles", icon: Users, end: false },
       ]
