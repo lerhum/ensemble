@@ -1,0 +1,1 @@
+ALTER TABLE "volunteers" ALTER COLUMN "email" DROP NOT NULL;

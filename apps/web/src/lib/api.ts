@@ -1,5 +1,6 @@
 // Typed API client. All types come from @ensemble/db/shared (single source of truth).
 import type {
+  AdminInscriptionInput,
   BroadcastInput,
   EventDTO,
   EventDetailDTO,
@@ -214,4 +215,7 @@ export const api = {
   /** Sends an email to a targeted group of volunteers (explicit ids take priority over filter). */
   broadcastVolunteers: (eventId: string, body: BroadcastInput) =>
     req<{ ok: true; sent: number }>(`/events/${eventId}/volunteers/broadcast`, json(body)),
+  /** Manually registers a person on a slot (admin action) — email/tel optional. */
+  addVolunteerToCreneau: (creneauId: string, body: AdminInscriptionInput) =>
+    req<{ ok: true }>(`/admin/creneaux/${creneauId}/volunteers`, json(body)),
 };

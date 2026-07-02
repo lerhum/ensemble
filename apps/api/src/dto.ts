@@ -1,7 +1,7 @@
 // Construction des DTO dérivés (event détaillé, bénévoles filtrés) à partir des
 // requêtes relationnelles Drizzle. Partagé entre routes publiques et admin.
 import { desc, eq } from "drizzle-orm";
-import { events, volunteers, volunteerTokens } from "@ensemble/db";
+import { creneaux, events, volunteers, volunteerTokens } from "@ensemble/db";
 import {
   slotStatus,
   type EventDTO,
@@ -18,6 +18,14 @@ const asc =
   <T extends { position: number }>() =>
   (a: T, b: T) =>
     a.position - b.position;
+
+/** Loads a slot with its task/pole tree (to derive eventId) and existing inscriptions. Shared by public and admin routes. */
+export async function loadCreneau(db: Db, id: string) {
+  return db.query.creneaux.findFirst({
+    where: eq(creneaux.id, id),
+    with: { inscriptions: true, tache: { with: { pole: true } } },
+  });
+}
 
 /** Returns a lightweight list of all events (no pole tree, ordered by creation date). */
 export async function listEvents(db: Db): Promise<EventDTO[]> {
@@ -179,7 +187,8 @@ export async function buildMesInscriptionsByVolunteerId(
   const { event } = vol;
   const hasConfirmedToken = vol.tokens.some((t) => t.confirmedAt !== null);
   return {
-    volunteer: { nom: vol.nom, email: vol.email, statut: vol.statut },
+    // Session bénévole : n'existe que pour un email/mot de passe défini, donc email non-null ici.
+    volunteer: { nom: vol.nom, email: vol.email!, statut: vol.statut },
     event: { nom: event.nom, date: event.date, horaires: event.horaires, lieu: event.lieu, slug: event.slug, orgNom: event.orgNom, couleurTheme: event.couleurTheme },
     inscriptions: vol.inscriptions.map((ins) => ({
       poleNom: ins.creneau.tache.pole.nom,
@@ -213,7 +222,8 @@ export async function buildMesInscriptions(
   const { volunteer } = row;
   const { event } = volunteer;
   return {
-    volunteer: { nom: volunteer.nom, email: volunteer.email, statut: volunteer.statut },
+    // Token de confirmation : créé uniquement pour une inscription publique avec email, donc non-null ici.
+    volunteer: { nom: volunteer.nom, email: volunteer.email!, statut: volunteer.statut },
     event: {
       nom: event.nom,
       date: event.date,
@@ -241,7 +251,7 @@ export function filterVolunteers(dtos: VolunteerDTO[], filter: VolunteerFilter):
     if (filter.pole && !v.poles.some((p) => p.id === filter.pole)) return false;
     if (filter.tache && !v.creneaux.some((cr) => cr.tacheId === filter.tache)) return false;
     if (filter.creneau && !v.creneaux.some((cr) => cr.id === filter.creneau)) return false;
-    if (q && !(v.nom.toLowerCase().includes(q) || v.email.toLowerCase().includes(q))) return false;
+    if (q && !(v.nom.toLowerCase().includes(q) || (v.email ?? "").toLowerCase().includes(q))) return false;
     return true;
   });
 }
@@ -290,7 +300,7 @@ export function volunteersToCsv(list: VolunteerDTO[]): string {
   const lines = list.map((v) =>
     [
       v.nom,
-      v.email,
+      v.email ?? "",
       v.tel ?? "",
       v.poles.map((p) => p.nom).join(" / "),
       v.creneaux.map((cr) => `${cr.tache} ${cr.debut}-${cr.fin}`).join(" / "),

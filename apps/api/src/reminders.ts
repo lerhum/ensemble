@@ -12,7 +12,7 @@ export interface DueInscriptionRow {
     fin: string;
     tache: { nom: string; pole: { nom: string; event: { statut: string; dateIso: string | null; nom: string; lieu: string } } };
   };
-  volunteer: { email: string; nom: string; statut: string };
+  volunteer: { email: string | null; nom: string; statut: string };
 }
 
 /**
@@ -51,6 +51,7 @@ export async function sendDueReminders(db: Db, email: EmailService, hoursBefore?
   let sent = 0;
   for (const row of due) {
     const { creneau, volunteer } = row;
+    if (!volunteer.email) continue; // Bénévole ajouté par l'admin sans email : pas de rappel possible.
     const { event } = creneau.tache.pole;
 
     await email.send(
