@@ -56,7 +56,8 @@ export async function resolveVolunteerSession(c: Context<AppEnv>): Promise<Volun
   return {
     volunteerId: volunteer.id,
     nom: volunteer.nom,
-    email: volunteer.email,
+    // Session bénévole : n'existe que pour un email/mot de passe défini, donc email non-null ici.
+    email: volunteer.email!,
     tel: volunteer.tel,
     eventSlug: volunteer.event.slug,
   };
@@ -119,7 +120,7 @@ volunteerAuthRoutes.post("/login", async (c) => {
     volunteer: {
       volunteerId: matched.id,
       nom: matched.nom,
-      email: matched.email,
+      email: body.email,
       tel: matched.tel,
       eventSlug: vol?.event.slug ?? "",
     } satisfies VolunteerSessionDTO,

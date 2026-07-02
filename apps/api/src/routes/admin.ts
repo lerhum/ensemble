@@ -1,8 +1,9 @@
 import { Hono, type Context } from "hono";
 import { z } from "zod";
 import { and, eq, isNotNull, lt, max, sql } from "drizzle-orm";
-import { creneaux, events, poles, settings, taches, volunteers } from "@ensemble/db";
+import { creneaux, events, inscriptions, poles, settings, taches, volunteers } from "@ensemble/db";
 import {
+  adminInscriptionSchema,
   broadcastSchema,
   creneauInputSchema,
   creneauUpdateSchema,
@@ -17,12 +18,13 @@ import {
   volunteerFilterSchema,
 } from "@ensemble/db/shared";
 import type { AppEnv } from "../context.js";
-import { notFound, validate } from "../errors.js";
+import { conflict, notFound, validate } from "../errors.js";
 import { requireAdmin } from "../auth.js";
 import {
   buildEventDetailById,
   buildVolunteers,
   listEvents,
+  loadCreneau,
   volunteersToCsv,
 } from "../dto.js";
 import { sendDueReminders } from "../reminders.js";
@@ -393,15 +395,63 @@ adminRoutes.get("/events/:id/volunteers.csv", async (c) => {
   return c.body(volunteersToCsv(list));
 });
 
+/** Manually registers a person on a slot (admin action) — email/tel are optional, unlike public signup. */
+adminRoutes.post("/admin/creneaux/:id/volunteers", async (c) => {
+  const db = c.get("db");
+  const id = c.req.param("id");
+  const body = validate(adminInscriptionSchema, await c.req.json().catch(() => ({})));
+
+  const cr = await loadCreneau(db, id);
+  if (!cr) throw notFound("Créneau introuvable");
+  if (cr.inscriptions.length >= cr.necessaires) throw conflict("Ce créneau est complet.");
+
+  const eventId = cr.tache.pole.eventId;
+  let volunteerId: string;
+
+  if (body.email) {
+    const [existing] = await db
+      .select()
+      .from(volunteers)
+      .where(and(eq(volunteers.eventId, eventId), eq(volunteers.email, body.email)))
+      .limit(1);
+    if (existing) {
+      volunteerId = existing.id;
+      if (existing.nom !== body.nom || existing.tel !== (body.tel ?? null)) {
+        await db
+          .update(volunteers)
+          .set({ nom: body.nom, tel: body.tel ?? null })
+          .where(eq(volunteers.id, volunteerId));
+      }
+    } else {
+      const [created] = await db
+        .insert(volunteers)
+        .values({ eventId, nom: body.nom, email: body.email, tel: body.tel ?? null, statut: "confirme" })
+        .returning();
+      volunteerId = created!.id;
+    }
+  } else {
+    const [created] = await db
+      .insert(volunteers)
+      .values({ eventId, nom: body.nom, email: null, tel: body.tel ?? null, statut: "confirme" })
+      .returning();
+    volunteerId = created!.id;
+  }
+
+  await db.insert(inscriptions).values({ creneauId: id, volunteerId }).onConflictDoNothing();
+  return c.json({ ok: true }, 201);
+});
+
 /** Sends an email to a targeted group of volunteers — either explicit ids or the given filter. */
 adminRoutes.post("/events/:id/volunteers/broadcast", async (c) => {
   const db = c.get("db");
   const eventId = c.req.param("id");
   const body = validate(broadcastSchema, await c.req.json().catch(() => ({})));
 
-  const targets = body.volunteerIds
-    ? (await buildVolunteers(db, eventId, {})).filter((v) => body.volunteerIds!.includes(v.id))
-    : await buildVolunteers(db, eventId, body.filter ?? {});
+  const targets = (
+    body.volunteerIds
+      ? (await buildVolunteers(db, eventId, {})).filter((v) => body.volunteerIds!.includes(v.id))
+      : await buildVolunteers(db, eventId, body.filter ?? {})
+  ).filter((v): v is typeof v & { email: string } => Boolean(v.email));
 
   const email = c.get("email");
   await Promise.all(

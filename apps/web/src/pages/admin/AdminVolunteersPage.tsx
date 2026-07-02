@@ -2,7 +2,7 @@ import * as React from "react";
 import { Download, Mail, Plus, Search, Trash2, X } from "lucide-react";
 import type { EventDetailDTO, VolunteerDTO, VolunteerFilter } from "@ensemble/db/shared";
 import { useParams } from "react-router-dom";
-import { api } from "@/lib/api";
+import { api, ApiError } from "@/lib/api";
 import { useAdminEvent } from "@/lib/useEvent";
 import { initials } from "@/lib/utils";
 import { AdminLayout, StatCard } from "@/components/admin/AdminLayout";
@@ -59,6 +59,14 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
   const [message, setMessage] = React.useState("");
   const [sending, setSending] = React.useState(false);
   const [lastSent, setLastSent] = React.useState<number | null>(null);
+
+  const [showAddVolunteer, setShowAddVolunteer] = React.useState(false);
+  const [addCreneauId, setAddCreneauId] = React.useState("");
+  const [addNom, setAddNom] = React.useState("");
+  const [addEmail, setAddEmail] = React.useState("");
+  const [addTel, setAddTel] = React.useState("");
+  const [adding, setAdding] = React.useState(false);
+  const [addError, setAddError] = React.useState<string | null>(null);
 
   const creneauOptions = React.useMemo(
     () =>
@@ -123,6 +131,35 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
     } finally {
       setDeletingId(null);
       setConfirmId(null);
+    }
+  }
+
+  function resetAddForm() {
+    setAddCreneauId("");
+    setAddNom("");
+    setAddEmail("");
+    setAddTel("");
+    setAddError(null);
+  }
+
+  async function addVolunteer() {
+    setAdding(true);
+    setAddError(null);
+    try {
+      await api.addVolunteerToCreneau(addCreneauId, {
+        nom: addNom.trim(),
+        email: addEmail.trim() || undefined,
+        tel: addTel.trim() || undefined,
+      });
+      const refresh = () => api.getVolunteers(event.id, filter).then((r) => setRows(r.volunteers));
+      const refreshAll = () => api.getVolunteers(event.id).then((r) => setAll(r.volunteers));
+      await Promise.all([refresh(), refreshAll()]);
+      setShowAddVolunteer(false);
+      resetAddForm();
+    } catch (e) {
+      setAddError(e instanceof ApiError ? e.message : "Erreur lors de l'ajout.");
+    } finally {
+      setAdding(false);
     }
   }
 
@@ -192,7 +229,7 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
               <Download className="h-4 w-4" /> Exporter CSV
             </a>
           </Button>
-          <Button variant="default">
+          <Button variant="default" onClick={() => setShowAddVolunteer(true)}>
             <Plus className="h-4 w-4" /> Inviter
           </Button>
         </>
@@ -343,7 +380,7 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
                       </Avatar>
                       <div className="leading-tight">
                         <div className="font-700 text-ink">{v.nom}</div>
-                        <div className="text-[13px] text-label">{v.email}</div>
+                        <div className="text-[13px] text-label">{v.email || "—"}</div>
                       </div>
                     </div>
                   </TableCell>
@@ -438,6 +475,78 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
               disabled={!subject.trim() || !message.trim() || sending || recipientCount === 0}
             >
               {sending ? "Envoi…" : "Envoyer"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={showAddVolunteer}
+        onOpenChange={(open) => {
+          setShowAddVolunteer(open);
+          if (!open) resetAddForm();
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Ajouter un bénévole</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <p className="text-[13px] text-label">
+              Un simple prénom suffit — l'email et le téléphone sont facultatifs.
+            </p>
+            <div className="space-y-1.5">
+              <Label htmlFor="add-creneau">Créneau *</Label>
+              <Select value={addCreneauId} onValueChange={setAddCreneauId}>
+                <SelectTrigger id="add-creneau">
+                  <SelectValue placeholder="Choisir un créneau" />
+                </SelectTrigger>
+                <SelectContent>
+                  {creneauOptions.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="add-nom">Prénom ou nom complet *</Label>
+              <Input
+                id="add-nom"
+                value={addNom}
+                onChange={(e) => setAddNom(e.target.value)}
+                placeholder="Ex : Julie ou Julie Dupont"
+                autoFocus
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="add-email">Email (optionnel)</Label>
+              <Input
+                id="add-email"
+                type="email"
+                value={addEmail}
+                onChange={(e) => setAddEmail(e.target.value)}
+                placeholder="julie@exemple.com"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="add-tel">Téléphone (optionnel)</Label>
+              <Input
+                id="add-tel"
+                value={addTel}
+                onChange={(e) => setAddTel(e.target.value)}
+                placeholder="04 12 34 56 78"
+              />
+            </div>
+            {addError && <p className="text-[13px] font-600 text-danger">{addError}</p>}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddVolunteer(false)}>
+              Annuler
+            </Button>
+            <Button onClick={addVolunteer} disabled={!addCreneauId || !addNom.trim() || adding}>
+              {adding ? "Ajout…" : "Ajouter"}
             </Button>
           </DialogFooter>
         </DialogContent>

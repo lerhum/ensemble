@@ -83,7 +83,7 @@ export const volunteers = pgTable("volunteers", {
     .notNull()
     .references(() => events.id, { onDelete: "cascade" }),
   nom: text("nom").notNull(),
-  email: text("email").notNull(),
+  email: text("email"),
   tel: text("tel"),
   statut: volunteerStatut("statut").notNull().default("confirme"),
   passwordHash: text("password_hash"),
