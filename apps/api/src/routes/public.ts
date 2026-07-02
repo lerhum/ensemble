@@ -12,7 +12,7 @@ import { buildMesInscriptionsByVolunteerId } from "../dto.js";
 import { inscriptionSchema } from "@ensemble/db/shared";
 import type { AppEnv } from "../context.js";
 import { conflict, notFound, validate } from "../errors.js";
-import { buildEventDetailBySlug, buildMesInscriptions } from "../dto.js";
+import { buildEventDetailBySlug, buildMesInscriptions, loadCreneau } from "../dto.js";
 
 export const publicRoutes = new Hono<AppEnv>();
 
@@ -67,14 +67,6 @@ publicRoutes.get("/volunteers/lookup", async (c) => {
     .limit(1);
   return c.json(vol ?? null);
 });
-
-/** Loads a slot with its task/pole tree (to derive eventId) and existing inscriptions. */
-async function loadCreneau(db: AppEnv["Variables"]["db"], id: string) {
-  return db.query.creneaux.findFirst({
-    where: eq(creneaux.id, id),
-    with: { inscriptions: true, tache: { with: { pole: true } } },
-  });
-}
 
 /** Returns an existing valid email token for the volunteer, or creates a new one with a 7-day TTL. */
 async function ensureToken(

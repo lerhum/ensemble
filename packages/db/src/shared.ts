@@ -99,7 +99,7 @@ export interface EventDetailDTO extends EventDTO {
 export interface VolunteerDTO {
   id: string;
   nom: string;
-  email: string;
+  email: string | null;
   tel: string | null;
   statut: VolunteerStatut;
   poles: { id: string; nom: string }[];
@@ -246,6 +246,14 @@ export const inscriptionSchema = z.object({
   tel: z.string().nullish(),
 });
 export type InscriptionInput = z.infer<typeof inscriptionSchema>;
+
+// Inscription manuelle par l'admin : nom seul suffit, email/tel optionnels.
+export const adminInscriptionSchema = z.object({
+  nom: z.string().min(1, "Nom requis"),
+  email: z.string().email("Email invalide").nullish(),
+  tel: z.string().nullish(),
+});
+export type AdminInscriptionInput = z.infer<typeof adminInscriptionSchema>;
 
 // Filtres bénévoles (query string) — cumulatifs.
 export const volunteerFilterSchema = z.object({
