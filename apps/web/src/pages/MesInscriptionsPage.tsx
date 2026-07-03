@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 export default function MesInscriptionsPage() {
   const { token } = useParams<{ token?: string }>();
   const { siteTitle, siteLogo } = useAuth();
-  const { logout } = useVolunteer();
+  const { logout, clearToken } = useVolunteer();
   const navigate = useNavigate();
   const [data, setData] = React.useState<MesInscriptionsDTO | null>(null);
   const [loading, setLoading] = React.useState(true);
@@ -28,7 +28,10 @@ export default function MesInscriptionsPage() {
 
     fetch
       .then(setData)
-      .catch(() => setError(token ? "Lien invalide ou expiré." : "Non connecté ou session expirée."))
+      .catch(() => {
+        if (token) clearToken();
+        setError(token ? "Lien invalide ou expiré." : "Non connecté ou session expirée.");
+      })
       .finally(() => setLoading(false));
   }, [token]);
 
@@ -53,7 +56,13 @@ export default function MesInscriptionsPage() {
   return (
     <div className="min-h-screen bg-[#F9F9F8]">
       <div className="hidden md:block">
-        <PublicNav orgNom={siteTitle || event.orgNom} accent={event.couleurTheme} siteLogo={siteLogo} eventSlug={event.slug} />
+        <PublicNav
+          orgNom={siteTitle || event.orgNom}
+          accent={event.couleurTheme}
+          siteLogo={siteLogo}
+          eventSlug={event.slug}
+          containerClassName="max-w-lg px-4"
+        />
       </div>
 
       <div className="py-10 px-4">

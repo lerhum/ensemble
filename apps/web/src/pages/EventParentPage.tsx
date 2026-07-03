@@ -48,7 +48,7 @@ function MobileView({ event, siteTitle, siteLogo }: { event: EventDetailDTO; sit
       </header>
 
       {event.banniere
-        ? <img src={event.banniere} alt={event.nom} className="aspect-[16/10] w-full object-cover" />
+        ? <img src={event.banniere} alt={event.nom} className="aspect-[16/10] w-full object-cover object-top" />
         : <div className="aspect-[16/10] w-full bg-hair" aria-hidden />
       }
 
@@ -135,7 +135,7 @@ function DesktopView({ event, siteTitle, siteLogo, rgpdEmail }: { event: EventDe
             <Coverage event={event} className="mt-8 max-w-md" withAvatars />
           </div>
           {event.banniere
-            ? <img src={event.banniere} alt={event.nom} className="h-[430px] w-full rounded-frame object-cover shadow-card" />
+            ? <img src={event.banniere} alt={event.nom} className="h-[430px] w-full rounded-frame object-cover object-top shadow-card" />
             : <div className="h-[430px] w-full rounded-frame shadow-card bg-hair" aria-hidden />
           }
         </section>
