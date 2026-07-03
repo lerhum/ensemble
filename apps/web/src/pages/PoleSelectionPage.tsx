@@ -81,7 +81,13 @@ function PoleInner({
     <div className="min-h-screen bg-white">
       {/* Desktop nav */}
       <div className="hidden md:block">
-        <PublicNav orgNom={siteTitle || event.orgNom} accent={event.couleurTheme} siteLogo={siteLogo} eventSlug={event.slug} />
+        <PublicNav
+          orgNom={siteTitle || event.orgNom}
+          accent={event.couleurTheme}
+          siteLogo={siteLogo}
+          eventSlug={event.slug}
+          containerClassName="max-w-5xl px-4 md:px-8"
+        />
       </div>
 
       {/* Mobile header */}

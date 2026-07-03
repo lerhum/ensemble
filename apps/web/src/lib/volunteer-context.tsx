@@ -22,6 +22,7 @@ interface VolunteerCtx {
   sessionLoading: boolean;
   refreshSession: () => Promise<void>;
   logout: () => Promise<void>;
+  clearToken: () => void;
 }
 
 const VolunteerContext = React.createContext<VolunteerCtx>({
@@ -33,6 +34,7 @@ const VolunteerContext = React.createContext<VolunteerCtx>({
   sessionLoading: false,
   refreshSession: async () => {},
   logout: async () => {},
+  clearToken: () => {},
 });
 
 /** Provides volunteer identity (persisted to localStorage), email-link token, and session state to the component tree. */
@@ -79,6 +81,12 @@ export function VolunteerProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem(TOKEN_KEY, t);
   }
 
+  /** Clears a stale/invalid email-link token (e.g. once the server reports it no longer resolves to a volunteer). */
+  function clearToken() {
+    setToken(null);
+    localStorage.removeItem(TOKEN_KEY);
+  }
+
   async function logout() {
     await api.volunteerLogout().catch(() => {});
     setSession(null);
@@ -90,7 +98,7 @@ export function VolunteerProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <VolunteerContext.Provider
-      value={{ identite, token, saveIdentite, saveToken, session, sessionLoading, refreshSession, logout }}
+      value={{ identite, token, saveIdentite, saveToken, session, sessionLoading, refreshSession, logout, clearToken }}
     >
       {children}
     </VolunteerContext.Provider>
