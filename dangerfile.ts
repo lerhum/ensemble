@@ -36,8 +36,9 @@ function truncate(text: string, maxLength = 4000): string {
 const baseRef = danger.github.pr.base.ref;
 const headRef = danger.github.pr.head.ref;
 const isPromotionToMain = baseRef === "main" && headRef === "develop";
+const branchOk = baseRef === "develop" || isPromotionToMain;
 
-if (baseRef !== "develop" && !isPromotionToMain) {
+if (!branchOk) {
   fail(
     `This PR targets \`${baseRef}\`, but feature branches must target \`develop\` (see CLAUDE.md's branch policy). ` +
       `Only the periodic \`develop\` → \`main\` promotion targets \`main\` directly.`,
@@ -53,16 +54,10 @@ if (!danger.github.pr.body || danger.github.pr.body.trim().length < 10) {
 // — Typecheck (blocking) —
 
 const typecheck = capture("pnpm -r typecheck");
-if (!typecheck.ok) {
-  fail(`\`pnpm -r typecheck\` failed:\n\n\`\`\`\n${truncate(typecheck.output)}\n\`\`\``);
-}
 
 // — Tests + coverage (tests blocking, coverage informational) —
 
 const testCoverage = capture("pnpm -r test:coverage");
-if (!testCoverage.ok) {
-  fail(`\`pnpm -r test:coverage\` failed:\n\n\`\`\`\n${truncate(testCoverage.output)}\n\`\`\``);
-}
 
 const coverageRows = WORKSPACES.map(({ label, dir }) => {
   const summaryPath = join(ROOT, dir, "coverage", "coverage-summary.json");
@@ -76,16 +71,7 @@ const coverageRows = WORKSPACES.map(({ label, dir }) => {
   return `| ${label} | ${lines.pct}% | ${statements.pct}% | ${functions.pct}% | ${branches.pct}% |`;
 });
 
-markdown(
-  [
-    "### Coverage (informational — no threshold enforced yet)",
-    "| Workspace | Lines | Statements | Functions | Branches |",
-    "|---|---|---|---|---|",
-    ...coverageRows,
-  ].join("\n"),
-);
-
-// — Lint (non-blocking) —
+// — Lint (non-blocking, scoped to files touched by this PR) —
 
 interface EslintMessage {
   ruleId: string | null;
@@ -121,17 +107,52 @@ for (const { dir } of WORKSPACES) {
   }
 }
 
-if (lintFindings.length > 0) {
-  warn(`ESLint found issues in files touched by this PR:\n\n${lintFindings.join("\n")}`);
-}
-
-// — Formatting (non-blocking) —
+// — Formatting (non-blocking, scoped to files touched by this PR) —
 
 const format = capture("pnpm exec prettier --list-different .");
 const unformattedFiles = format.output
   .split("\n")
   .map((line) => line.trim())
   .filter((line) => line.length > 0 && touchedFiles.has(line));
+
+// — Summary comment (always posted, regardless of outcome) —
+
+function statusIcon(ok: boolean, hasFindings = false): string {
+  if (!ok) return "❌";
+  return hasFindings ? "⚠️" : "✅";
+}
+
+markdown(
+  [
+    "## PR Quality Gate",
+    "| Check | Result |",
+    "|---|---|",
+    `| Branch target | ${statusIcon(branchOk)} |`,
+    `| Typecheck | ${statusIcon(typecheck.ok)} |`,
+    `| Tests | ${statusIcon(testCoverage.ok)} |`,
+    `| Lint (files touched by this PR) | ${statusIcon(true, lintFindings.length > 0)} |`,
+    `| Format (files touched by this PR) | ${statusIcon(true, unformattedFiles.length > 0)} |`,
+    "",
+    "### Coverage (informational — no threshold enforced yet)",
+    "| Workspace | Lines | Statements | Functions | Branches |",
+    "|---|---|---|---|---|",
+    ...coverageRows,
+  ].join("\n"),
+);
+
+// — Detailed failures/warnings (rendered by Danger below the summary) —
+
+if (!typecheck.ok) {
+  fail(`\`pnpm -r typecheck\` failed:\n\n\`\`\`\n${truncate(typecheck.output)}\n\`\`\``);
+}
+
+if (!testCoverage.ok) {
+  fail(`\`pnpm -r test:coverage\` failed:\n\n\`\`\`\n${truncate(testCoverage.output)}\n\`\`\``);
+}
+
+if (lintFindings.length > 0) {
+  warn(`ESLint found issues in files touched by this PR:\n\n${lintFindings.join("\n")}`);
+}
 
 if (unformattedFiles.length > 0) {
   warn(
