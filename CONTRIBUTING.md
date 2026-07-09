@@ -40,9 +40,10 @@ Run typecheck and the relevant test suite(s) before opening a PR.
 ## Automated PR quality gate
 
 Every PR triggers a Danger.js check (`.github/workflows/pr-quality-gate.yml`) that runs typecheck,
-tests, lint, and formatting, and reports a coverage summary. Typecheck and test failures block the
-PR; lint and formatting issues are posted as warnings (not blocking yet) since there's no baseline
-history for those checks — fix them anyway, they'll become blocking once the codebase is caught up.
+tests, lint, formatting, and a `pnpm audit` dependency scan, and reports a coverage summary.
+Typecheck and test failures block the PR; lint, formatting, and dependency audit issues are posted
+as warnings (not blocking yet) since there's no baseline history for those checks — fix them
+anyway, they'll become blocking once the codebase is caught up.
 
 ## Naming convention
 

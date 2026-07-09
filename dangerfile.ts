@@ -115,6 +115,39 @@ const unformattedFiles = format.output
   .map((line) => line.trim())
   .filter((line) => line.length > 0 && touchedFiles.has(line));
 
+// — Dependency audit (informational; warns only on high/critical severity) —
+
+interface AuditVulnerabilities {
+  info: number;
+  low: number;
+  moderate: number;
+  high: number;
+  critical: number;
+}
+interface AuditAdvisory {
+  title: string;
+  module_name: string;
+  severity: "info" | "low" | "moderate" | "high" | "critical";
+  url: string;
+}
+interface AuditResult {
+  advisories: Record<string, AuditAdvisory>;
+  metadata: { vulnerabilities: AuditVulnerabilities };
+}
+
+const auditRun = capture("pnpm audit --json");
+let auditCounts: AuditVulnerabilities | null = null;
+let severeAdvisories: AuditAdvisory[] = [];
+try {
+  const audit = JSON.parse(auditRun.output) as AuditResult;
+  auditCounts = audit.metadata.vulnerabilities;
+  severeAdvisories = Object.values(audit.advisories).filter(
+    (a) => a.severity === "high" || a.severity === "critical",
+  );
+} catch {
+  // pnpm audit produced no parseable output (e.g. registry unreachable) — skip rather than fail the gate.
+}
+
 // — Summary comment (always posted, regardless of outcome) —
 
 function statusIcon(ok: boolean, hasFindings = false): string {
@@ -132,11 +165,17 @@ markdown(
     `| Tests | ${statusIcon(testCoverage.ok)} |`,
     `| Lint (files touched by this PR) | ${statusIcon(true, lintFindings.length > 0)} |`,
     `| Format (files touched by this PR) | ${statusIcon(true, unformattedFiles.length > 0)} |`,
+    `| Dependency audit | ${auditCounts ? statusIcon(true, severeAdvisories.length > 0) : "n/a"} |`,
     "",
     "### Coverage (informational — no threshold enforced yet)",
     "| Workspace | Lines | Statements | Functions | Branches |",
     "|---|---|---|---|---|",
     ...coverageRows,
+    "",
+    "### Dependency audit (informational — warns on high/critical only)",
+    auditCounts
+      ? `${auditCounts.critical} critical, ${auditCounts.high} high, ${auditCounts.moderate} moderate, ${auditCounts.low} low`
+      : "`pnpm audit` output could not be parsed.",
   ].join("\n"),
 );
 
@@ -158,6 +197,16 @@ if (unformattedFiles.length > 0) {
   warn(
     `These files touched by this PR aren't formatted with Prettier — run \`pnpm format\`:\n\n${unformattedFiles
       .map((f) => `- \`${f}\``)
+      .join("\n")}`,
+  );
+}
+
+if (severeAdvisories.length > 0) {
+  warn(
+    `\`pnpm audit\` found ${severeAdvisories.length} high/critical severity ${
+      severeAdvisories.length === 1 ? "issue" : "issues"
+    } in dependencies:\n\n${severeAdvisories
+      .map((a) => `- **${a.severity}** [${a.module_name}](${a.url}): ${a.title}`)
       .join("\n")}`,
   );
 }
