@@ -1,12 +1,6 @@
 import { Hono } from "hono";
 import { and, desc, eq, gt } from "drizzle-orm";
-import {
-  creneaux,
-  events,
-  inscriptions,
-  volunteers,
-  volunteerTokens,
-} from "@ensemble/db";
+import { creneaux, events, inscriptions, volunteers, volunteerTokens } from "@ensemble/db";
 import { resolveVolunteerSession } from "./volunteer-auth.js";
 import { buildMesInscriptionsByVolunteerId } from "../dto.js";
 import { inscriptionSchema } from "@ensemble/db/shared";
@@ -69,20 +63,12 @@ publicRoutes.get("/volunteers/lookup", async (c) => {
 });
 
 /** Returns an existing valid email token for the volunteer, or creates a new one with a 7-day TTL. */
-async function ensureToken(
-  db: AppEnv["Variables"]["db"],
-  volunteerId: string,
-): Promise<string> {
+async function ensureToken(db: AppEnv["Variables"]["db"], volunteerId: string): Promise<string> {
   const now = new Date();
   const [existing] = await db
     .select({ token: volunteerTokens.token })
     .from(volunteerTokens)
-    .where(
-      and(
-        eq(volunteerTokens.volunteerId, volunteerId),
-        gt(volunteerTokens.expiresAt, now),
-      ),
-    )
+    .where(and(eq(volunteerTokens.volunteerId, volunteerId), gt(volunteerTokens.expiresAt, now)))
     .limit(1);
   if (existing) return existing.token;
 
@@ -141,15 +127,11 @@ publicRoutes.post("/creneaux/:id/inscriptions", async (c) => {
     isNew = true;
   }
 
-  await db
-    .insert(inscriptions)
-    .values({ creneauId: id, volunteerId })
-    .onConflictDoNothing();
+  await db.insert(inscriptions).values({ creneauId: id, volunteerId }).onConflictDoNothing();
 
   const token = await ensureToken(db, volunteerId);
 
   // Envoyer l'email de confirmation si nouveau ou toujours en attente.
-  const vol = existing ?? (await db.query.volunteers.findFirst({ where: eq(volunteers.id, volunteerId) }));
   const needsConfirmation = !existing || existing.statut === "attente";
 
   if (needsConfirmation) {
@@ -210,14 +192,8 @@ publicRoutes.get("/confirmer/:token", async (c) => {
 
   if (!row.confirmedAt) {
     await Promise.all([
-      db
-        .update(volunteerTokens)
-        .set({ confirmedAt: now })
-        .where(eq(volunteerTokens.token, token)),
-      db
-        .update(volunteers)
-        .set({ statut: "confirme" })
-        .where(eq(volunteers.id, row.volunteerId)),
+      db.update(volunteerTokens).set({ confirmedAt: now }).where(eq(volunteerTokens.token, token)),
+      db.update(volunteers).set({ statut: "confirme" }).where(eq(volunteers.id, row.volunteerId)),
     ]);
   }
 
@@ -251,7 +227,12 @@ publicRoutes.delete("/volunteers/me", async (c) => {
 // ── Templates email ───────────────────────────────────────────────────────
 
 /** Generates the HTML body for the participation confirmation email. */
-function confirmationHtml(nom: string, confirmUrl: string, inscriptionsUrl: string, definePasswordUrl: string): string {
+function confirmationHtml(
+  nom: string,
+  confirmUrl: string,
+  inscriptionsUrl: string,
+  definePasswordUrl: string,
+): string {
   return `<!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="utf-8"><title>Confirme ta participation</title></head>

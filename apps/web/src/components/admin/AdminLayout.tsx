@@ -1,5 +1,15 @@
 import { NavLink, useParams, Link, useNavigate } from "react-router-dom";
-import { LayoutDashboard, ListTodo, Users, Megaphone, Settings, ChevronLeft, CalendarDays, LogOut, Pencil } from "lucide-react";
+import {
+  LayoutDashboard,
+  ListTodo,
+  Users,
+  Megaphone,
+  Settings,
+  ChevronLeft,
+  CalendarDays,
+  LogOut,
+  Pencil,
+} from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/lib/auth-context";
@@ -7,9 +17,7 @@ import { api } from "@/lib/api";
 import { initials } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
-const NAV_DISABLED = [
-  { label: "Communications", icon: Megaphone },
-];
+const NAV_DISABLED = [{ label: "Communications", icon: Megaphone }];
 
 interface AdminLayoutProps {
   eyebrow?: string;
@@ -34,7 +42,12 @@ export function AdminLayout({ eyebrow, title, actions, children }: AdminLayoutPr
   const eventNav = id
     ? [
         { to: `/admin/events/${id}`, label: "Tableau de bord", icon: LayoutDashboard, end: true },
-        { to: `/admin/events/${id}/edition`, label: "Éditer l'événement", icon: Pencil, end: false },
+        {
+          to: `/admin/events/${id}/edition`,
+          label: "Éditer l'événement",
+          icon: Pencil,
+          end: false,
+        },
         { to: `/admin/events/${id}/poles`, label: "Pôles & créneaux", icon: ListTodo, end: false },
         { to: `/admin/events/${id}/volunteers`, label: "Bénévoles", icon: Users, end: false },
       ]
@@ -149,9 +162,7 @@ export function AdminLayout({ eyebrow, title, actions, children }: AdminLayoutPr
       <main className="min-w-0 flex-1 px-6 py-6 lg:px-10 lg:py-8">
         <header className="mb-7 flex flex-wrap items-start justify-between gap-4">
           <div>
-            {eyebrow && (
-              <p className="text-[12px] font-700 text-label">{eyebrow}</p>
-            )}
+            {eyebrow && <p className="text-[12px] font-700 text-label">{eyebrow}</p>}
             <h1 className="mt-1 text-[28px] font-800 leading-none tracking-tighter2 text-ink">
               {title}
             </h1>

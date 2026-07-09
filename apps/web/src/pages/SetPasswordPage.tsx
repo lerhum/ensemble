@@ -30,7 +30,11 @@ export default function DefinirMotDePassePage() {
     setBusy(true);
     setError(null);
     try {
-      await api.volunteerDefinePassword({ token, password: form.password, confirmPassword: form.confirmPassword });
+      await api.volunteerDefinePassword({
+        token,
+        password: form.password,
+        confirmPassword: form.confirmPassword,
+      });
       await refreshSession();
       setDone(true);
       setTimeout(() => navigate("/mes-inscriptions"), 1500);
@@ -59,9 +63,7 @@ export default function DefinirMotDePassePage() {
           <Link to="/" className="text-[13px] text-label hover:underline">
             ‹ Retour à l'accueil
           </Link>
-          <h1 className="mt-3 text-2xl font-800 tracking-tighter2 text-ink">
-            Crée ton accès
-          </h1>
+          <h1 className="mt-3 text-2xl font-800 tracking-tighter2 text-ink">Crée ton accès</h1>
           <p className="mt-1 text-sm text-label">
             Définis un mot de passe pour retrouver tes inscriptions à tout moment.
           </p>

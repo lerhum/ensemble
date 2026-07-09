@@ -42,7 +42,9 @@ async function createVolunteerSession(c: Context<AppEnv>, volunteerId: string) {
 }
 
 /** Resolves the volunteer session cookie; returns the session DTO or null if missing or expired. */
-export async function resolveVolunteerSession(c: Context<AppEnv>): Promise<VolunteerSessionDTO | null> {
+export async function resolveVolunteerSession(
+  c: Context<AppEnv>,
+): Promise<VolunteerSessionDTO | null> {
   const token = await getSignedCookie(c, c.get("sessionSecret"), VOL_SESSION_COOKIE);
   if (!token) return null;
   const now = new Date();
@@ -78,13 +80,22 @@ volunteerAuthRoutes.post("/define-password", async (c) => {
   const passwordHash = await hashPassword(body.password);
 
   await Promise.all([
-    db.update(volunteers).set({ passwordHash, statut: "confirme" }).where(eq(volunteers.id, tokenRow.volunteerId)),
-    db.update(volunteerTokens).set({ confirmedAt: now }).where(eq(volunteerTokens.token, body.token)),
+    db
+      .update(volunteers)
+      .set({ passwordHash, statut: "confirme" })
+      .where(eq(volunteers.id, tokenRow.volunteerId)),
+    db
+      .update(volunteerTokens)
+      .set({ confirmedAt: now })
+      .where(eq(volunteerTokens.token, body.token)),
   ]);
 
   await createVolunteerSession(c, tokenRow.volunteerId);
 
-  return c.json({ ok: true, volunteer: { nom: tokenRow.volunteer.nom, email: tokenRow.volunteer.email } });
+  return c.json({
+    ok: true,
+    volunteer: { nom: tokenRow.volunteer.nom, email: tokenRow.volunteer.email },
+  });
 });
 
 /** Authenticates a volunteer by email and password; creates a session cookie. */
@@ -103,7 +114,10 @@ volunteerAuthRoutes.post("/login", async (c) => {
   for (const v of rows) {
     if (!v.passwordHash) continue;
     const ok = await verifyPassword(body.password, v.passwordHash);
-    if (ok) { matched = v; break; }
+    if (ok) {
+      matched = v;
+      break;
+    }
   }
 
   if (!matched) throw unauthorized();

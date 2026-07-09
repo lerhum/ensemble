@@ -64,8 +64,13 @@ export const api = {
   /** Checks install status and returns site settings. */
   installStatus: () => req<{ needsSetup: boolean } & SiteSettingsDTO>("/install/status"),
   /** Runs the first-time setup wizard (creates the first admin). */
-  install: (body: { orgNom: string; rgpdEmail: string; email: string; password: string; confirmPassword: string }) =>
-    req<{ user: SessionUserDTO }>("/install", json(body)),
+  install: (body: {
+    orgNom: string;
+    rgpdEmail: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+  }) => req<{ user: SessionUserDTO }>("/install", json(body)),
   /** Authenticates an admin by email and password. */
   login: (body: { email: string; password: string }) =>
     req<{ user: SessionUserDTO }>("/auth/login", json(body)),
@@ -108,7 +113,10 @@ export const api = {
   // — Auth bénévole —
   /** Sets a volunteer's password via an email token. */
   volunteerDefinePassword: (body: { token: string; password: string; confirmPassword: string }) =>
-    req<{ ok: true; volunteer: { nom: string; email: string } }>("/auth/volunteer/define-password", json(body)),
+    req<{ ok: true; volunteer: { nom: string; email: string } }>(
+      "/auth/volunteer/define-password",
+      json(body),
+    ),
   /** Authenticates a volunteer by email and password. */
   volunteerLogin: (body: { email: string; password: string }) =>
     req<{ ok: true; volunteer: VolunteerSessionDTO }>("/auth/volunteer/login", json(body)),
@@ -124,11 +132,14 @@ export const api = {
   /** Returns a single event's full detail by id (admin view). */
   getAdminEvent: (id: string) => req<EventDetailDTO>(`/admin/events/${id}`),
   /** Creates a new event. */
-  createEvent: (body: Record<string, unknown>) =>
-    req<EventDetailDTO>("/events", json(body)),
+  createEvent: (body: Record<string, unknown>) => req<EventDetailDTO>("/events", json(body)),
   /** Partially updates an event's fields. */
   updateEvent: (id: string, body: Record<string, unknown>) =>
-    req<EventDetailDTO>(`/events/${id}`, { method: "PATCH", body: JSON.stringify(body), headers: { "content-type": "application/json" } }),
+    req<EventDetailDTO>(`/events/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(body),
+      headers: { "content-type": "application/json" },
+    }),
   /** Duplicates an event with all its poles, tasks, and slots as a new draft. */
   duplicateEvent: (id: string) =>
     req<EventDetailDTO>(`/admin/events/${id}/duplicate`, { method: "POST" }),
@@ -148,7 +159,11 @@ export const api = {
   getSettings: () => req<SiteSettingsDTO>("/settings"),
   /** Partially updates site settings. */
   updateSettings: (body: SettingsUpdateInput) =>
-    req<SiteSettingsDTO>("/settings", { method: "PATCH", body: JSON.stringify(body), headers: { "content-type": "application/json" } }),
+    req<SiteSettingsDTO>("/settings", {
+      method: "PATCH",
+      body: JSON.stringify(body),
+      headers: { "content-type": "application/json" },
+    }),
 
   /** Uploads the site logo via multipart form. */
   uploadSiteLogo: async (file: File): Promise<{ url: string }> => {
@@ -169,46 +184,73 @@ export const api = {
     req("/poles", json(body)),
   /** Updates a pole's name or description. */
   updatePole: (id: string, body: { nom?: string; description?: string }) =>
-    req(`/poles/${id}`, { method: "PATCH", body: JSON.stringify(body), headers: { "content-type": "application/json" } }),
+    req(`/poles/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(body),
+      headers: { "content-type": "application/json" },
+    }),
   /** Deletes a pole and all its tasks and slots. */
   deletePole: (id: string) => req(`/poles/${id}`, { method: "DELETE" }),
   /** Reorders poles by updating their positions to match the provided id order. */
   reorderPoles: (ids: string[]) =>
-    req("/poles/reorder", { method: "PATCH", body: JSON.stringify({ ids }), headers: { "content-type": "application/json" } }),
+    req("/poles/reorder", {
+      method: "PATCH",
+      body: JSON.stringify({ ids }),
+      headers: { "content-type": "application/json" },
+    }),
 
   /** Creates a new task within a pole. */
   createTache: (body: { poleId: string; nom: string; description?: string }) =>
     req("/taches", json(body)),
   /** Updates a task's name or description. */
   updateTache: (id: string, body: { nom?: string; description?: string }) =>
-    req(`/taches/${id}`, { method: "PATCH", body: JSON.stringify(body), headers: { "content-type": "application/json" } }),
+    req(`/taches/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(body),
+      headers: { "content-type": "application/json" },
+    }),
   /** Deletes a task and all its slots. */
   deleteTache: (id: string) => req(`/taches/${id}`, { method: "DELETE" }),
   /** Reorders tasks by updating their positions to match the provided id order. */
   reorderTaches: (ids: string[]) =>
-    req("/taches/reorder", { method: "PATCH", body: JSON.stringify({ ids }), headers: { "content-type": "application/json" } }),
+    req("/taches/reorder", {
+      method: "PATCH",
+      body: JSON.stringify({ ids }),
+      headers: { "content-type": "application/json" },
+    }),
 
   /** Creates a new slot within a task. */
   createCreneau: (body: { tacheId: string; debut: string; fin: string; necessaires?: number }) =>
     req("/creneaux", json(body)),
   /** Updates a slot's start time, end time, or volunteer capacity. */
   updateCreneau: (id: string, body: { debut?: string; fin?: string; necessaires?: number }) =>
-    req(`/creneaux/${id}`, { method: "PATCH", body: JSON.stringify(body), headers: { "content-type": "application/json" } }),
+    req(`/creneaux/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(body),
+      headers: { "content-type": "application/json" },
+    }),
   /** Deletes a slot and its inscriptions. */
   deleteCreneau: (id: string) => req(`/creneaux/${id}`, { method: "DELETE" }),
   /** Reorders slots by updating their positions to match the provided id order. */
   reorderCreneaux: (ids: string[]) =>
-    req("/creneaux/reorder", { method: "PATCH", body: JSON.stringify({ ids }), headers: { "content-type": "application/json" } }),
+    req("/creneaux/reorder", {
+      method: "PATCH",
+      body: JSON.stringify({ ids }),
+      headers: { "content-type": "application/json" },
+    }),
 
   /** Deletes the current volunteer's account (GDPR right to erasure). */
   deleteMyAccount: () => req<{ ok: true }>("/volunteers/me", { method: "DELETE" }),
 
   // — Admin : bénévoles —
   /** Deletes a volunteer and all their inscriptions (admin action). */
-  deleteVolunteer: (id: string) => req<{ ok: true }>(`/admin/volunteers/${id}`, { method: "DELETE" }),
+  deleteVolunteer: (id: string) =>
+    req<{ ok: true }>(`/admin/volunteers/${id}`, { method: "DELETE" }),
   /** Returns filtered volunteers for an event with a total count. */
   getVolunteers: (eventId: string, filter: VolunteerFilter = {}) =>
-    req<{ volunteers: VolunteerDTO[]; total: number }>(`/events/${eventId}/volunteers${qs(filter)}`),
+    req<{ volunteers: VolunteerDTO[]; total: number }>(
+      `/events/${eventId}/volunteers${qs(filter)}`,
+    ),
   /** Returns the URL for a filtered volunteer CSV export (for direct download via anchor). */
   volunteersCsvUrl: (eventId: string, filter: VolunteerFilter = {}) =>
     `${BASE}/events/${eventId}/volunteers.csv${qs(filter)}`,

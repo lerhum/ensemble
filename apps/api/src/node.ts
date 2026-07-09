@@ -13,11 +13,7 @@ const emailFrom = process.env.EMAIL_FROM ?? "Ensemble <noreply@ensemble.local>";
 const email = process.env.RESEND_API_KEY
   ? new ResendEmailService(process.env.RESEND_API_KEY, emailFrom)
   : process.env.SMTP_HOST
-    ? new SmtpEmailService(
-        process.env.SMTP_HOST,
-        Number(process.env.SMTP_PORT ?? 1025),
-        emailFrom,
-      )
+    ? new SmtpEmailService(process.env.SMTP_HOST, Number(process.env.SMTP_PORT ?? 1025), emailFrom)
     : new LogEmailService();
 
 const app = createApp({

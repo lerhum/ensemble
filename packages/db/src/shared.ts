@@ -122,7 +122,15 @@ export interface SiteSettingsDTO {
 
 export interface MesInscriptionsDTO {
   volunteer: { nom: string; email: string; statut: VolunteerStatut };
-  event: { nom: string; date: string; horaires: string; lieu: string; slug: string; orgNom: string; couleurTheme: string };
+  event: {
+    nom: string;
+    date: string;
+    horaires: string;
+    lieu: string;
+    slug: string;
+    orgNom: string;
+    couleurTheme: string;
+  };
   inscriptions: { poleNom: string; tacheNom: string; debut: string; fin: string }[];
   confirmed: boolean;
 }
@@ -144,13 +152,9 @@ export const settingsUpdateSchema = z.object({
 });
 export type SettingsUpdateInput = z.infer<typeof settingsUpdateSchema>;
 
-const hhmm = z
-  .string()
-  .regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Heure attendue au format HH:MM");
+const hhmm = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Heure attendue au format HH:MM");
 
-const hexColor = z
-  .string()
-  .regex(/^#([0-9a-fA-F]{6})$/, "Couleur hex attendue (#RRGGBB)");
+const hexColor = z.string().regex(/^#([0-9a-fA-F]{6})$/, "Couleur hex attendue (#RRGGBB)");
 
 export const installSchema = z
   .object({
@@ -211,9 +215,7 @@ export const creneauInputSchema = z.object({
   fin: hhmm,
   necessaires: z.coerce.number().int().min(1).default(1),
 });
-export const creneauUpdateSchema = creneauInputSchema
-  .partial()
-  .omit({ tacheId: true });
+export const creneauUpdateSchema = creneauInputSchema.partial().omit({ tacheId: true });
 
 // Réordonnancement : liste ordonnée d'ids pour un type d'entité.
 export const reorderSchema = z.object({
