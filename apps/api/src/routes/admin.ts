@@ -42,7 +42,10 @@ async function nextPosition(
   column: typeof poles.eventId | typeof taches.poleId | typeof creneaux.tacheId,
   parentId: string,
 ): Promise<number> {
-  const [row] = await db.select({ m: max(table.position) }).from(table).where(eq(column, parentId));
+  const [row] = await db
+    .select({ m: max(table.position) })
+    .from(table)
+    .where(eq(column, parentId));
   return (row?.m ?? -1) + 1;
 }
 
@@ -112,7 +115,12 @@ adminRoutes.post("/admin/events/:id/duplicate", async (c) => {
     for (const t of sortedTaches) {
       const [newTache] = await db
         .insert(taches)
-        .values({ poleId: newPole!.id, nom: t.nom, description: t.description, position: t.position })
+        .values({
+          poleId: newPole!.id,
+          nom: t.nom,
+          description: t.description,
+          position: t.position,
+        })
         .returning();
       const sortedCreneaux = [...t.creneaux].sort((a, b) => a.position - b.position);
       if (sortedCreneaux.length > 0) {
@@ -212,7 +220,12 @@ adminRoutes.get("/settings", async (c) => {
 adminRoutes.patch("/settings", async (c) => {
   const db = c.get("db");
   const body = validate(settingsUpdateSchema, await c.req.json().catch(() => ({})));
-  const patch: { siteTitle?: string; siteLogo?: string | null; rgpdEmail?: string; reminderHoursBefore?: number } = {};
+  const patch: {
+    siteTitle?: string;
+    siteLogo?: string | null;
+    rgpdEmail?: string;
+    reminderHoursBefore?: number;
+  } = {};
   if (body.siteTitle !== undefined) patch.siteTitle = body.siteTitle;
   if ("siteLogo" in body) patch.siteLogo = body.siteLogo ?? null;
   if (body.rgpdEmail !== undefined) patch.rgpdEmail = body.rgpdEmail;
@@ -277,7 +290,11 @@ adminRoutes.post("/poles", async (c) => {
 adminRoutes.patch("/poles/:id", async (c) => {
   const db = c.get("db");
   const body = validate(poleUpdateSchema, await c.req.json().catch(() => ({})));
-  const [row] = await db.update(poles).set(body).where(eq(poles.id, c.req.param("id"))).returning();
+  const [row] = await db
+    .update(poles)
+    .set(body)
+    .where(eq(poles.id, c.req.param("id")))
+    .returning();
   if (!row) throw notFound("Pôle introuvable");
   return c.json(row);
 });
@@ -310,7 +327,11 @@ adminRoutes.post("/taches", async (c) => {
 adminRoutes.patch("/taches/:id", async (c) => {
   const db = c.get("db");
   const body = validate(tacheUpdateSchema, await c.req.json().catch(() => ({})));
-  const [row] = await db.update(taches).set(body).where(eq(taches.id, c.req.param("id"))).returning();
+  const [row] = await db
+    .update(taches)
+    .set(body)
+    .where(eq(taches.id, c.req.param("id")))
+    .returning();
   if (!row) throw notFound("Tâche introuvable");
   return c.json(row);
 });
@@ -425,7 +446,13 @@ adminRoutes.post("/admin/creneaux/:id/volunteers", async (c) => {
     } else {
       const [created] = await db
         .insert(volunteers)
-        .values({ eventId, nom: body.nom, email: body.email, tel: body.tel ?? null, statut: "confirme" })
+        .values({
+          eventId,
+          nom: body.nom,
+          email: body.email,
+          tel: body.tel ?? null,
+          statut: "confirme",
+        })
         .returning();
       volunteerId = created!.id;
     }
@@ -456,7 +483,12 @@ adminRoutes.post("/events/:id/volunteers/broadcast", async (c) => {
   const email = c.get("email");
   await Promise.all(
     targets.map((v) =>
-      email.send(v.email, body.subject, broadcastHtml(v.nom, body.message), broadcastText(v.nom, body.message)),
+      email.send(
+        v.email,
+        body.subject,
+        broadcastHtml(v.nom, body.message),
+        broadcastText(v.nom, body.message),
+      ),
     ),
   );
 

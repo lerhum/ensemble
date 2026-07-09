@@ -47,10 +47,15 @@ function PoleInner({
   const { identite, session, saveIdentite, saveToken } = useVolunteer();
   const { siteTitle, siteLogo } = useAuth();
 
-  const [activeCreneau, setActiveCreneau] = React.useState<{ id: string; label: string } | null>(null);
+  const [activeCreneau, setActiveCreneau] = React.useState<{ id: string; label: string } | null>(
+    null,
+  );
   const [dialogMode, setDialogMode] = React.useState<DialogMode>(null);
   const [inscribed, setInscribed] = React.useState<Set<string>>(new Set());
-  const [success, setSuccess] = React.useState<{ token: string; needsConfirmation: boolean } | null>(null);
+  const [success, setSuccess] = React.useState<{
+    token: string;
+    needsConfirmation: boolean;
+  } | null>(null);
 
   // Identité effective : session connectée > localStorage
   const effectiveIdentite: Identite | null = session
@@ -85,7 +90,6 @@ function PoleInner({
           orgNom={siteTitle || event.orgNom}
           accent={event.couleurTheme}
           siteLogo={siteLogo}
-          eventSlug={event.slug}
           containerClassName="max-w-5xl px-4 md:px-8"
         />
       </div>
@@ -120,7 +124,11 @@ function PoleInner({
               <h1 className="text-[26px] font-800 tracking-tighter2 text-ink">{pole.nom}</h1>
             </div>
             <div className="w-64">
-              <Jauge inscrits={pole.inscrits} necessaires={pole.necessaires} label="Couverture du pôle" />
+              <Jauge
+                inscrits={pole.inscrits}
+                necessaires={pole.necessaires}
+                label="Couverture du pôle"
+              />
             </div>
           </div>
         </div>
@@ -135,7 +143,8 @@ function PoleInner({
               <div className="mt-2 flex items-start gap-2 text-[13px] text-ink2">
                 <Mail className="mt-0.5 h-4 w-4 shrink-0 text-label" />
                 <span>
-                  Un email a été envoyé. Clique sur le lien pour confirmer ta participation et protéger ton accès.
+                  Un email a été envoyé. Clique sur le lien pour confirmer ta participation et
+                  protéger ton accès.
                 </span>
               </div>
             )}
@@ -171,7 +180,10 @@ function PoleInner({
 
             <div className="space-y-5">
               {pole.taches.map((tache) => (
-                <div key={tache.id} className="md:rounded-card md:border md:border-hair md:bg-white">
+                <div
+                  key={tache.id}
+                  className="md:rounded-card md:border md:border-hair md:bg-white"
+                >
                   {/* En-tête de tâche (desktop) */}
                   <div className="hidden items-center gap-2 border-b border-hair px-5 py-3 md:flex">
                     <span className="font-800 text-ink">{tache.nom}</span>
@@ -261,5 +273,7 @@ function PoleInner({
 
 /** Full-screen centered wrapper for loading and error states. */
 function Center({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <div className={`grid min-h-screen place-items-center text-label ${className}`}>{children}</div>;
+  return (
+    <div className={`grid min-h-screen place-items-center text-label ${className}`}>{children}</div>
+  );
 }

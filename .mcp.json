@@ -2,9 +2,7 @@
   "mcpServers": {
     "code-review-graph": {
       "command": "/Users/romain/.local/bin/code-review-graph",
-      "args": [
-        "serve"
-      ],
+      "args": ["serve"],
       "cwd": "/Users/romain/Repositories/ensemble",
       "type": "stdio"
     }

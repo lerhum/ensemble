@@ -82,9 +82,7 @@ export default function VolunteerLoginPage() {
 
         <p className="text-center text-[13px] text-label">
           Pas encore de mot de passe ?{" "}
-          <span className="text-navy">
-            Clique sur le lien reçu dans ton email de confirmation.
-          </span>
+          <span className="text-navy">Clique sur le lien reçu dans ton email de confirmation.</span>
         </p>
       </div>
     </div>

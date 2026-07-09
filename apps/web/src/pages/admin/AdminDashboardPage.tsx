@@ -27,7 +27,10 @@ export default function AdminDashboardPage() {
   const navigate = useNavigate();
   const { event, loading, error, reload } = useAdminEvent(id ?? "");
 
-  if (!id) { navigate("/admin"); return null; }
+  if (!id) {
+    navigate("/admin");
+    return null;
+  }
 
   if (loading) {
     return (
@@ -73,8 +76,9 @@ function DashboardInner({ event, reload }: { event: EventDetailDTO; reload: () =
     applyAccent(form.couleurTheme);
   }, [form.couleurTheme]);
 
-  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-    setForm((f) => ({ ...f, [k]: e.target.value }));
+  const set =
+    (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+      setForm((f) => ({ ...f, [k]: e.target.value }));
 
   const setDateIso = (e: React.ChangeEvent<HTMLInputElement>) => {
     const iso = e.target.value;
@@ -128,21 +132,37 @@ function DashboardInner({ event, reload }: { event: EventDetailDTO; reload: () =
           </p>
           <div className="space-y-5">
             <Field label="Nom de l'événement">
-              <Input value={form.nom} onChange={set("nom")} onBlur={() => persist({ nom: form.nom })} />
+              <Input
+                value={form.nom}
+                onChange={set("nom")}
+                onBlur={() => persist({ nom: form.nom })}
+              />
             </Field>
             <div className="grid grid-cols-2 gap-4">
               <Field label="Date">
-                <Input type="date" value={form.dateIso} onChange={setDateIso} onBlur={() => persist({ dateIso: form.dateIso || null, date: form.date })} />
-                {form.date && (
-                  <p className="mt-1 text-[12px] text-label capitalize">{form.date}</p>
-                )}
+                <Input
+                  type="date"
+                  value={form.dateIso}
+                  onChange={setDateIso}
+                  onBlur={() => persist({ dateIso: form.dateIso || null, date: form.date })}
+                />
+                {form.date && <p className="mt-1 text-[12px] text-label capitalize">{form.date}</p>}
               </Field>
               <Field label="Horaires">
-                <Input value={form.horaires} onChange={set("horaires")} placeholder="14h00 – 20h00" onBlur={() => persist({ horaires: form.horaires })} />
+                <Input
+                  value={form.horaires}
+                  onChange={set("horaires")}
+                  placeholder="14h00 – 20h00"
+                  onBlur={() => persist({ horaires: form.horaires })}
+                />
               </Field>
             </div>
             <Field label="Lieu">
-              <Input value={form.lieu} onChange={set("lieu")} onBlur={() => persist({ lieu: form.lieu })} />
+              <Input
+                value={form.lieu}
+                onChange={set("lieu")}
+                onBlur={() => persist({ lieu: form.lieu })}
+              />
             </Field>
             <Field label="L'histoire de la fête">
               <Textarea
@@ -200,7 +220,12 @@ function DashboardInner({ event, reload }: { event: EventDetailDTO; reload: () =
             )}
           </div>
           <input ref={fileRef} type="file" accept="image/*" hidden onChange={onUpload} />
-          <Button variant="outline" size="sm" className="mt-2" onClick={() => fileRef.current?.click()}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-2"
+            onClick={() => fileRef.current?.click()}
+          >
             <Upload className="h-4 w-4" /> Remplacer
           </Button>
 
@@ -251,7 +276,8 @@ function DashboardInner({ event, reload }: { event: EventDetailDTO; reload: () =
                 {form.nom}
               </h3>
               <p className="mt-0.5 text-[13px] text-label">
-                {form.date || "—"}{form.horaires ? ` · ${form.horaires}` : ""}
+                {form.date || "—"}
+                {form.horaires ? ` · ${form.horaires}` : ""}
               </p>
               <Button variant="brand" size="sm" className="mt-3 w-full">
                 Je participe

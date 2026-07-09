@@ -27,7 +27,13 @@ interface Props {
 }
 
 /** Modal form for volunteer sign-up; pre-fills identity from a prior lookup or from the parent's initialIdentite prop. */
-export function InscriptionDialog({ open, onOpenChange, creneauId, initialIdentite, onConfirm }: Props) {
+export function InscriptionDialog({
+  open,
+  onOpenChange,
+  creneauId,
+  initialIdentite,
+  onConfirm,
+}: Props) {
   const { rgpdEmail } = useAuth();
   const [form, setForm] = React.useState({ nom: "", email: "", tel: "" });
   const [prefilled, setPrefilled] = React.useState(false);
@@ -91,7 +97,9 @@ export function InscriptionDialog({ open, onOpenChange, creneauId, initialIdenti
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Confirme ta participation</DialogTitle>
-          <DialogDescription>Laisse-nous tes coordonnées pour finaliser l'inscription.</DialogDescription>
+          <DialogDescription>
+            Laisse-nous tes coordonnées pour finaliser l'inscription.
+          </DialogDescription>
         </DialogHeader>
         <form className="space-y-4" onSubmit={submit}>
           <div className="space-y-1.5">
@@ -108,7 +116,9 @@ export function InscriptionDialog({ open, onOpenChange, creneauId, initialIdenti
           </div>
           {prefilled && (
             <p className="rounded-md bg-[#EEF1F4] px-3 py-2 text-[13px] text-navy">
-              {initialIdentite ? "Tes informations sont pré-remplies." : "Nous t'avons retrouvé·e — tes infos sont pré-remplies."}
+              {initialIdentite
+                ? "Tes informations sont pré-remplies."
+                : "Nous t'avons retrouvé·e — tes infos sont pré-remplies."}
             </p>
           )}
           <div className="space-y-1.5">
@@ -124,9 +134,20 @@ export function InscriptionDialog({ open, onOpenChange, creneauId, initialIdenti
             {busy ? "Inscription…" : "Je participe"}
           </Button>
           <p className="text-[11px] leading-relaxed text-label2 text-center">
-            Tes coordonnées (nom, email, tél.) sont utilisées uniquement pour organiser cet événement.
-            Tu peux demander leur suppression depuis « Mes inscriptions »
-            {rgpdEmail ? <> ou en contactant <a href={`mailto:${rgpdEmail}`} className="underline">{rgpdEmail}</a></> : ""}.
+            Tes coordonnées (nom, email, tél.) sont utilisées uniquement pour organiser cet
+            événement. Tu peux demander leur suppression depuis « Mes inscriptions »
+            {rgpdEmail ? (
+              <>
+                {" "}
+                ou en contactant{" "}
+                <a href={`mailto:${rgpdEmail}`} className="underline">
+                  {rgpdEmail}
+                </a>
+              </>
+            ) : (
+              ""
+            )}
+            .
           </p>
         </form>
       </DialogContent>

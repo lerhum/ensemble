@@ -38,7 +38,9 @@ installRoutes.post("/", async (c) => {
     .insert(users)
     .values({ email: body.email, passwordHash, nom: body.orgNom, role: "admin" })
     .returning();
-  await db.insert(settings).values({ id: 1, siteTitle: body.orgNom, siteLogo: null, rgpdEmail: body.rgpdEmail });
+  await db
+    .insert(settings)
+    .values({ id: 1, siteTitle: body.orgNom, siteLogo: null, rgpdEmail: body.rgpdEmail });
   await createSession(c, user!.id);
   return c.json(
     { user: { id: user!.id, email: user!.email, nom: user!.nom, role: user!.role } },

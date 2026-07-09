@@ -10,7 +10,13 @@ export interface DueInscriptionRow {
   creneau: {
     debut: string;
     fin: string;
-    tache: { nom: string; pole: { nom: string; event: { statut: string; dateIso: string | null; nom: string; lieu: string } } };
+    tache: {
+      nom: string;
+      pole: {
+        nom: string;
+        event: { statut: string; dateIso: string | null; nom: string; lieu: string };
+      };
+    };
   };
   volunteer: { email: string | null; nom: string; statut: string };
 }
@@ -20,7 +26,11 @@ export interface DueInscriptionRow {
  * returns those whose event is published, whose volunteer is confirmed, and whose créneau
  * starts within [now, now + hoursBefore].
  */
-export function selectDueReminders(rows: DueInscriptionRow[], now: number, hoursBefore: number): DueInscriptionRow[] {
+export function selectDueReminders(
+  rows: DueInscriptionRow[],
+  now: number,
+  hoursBefore: number,
+): DueInscriptionRow[] {
   const windowEnd = now + hoursBefore * 60 * 60 * 1000;
   return rows.filter((row) => {
     const { event } = row.creneau.tache.pole;
@@ -35,7 +45,11 @@ export function selectDueReminders(rows: DueInscriptionRow[], now: number, hours
  * `hoursBefore` hours and hasn't been reminded yet, then marks it as sent. Only
  * considers published events and confirmed volunteers. Returns the number of emails sent.
  */
-export async function sendDueReminders(db: Db, email: EmailService, hoursBefore?: number): Promise<number> {
+export async function sendDueReminders(
+  db: Db,
+  email: EmailService,
+  hoursBefore?: number,
+): Promise<number> {
   const lead = hoursBefore ?? (await readReminderHoursBefore(db));
 
   const unsent = await db.query.inscriptions.findMany({
@@ -57,14 +71,35 @@ export async function sendDueReminders(db: Db, email: EmailService, hoursBefore?
     await email.send(
       volunteer.email,
       `Rappel — ton créneau approche (${event.nom})`,
-      reminderHtml(volunteer.nom, event.nom, creneau.tache.nom, creneau.tache.pole.nom, creneau.debut, creneau.fin, event.lieu),
-      reminderText(volunteer.nom, event.nom, creneau.tache.nom, creneau.tache.pole.nom, creneau.debut, creneau.fin, event.lieu),
+      reminderHtml(
+        volunteer.nom,
+        event.nom,
+        creneau.tache.nom,
+        creneau.tache.pole.nom,
+        creneau.debut,
+        creneau.fin,
+        event.lieu,
+      ),
+      reminderText(
+        volunteer.nom,
+        event.nom,
+        creneau.tache.nom,
+        creneau.tache.pole.nom,
+        creneau.debut,
+        creneau.fin,
+        event.lieu,
+      ),
     );
 
     await db
       .update(inscriptions)
       .set({ reminderSentAt: new Date() })
-      .where(and(eq(inscriptions.creneauId, row.creneauId), eq(inscriptions.volunteerId, row.volunteerId)));
+      .where(
+        and(
+          eq(inscriptions.creneauId, row.creneauId),
+          eq(inscriptions.volunteerId, row.volunteerId),
+        ),
+      );
 
     sent++;
   }
@@ -81,7 +116,15 @@ async function readReminderHoursBefore(db: Db): Promise<number> {
 // ── Templates email ───────────────────────────────────────────────────────
 
 /** Generates the HTML body for the slot-reminder email. */
-function reminderHtml(nom: string, eventNom: string, tacheNom: string, poleNom: string, debut: string, fin: string, lieu: string): string {
+function reminderHtml(
+  nom: string,
+  eventNom: string,
+  tacheNom: string,
+  poleNom: string,
+  debut: string,
+  fin: string,
+  lieu: string,
+): string {
   return `<!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="utf-8"><title>Rappel de créneau</title></head>
@@ -100,7 +143,15 @@ function reminderHtml(nom: string, eventNom: string, tacheNom: string, poleNom: 
 }
 
 /** Generates the plain-text body for the slot-reminder email. */
-function reminderText(nom: string, eventNom: string, tacheNom: string, poleNom: string, debut: string, fin: string, lieu: string): string {
+function reminderText(
+  nom: string,
+  eventNom: string,
+  tacheNom: string,
+  poleNom: string,
+  debut: string,
+  fin: string,
+  lieu: string,
+): string {
   return `Bonjour ${nom},
 
 Petit rappel : ton créneau approche pour ${eventNom}.

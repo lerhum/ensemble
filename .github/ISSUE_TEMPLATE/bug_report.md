@@ -3,7 +3,7 @@ name: Bug report
 about: Report a problem with Ensemble
 title: "[Bug] "
 labels: bug
-assignees: ''
+assignees: ""
 ---
 
 ## Description

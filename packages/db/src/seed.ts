@@ -25,7 +25,11 @@ const VOL: Record<string, { email: string; tel: string | null; statut: Statut }>
   "Émilie Dupont": { email: "emilie.dupont@email.be", tel: "0491 12 13 14", statut: "confirme" },
   "Karim Benali": { email: "karim.benali@email.be", tel: "0494 15 16 17", statut: "attente" },
   // — Grimage & maquillage —
-  "Nathalie Wauters": { email: "nathalie.wauters@email.be", tel: "0472 18 19 20", statut: "confirme" },
+  "Nathalie Wauters": {
+    email: "nathalie.wauters@email.be",
+    tel: "0472 18 19 20",
+    statut: "confirme",
+  },
   "David Collard": { email: "david.collard@email.be", tel: null, statut: "confirme" },
   "Manon Gillet": { email: "manon.gillet@email.be", tel: "0473 21 22 23", statut: "confirme" },
   "Pierre Lejeune": { email: "pierre.lejeune@email.be", tel: "0496 24 25 26", statut: "attente" },
@@ -34,7 +38,11 @@ const VOL: Record<string, { email: string; tel: string | null; statut: Statut }>
   // — Pâtisseries —
   "Sofie Janssens": { email: "sofie.janssens@email.be", tel: "0477 30 31 32", statut: "confirme" },
   "Hugo Moreau": { email: "hugo.moreau@email.be", tel: "0498 33 34 35", statut: "attente" },
-  "Léa Vandenberghe": { email: "lea.vandenberghe@email.be", tel: "0479 36 37 38", statut: "confirme" },
+  "Léa Vandenberghe": {
+    email: "lea.vandenberghe@email.be",
+    tel: "0479 36 37 38",
+    statut: "confirme",
+  },
   // — Accueil & billetterie —
   "Laurent Piron": { email: "l.piron@email.be", tel: "0478 39 40 41", statut: "confirme" },
   "Marc Stevens": { email: "marc.stevens@email.be", tel: "0471 42 43 44", statut: "confirme" },
@@ -73,15 +81,30 @@ const POLES: PoleSeed[] = [
         nom: "Montage du bar",
         description: "Installation & mise en place",
         creneaux: [
-          { debut: "13:00", fin: "14:00", necessaires: 3, benevoles: ["Julie Marchal", "Sophie Kümpel", "Thomas Lemaire"] },
+          {
+            debut: "13:00",
+            fin: "14:00",
+            necessaires: 3,
+            benevoles: ["Julie Marchal", "Sophie Kümpel", "Thomas Lemaire"],
+          },
         ],
       },
       {
         nom: "Service boissons",
         description: "Service au comptoir",
         creneaux: [
-          { debut: "14:00", fin: "16:00", necessaires: 4, benevoles: ["Aïcha Demir", "Rachel Fontaine"] },
-          { debut: "16:00", fin: "18:00", necessaires: 4, benevoles: ["Mehdi Nasri", "Camille Bertrand", "Valérie Dubois"] },
+          {
+            debut: "14:00",
+            fin: "16:00",
+            necessaires: 4,
+            benevoles: ["Aïcha Demir", "Rachel Fontaine"],
+          },
+          {
+            debut: "16:00",
+            fin: "18:00",
+            necessaires: 4,
+            benevoles: ["Mehdi Nasri", "Camille Bertrand", "Valérie Dubois"],
+          },
         ],
       },
       {
@@ -98,13 +121,25 @@ const POLES: PoleSeed[] = [
       {
         nom: "Préparation du stand",
         description: "Installer le bassin et les lots",
-        creneaux: [{ debut: "13:30", fin: "14:30", necessaires: 3, benevoles: ["Nicolas Henry", "Sarah Lambert"] }],
+        creneaux: [
+          {
+            debut: "13:30",
+            fin: "14:30",
+            necessaires: 3,
+            benevoles: ["Nicolas Henry", "Sarah Lambert"],
+          },
+        ],
       },
       {
         nom: "Animation",
         description: "Accueillir les enfants au stand",
         creneaux: [
-          { debut: "14:30", fin: "17:00", necessaires: 3, benevoles: ["Olivier Maréchal", "Émilie Dupont"] },
+          {
+            debut: "14:30",
+            fin: "17:00",
+            necessaires: 3,
+            benevoles: ["Olivier Maréchal", "Émilie Dupont"],
+          },
           { debut: "17:00", fin: "19:30", necessaires: 3, benevoles: ["Karim Benali"] },
         ],
       },
@@ -117,14 +152,31 @@ const POLES: PoleSeed[] = [
       {
         nom: "Installation",
         description: "Préparer le matériel de maquillage",
-        creneaux: [{ debut: "13:30", fin: "14:30", necessaires: 2, benevoles: ["Nathalie Wauters", "David Collard"] }],
+        creneaux: [
+          {
+            debut: "13:30",
+            fin: "14:30",
+            necessaires: 2,
+            benevoles: ["Nathalie Wauters", "David Collard"],
+          },
+        ],
       },
       {
         nom: "Maquillage",
         description: "Maquiller les enfants",
         creneaux: [
-          { debut: "14:30", fin: "17:00", necessaires: 3, benevoles: ["Manon Gillet", "Pierre Lejeune"] },
-          { debut: "17:00", fin: "19:30", necessaires: 3, benevoles: ["Céline Dewulf", "Antoine Renard"] },
+          {
+            debut: "14:30",
+            fin: "17:00",
+            necessaires: 3,
+            benevoles: ["Manon Gillet", "Pierre Lejeune"],
+          },
+          {
+            debut: "17:00",
+            fin: "19:30",
+            necessaires: 3,
+            benevoles: ["Céline Dewulf", "Antoine Renard"],
+          },
         ],
       },
     ],
@@ -137,7 +189,12 @@ const POLES: PoleSeed[] = [
         nom: "Vente pâtisseries",
         description: "Tenir le stand de pâtisseries",
         creneaux: [
-          { debut: "14:00", fin: "17:00", necessaires: 3, benevoles: ["Sofie Janssens", "Hugo Moreau"] },
+          {
+            debut: "14:00",
+            fin: "17:00",
+            necessaires: 3,
+            benevoles: ["Sofie Janssens", "Hugo Moreau"],
+          },
           { debut: "17:00", fin: "20:00", necessaires: 3, benevoles: ["Léa Vandenberghe"] },
         ],
       },
@@ -151,16 +208,36 @@ const POLES: PoleSeed[] = [
         nom: "Accueil",
         description: "Accueillir et orienter les familles",
         creneaux: [
-          { debut: "13:30", fin: "15:00", necessaires: 3, benevoles: ["Laurent Piron", "Marc Stevens", "Isabelle Close"] },
-          { debut: "18:00", fin: "20:00", necessaires: 3, benevoles: ["Julie Marchal", "Fatima Zahra"] },
+          {
+            debut: "13:30",
+            fin: "15:00",
+            necessaires: 3,
+            benevoles: ["Laurent Piron", "Marc Stevens", "Isabelle Close"],
+          },
+          {
+            debut: "18:00",
+            fin: "20:00",
+            necessaires: 3,
+            benevoles: ["Julie Marchal", "Fatima Zahra"],
+          },
         ],
       },
       {
         nom: "Billetterie",
         description: "Vendre les tickets à l'entrée",
         creneaux: [
-          { debut: "15:00", fin: "16:30", necessaires: 2, benevoles: ["Nicolas Henry", "Géraldine Body"] },
-          { debut: "16:30", fin: "18:00", necessaires: 2, benevoles: ["Sarah Lambert", "Quentin Servais"] },
+          {
+            debut: "15:00",
+            fin: "16:30",
+            necessaires: 2,
+            benevoles: ["Nicolas Henry", "Géraldine Body"],
+          },
+          {
+            debut: "16:30",
+            fin: "18:00",
+            necessaires: 2,
+            benevoles: ["Sarah Lambert", "Quentin Servais"],
+          },
         ],
       },
     ],
@@ -215,7 +292,8 @@ async function main() {
   // Bénévoles : insère uniquement ceux référencés dans les créneaux.
   const usedNames = new Set<string>();
   for (const p of POLES)
-    for (const t of p.taches) for (const c of t.creneaux) c.benevoles.forEach((n) => usedNames.add(n));
+    for (const t of p.taches)
+      for (const c of t.creneaux) c.benevoles.forEach((n) => usedNames.add(n));
 
   console.log(`→ Insertion de ${usedNames.size} bénévoles…`);
   const volRows = [...usedNames].map((nom) => {

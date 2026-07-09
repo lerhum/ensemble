@@ -11,6 +11,9 @@ build/
 .output/
 *.tsbuildinfo
 
+# Coverage reports
+coverage/
+
 # Env
 .env
 .env.local

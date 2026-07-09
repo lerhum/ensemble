@@ -14,7 +14,13 @@ const NAVY = "#1C3A5E";
 export function Logo({ color = "var(--accent-brand)", className, withWordmark = true }: LogoProps) {
   return (
     <span className={cn("inline-flex items-center gap-2.5 text-ink", className)}>
-      <svg viewBox="0 0 48 48" className="h-full w-auto" role="img" aria-label="Ensemble" fill="none">
+      <svg
+        viewBox="0 0 48 48"
+        className="h-full w-auto"
+        role="img"
+        aria-label="Ensemble"
+        fill="none"
+      >
         {Array.from({ length: 6 }).map((_, i) => {
           const angle = (i * 60 * Math.PI) / 180;
           const cx = 24 + Math.cos(angle) * 14;
@@ -31,9 +37,30 @@ export function Logo({ color = "var(--accent-brand)", className, withWordmark = 
                 fill={i % 2 === 0 ? NAVY : color}
               />
               {/* doigts stylisés */}
-              <rect x={cx - 3.5} y={cy - 6.5} width={1.7} height={4} rx={0.85} fill={i % 2 === 0 ? NAVY : color} />
-              <rect x={cx - 0.9} y={cy - 7} width={1.7} height={4.5} rx={0.85} fill={i % 2 === 0 ? NAVY : color} />
-              <rect x={cx + 1.8} y={cy - 6.5} width={1.7} height={4} rx={0.85} fill={i % 2 === 0 ? NAVY : color} />
+              <rect
+                x={cx - 3.5}
+                y={cy - 6.5}
+                width={1.7}
+                height={4}
+                rx={0.85}
+                fill={i % 2 === 0 ? NAVY : color}
+              />
+              <rect
+                x={cx - 0.9}
+                y={cy - 7}
+                width={1.7}
+                height={4.5}
+                rx={0.85}
+                fill={i % 2 === 0 ? NAVY : color}
+              />
+              <rect
+                x={cx + 1.8}
+                y={cy - 6.5}
+                width={1.7}
+                height={4}
+                rx={0.85}
+                fill={i % 2 === 0 ? NAVY : color}
+              />
             </g>
           );
         })}

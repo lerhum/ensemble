@@ -77,7 +77,11 @@ describe("installSchema", () => {
   });
 
   it("rejects password shorter than 8 chars", () => {
-    const result = installSchema.safeParse({ ...valid, password: "short", confirmPassword: "short" });
+    const result = installSchema.safeParse({
+      ...valid,
+      password: "short",
+      confirmPassword: "short",
+    });
     expect(result.success).toBe(false);
   });
 
@@ -132,7 +136,12 @@ describe("eventInputSchema", () => {
 });
 
 describe("creneauInputSchema", () => {
-  const valid = { tacheId: "00000000-0000-0000-0000-000000000001", debut: "10:00", fin: "12:00", necessaires: 3 };
+  const valid = {
+    tacheId: "00000000-0000-0000-0000-000000000001",
+    debut: "10:00",
+    fin: "12:00",
+    necessaires: 3,
+  };
 
   it("accepts a valid payload", () => {
     expect(() => creneauInputSchema.parse(valid)).not.toThrow();

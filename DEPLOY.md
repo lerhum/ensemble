@@ -2,11 +2,11 @@
 
 The app deploys on Cloudflare's **free tier**:
 
-| Component | Hosting | Why |
-| --------- | ------- | --- |
-| `apps/web` (Vite frontend) | **Cloudflare Worker** (static assets) | static, Vite build |
-| `apps/api` (Hono) | **Cloudflare Worker** | same code as dev, Neon driver |
-| Database | **Neon** (managed Postgres, free) | Cloudflare free tier doesn't host Postgres |
+| Component                  | Hosting                               | Why                                        |
+| -------------------------- | ------------------------------------- | ------------------------------------------ |
+| `apps/web` (Vite frontend) | **Cloudflare Worker** (static assets) | static, Vite build                         |
+| `apps/api` (Hono)          | **Cloudflare Worker**                 | same code as dev, Neon driver              |
+| Database                   | **Neon** (managed Postgres, free)     | Cloudflare free tier doesn't host Postgres |
 
 > ⚠️ Docker (`docker compose up`) is **for local dev only**. Cloudflare's free tier hosts neither
 > containers nor Postgres: in production, the database is Neon.
@@ -37,7 +37,7 @@ When connecting the repo under **Workers & Pages → your Worker → Settings �
 - **Root directory**: `apps/api` (must point to the folder containing `wrangler.toml` — leaving it at
   `/` breaks `wrangler deploy`, which won't find the config file)
 - **Build command**: `pnpm run build` (runs `apps/api`'s `tsc --noEmit` — a typecheck gate; `wrangler
-  deploy` does its own esbuild bundling)
+deploy` does its own esbuild bundling)
 - **Deploy command**: `npx wrangler deploy`
 - **Include (watch) paths**: `apps/api/**` and `packages/db/**` — not `*`, otherwise every commit
   (even web-only changes) triggers an API rebuild/redeploy
@@ -49,7 +49,7 @@ When connecting the repo under **Workers & Pages → your Worker → Settings �
 ## 1. Database — Neon
 
 1. Create a project on https://neon.tech (nearby region, e.g. EU).
-2. Copy the *pooled* connection string:
+2. Copy the _pooled_ connection string:
    `postgresql://<user>:<pwd>@<...>-pooler.<region>.aws.neon.tech/<db>?sslmode=require`
 3. Apply the schema + seed from your machine (pg driver, compatible with Neon):
    ```bash
@@ -151,6 +151,7 @@ The frontend queries the API via `VITE_API_BASE` (empty in dev → proxy; Worker
 this is a **build-time** var (baked into the JS bundle by Vite), unlike the API's runtime secrets.
 
 **Option A — Workers Builds dashboard (Git CI, recommended)**
+
 - Workers & Pages → Create → connect the same repo as a Worker (not a script — the dashboard
   detects the static build). Build settings:
   - **Root directory**: `apps/web`
@@ -160,6 +161,7 @@ this is a **build-time** var (baked into the JS bundle by Vite), unlike the API'
 - Under **Settings → Domains**, enable the `workers.dev` route to get a public URL.
 
 **Option B — CLI**
+
 ```bash
 VITE_API_BASE="https://<api-worker-name>.<account>.workers.dev" pnpm --filter @ensemble/web build
 cd apps/web && npx wrangler deploy
@@ -183,6 +185,7 @@ Update this URL in `apps/api/wrangler.toml` (`WEB_ORIGIN`) then **redeploy the W
 ## 5. Ongoing migrations
 
 After modifying the Drizzle schema:
+
 ```bash
 pnpm --filter @ensemble/db generate                 # new SQL file in packages/db/drizzle
 DATABASE_URL="<neon-url>" pnpm --filter @ensemble/db migrate

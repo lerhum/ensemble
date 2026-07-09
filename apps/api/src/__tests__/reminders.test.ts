@@ -12,7 +12,12 @@ function makeRow(overrides: Partial<DueInscriptionRow> = {}): DueInscriptionRow 
         nom: "Serveur",
         pole: {
           nom: "Bar",
-          event: { statut: "publie", dateIso: "2026-01-15", nom: "Demo Got's Talent", lieu: "École" },
+          event: {
+            statut: "publie",
+            dateIso: "2026-01-15",
+            nom: "Demo Got's Talent",
+            lieu: "École",
+          },
         },
       },
     },
@@ -40,7 +45,20 @@ describe("selectDueReminders", () => {
   });
 
   it("excludes unpublished events", () => {
-    const rows = [makeRow({ creneau: { ...makeRow().creneau, tache: { nom: "Serveur", pole: { nom: "Bar", event: { statut: "brouillon", dateIso: "2026-01-15", nom: "x", lieu: "" } } } } })];
+    const rows = [
+      makeRow({
+        creneau: {
+          ...makeRow().creneau,
+          tache: {
+            nom: "Serveur",
+            pole: {
+              nom: "Bar",
+              event: { statut: "brouillon", dateIso: "2026-01-15", nom: "x", lieu: "" },
+            },
+          },
+        },
+      }),
+    ];
     expect(selectDueReminders(rows, NOW, 4)).toHaveLength(0);
   });
 

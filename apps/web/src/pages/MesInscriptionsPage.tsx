@@ -22,9 +22,7 @@ export default function MesInscriptionsPage() {
   const [deleting, setDeleting] = React.useState(false);
 
   React.useEffect(() => {
-    const fetch = token
-      ? api.getMesInscriptions(token)
-      : api.getMesInscriptionsSession();
+    const fetch = token ? api.getMesInscriptions(token) : api.getMesInscriptionsSession();
 
     fetch
       .then(setData)
@@ -33,6 +31,8 @@ export default function MesInscriptionsPage() {
         setError(token ? "Lien invalide ou expiré." : "Non connecté ou session expirée.");
       })
       .finally(() => setLoading(false));
+    // clearToken isn't memoized in VolunteerProvider; adding it here would refetch on every provider render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
   React.useEffect(() => {
@@ -40,13 +40,19 @@ export default function MesInscriptionsPage() {
   }, [data]);
 
   if (loading) {
-    return <Center><p className="text-label">Chargement…</p></Center>;
+    return (
+      <Center>
+        <p className="text-label">Chargement…</p>
+      </Center>
+    );
   }
   if (error || !data) {
     return (
       <Center>
         <p className="text-danger font-700">{error ?? "Erreur"}</p>
-        <Link to="/" className="mt-4 text-sm text-navy underline">Retour à l'accueil</Link>
+        <Link to="/" className="mt-4 text-sm text-navy underline">
+          Retour à l'accueil
+        </Link>
       </Center>
     );
   }
@@ -60,19 +66,19 @@ export default function MesInscriptionsPage() {
           orgNom={siteTitle || event.orgNom}
           accent={event.couleurTheme}
           siteLogo={siteLogo}
-          eventSlug={event.slug}
           containerClassName="max-w-lg px-4"
         />
       </div>
 
       <div className="py-10 px-4">
         <div className="mx-auto max-w-lg space-y-6">
-
           {/* En-tête */}
           <div>
             <p className="text-[13px] text-label">
-              <Link to={`/e/${event.slug}`} className="hover:underline">{event.nom}</Link>
-              {" "}/ Mes inscriptions
+              <Link to={`/e/${event.slug}`} className="hover:underline">
+                {event.nom}
+              </Link>{" "}
+              / Mes inscriptions
             </p>
             <h1 className="mt-2 text-2xl font-800 tracking-tighter2 text-ink">Mes inscriptions</h1>
           </div>
@@ -110,7 +116,9 @@ export default function MesInscriptionsPage() {
             <div className="mt-2 space-y-1">
               <div className="flex items-center gap-2 text-sm text-label">
                 <Calendar className="h-4 w-4" />
-                <span>{event.date} · {event.horaires}</span>
+                <span>
+                  {event.date} · {event.horaires}
+                </span>
               </div>
               <div className="flex items-center gap-2 text-sm text-label">
                 <MapPin className="h-4 w-4" />
@@ -140,7 +148,9 @@ export default function MesInscriptionsPage() {
                     <p className="text-[13px] text-label">{ins.tacheNom}</p>
                     <div className="mt-1 flex items-center gap-1.5 text-[13px] text-ink2">
                       <Clock className="h-3.5 w-3.5 text-label" />
-                      <span>{ins.debut} – {ins.fin}</span>
+                      <span>
+                        {ins.debut} – {ins.fin}
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -156,9 +166,12 @@ export default function MesInscriptionsPage() {
 
           {/* Droit à l'effacement */}
           <div className="rounded-card border border-hair bg-white p-5">
-            <p className="text-[11px] font-800 uppercase tracking-[.1em] text-label2">Mes données</p>
+            <p className="text-[11px] font-800 uppercase tracking-[.1em] text-label2">
+              Mes données
+            </p>
             <p className="mt-2 text-sm text-label">
-              Tu peux demander la suppression de toutes tes données personnelles (nom, email, téléphone et inscriptions).
+              Tu peux demander la suppression de toutes tes données personnelles (nom, email,
+              téléphone et inscriptions).
             </p>
             {!deleteConfirm ? (
               <Button
@@ -171,7 +184,9 @@ export default function MesInscriptionsPage() {
               </Button>
             ) : (
               <div className="mt-3 space-y-2">
-                <p className="text-sm font-700 text-danger">Cette action est irréversible. Confirmer ?</p>
+                <p className="text-sm font-700 text-danger">
+                  Cette action est irréversible. Confirmer ?
+                </p>
                 <div className="flex gap-2">
                   <Button
                     variant="outline"

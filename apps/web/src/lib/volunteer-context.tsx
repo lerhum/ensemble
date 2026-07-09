@@ -48,9 +48,7 @@ export function VolunteerProvider({ children }: { children: React.ReactNode }) {
     }
   });
 
-  const [token, setToken] = React.useState<string | null>(() =>
-    localStorage.getItem(TOKEN_KEY),
-  );
+  const [token, setToken] = React.useState<string | null>(() => localStorage.getItem(TOKEN_KEY));
 
   const [session, setSession] = React.useState<VolunteerSession | null>(null);
   const [sessionLoading, setSessionLoading] = React.useState(true);
@@ -98,7 +96,17 @@ export function VolunteerProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <VolunteerContext.Provider
-      value={{ identite, token, saveIdentite, saveToken, session, sessionLoading, refreshSession, logout, clearToken }}
+      value={{
+        identite,
+        token,
+        saveIdentite,
+        saveToken,
+        session,
+        sessionLoading,
+        refreshSession,
+        logout,
+        clearToken,
+      }}
     >
       {children}
     </VolunteerContext.Provider>

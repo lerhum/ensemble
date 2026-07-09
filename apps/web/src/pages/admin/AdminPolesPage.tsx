@@ -33,7 +33,11 @@ function PolesInner({ event, reload }: { event: EventDetailDTO; reload: () => Pr
   const [open, setOpen] = React.useState<string | null>(event.poles[0]?.id ?? null);
 
   const addPole = async () => {
-    const pole = await api.createPole({ eventId: event.id, nom: "Nouveau pôle", description: "" }) as { id: string };
+    const pole = (await api.createPole({
+      eventId: event.id,
+      nom: "Nouveau pôle",
+      description: "",
+    })) as { id: string };
     await reload();
     setOpen(pole.id);
   };
@@ -57,7 +61,15 @@ function PolesInner({ event, reload }: { event: EventDetailDTO; reload: () => Pr
     >
       {/* Stats */}
       <div className="mb-7 flex flex-wrap gap-x-12 gap-y-4 rounded-card border border-hair bg-white px-6 py-5">
-        <StatCard value={<><span>{c.inscrits}</span><span className="text-label"> / {c.necessaires}</span></>} label="Bénévoles inscrits" />
+        <StatCard
+          value={
+            <>
+              <span>{c.inscrits}</span>
+              <span className="text-label"> / {c.necessaires}</span>
+            </>
+          }
+          label="Bénévoles inscrits"
+        />
         <StatCard value={c.nbPoles} label="Pôles" />
         <StatCard value={c.nbCreneaux} label="Créneaux" />
         <StatCard value={c.aCompleter} label="À compléter" accent="coral" />
@@ -151,7 +163,9 @@ function PoleCard({
           {poleLabel}
         </span>
         <button onClick={onToggle} aria-label="Déplier">
-          <ChevronDown className={cn("h-5 w-5 text-label transition-transform", expanded && "rotate-180")} />
+          <ChevronDown
+            className={cn("h-5 w-5 text-label transition-transform", expanded && "rotate-180")}
+          />
         </button>
       </div>
 
@@ -237,7 +251,10 @@ function TacheGroup({ tache, reload }: { tache: TacheDTO; reload: () => Promise<
         <span className="rounded-full bg-chip px-2 py-0.5 text-[11px] font-700 text-navy">
           {tache.creneaux.length} créneau{tache.creneaux.length > 1 ? "x" : ""}
         </span>
-        <button onClick={addCreneau} className="ml-auto text-sm font-700 text-brand hover:underline">
+        <button
+          onClick={addCreneau}
+          className="ml-auto text-sm font-700 text-brand hover:underline"
+        >
           + créneau
         </button>
       </div>
@@ -303,13 +320,22 @@ function CreneauRow({
         className="h-9 w-20"
       />
       <div className="flex items-center gap-2">
-        <Jauge inscrits={creneau.inscrits} necessaires={creneau.necessaires} showValue={false} className="w-16" />
+        <Jauge
+          inscrits={creneau.inscrits}
+          necessaires={creneau.necessaires}
+          showValue={false}
+          className="w-16"
+        />
         <span className="text-sm font-600 text-ink">
           {creneau.inscrits}/{creneau.necessaires}
         </span>
       </div>
       <BadgeStatut inscrits={creneau.inscrits} necessaires={creneau.necessaires} />
-      <button onClick={del} aria-label="Supprimer le créneau" className="text-label2 hover:text-danger">
+      <button
+        onClick={del}
+        aria-label="Supprimer le créneau"
+        className="text-label2 hover:text-danger"
+      >
         <X className="h-4 w-4" />
       </button>
     </div>
