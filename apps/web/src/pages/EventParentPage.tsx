@@ -33,7 +33,15 @@ export default function EventParentPage() {
 
 // ── Mobile (écran 1) ──────────────────────────────────────────────────────
 /** Mobile layout for the public event page (screen 1): story, poles with coverage, and CTAs. */
-function MobileView({ event, siteTitle, siteLogo }: { event: EventDetailDTO; siteTitle: string; siteLogo: string | null }) {
+function MobileView({
+  event,
+  siteTitle,
+  siteLogo,
+}: {
+  event: EventDetailDTO;
+  siteTitle: string;
+  siteLogo: string | null;
+}) {
   const polesRef = React.useRef<HTMLDivElement>(null);
   return (
     <div className="mx-auto max-w-md md:hidden">
@@ -41,19 +49,29 @@ function MobileView({ event, siteTitle, siteLogo }: { event: EventDetailDTO; sit
         {siteLogo ? (
           <img src={siteLogo} alt={siteTitle} className="h-7 w-auto object-contain" />
         ) : (
-          <span className="text-[15px] font-800 tracking-tighter2 text-ink" style={{ color: event.couleurTheme }}>
+          <span
+            className="text-[15px] font-800 tracking-tighter2 text-ink"
+            style={{ color: event.couleurTheme }}
+          >
             {siteTitle}
           </span>
         )}
       </header>
 
-      {event.banniere
-        ? <img src={event.banniere} alt={event.nom} className="aspect-[16/10] w-full object-cover object-top" />
-        : <div className="aspect-[16/10] w-full bg-hair" aria-hidden />
-      }
+      {event.banniere ? (
+        <img
+          src={event.banniere}
+          alt={event.nom}
+          className="aspect-[16/10] w-full object-cover object-top"
+        />
+      ) : (
+        <div className="aspect-[16/10] w-full bg-hair" aria-hidden />
+      )}
 
       <div className="px-4 pb-28 pt-5">
-        <p className="text-[11px] font-800 uppercase tracking-[.1em] text-label2">Fête de l'école</p>
+        <p className="text-[11px] font-800 uppercase tracking-[.1em] text-label2">
+          Fête de l'école
+        </p>
         <h1 className="mt-1 text-[28px] font-800 leading-[1.05] tracking-tightest text-ink">
           {event.nom}
         </h1>
@@ -96,11 +114,25 @@ function MobileView({ event, siteTitle, siteLogo }: { event: EventDetailDTO; sit
 
 // ── Desktop (écran 6) ─────────────────────────────────────────────────────
 /** Desktop layout for the public event page (screen 6): two-column with story, poles table, and signup links. */
-function DesktopView({ event, siteTitle, siteLogo, rgpdEmail }: { event: EventDetailDTO; siteTitle: string; siteLogo: string | null; rgpdEmail: string }) {
+function DesktopView({
+  event,
+  siteTitle,
+  siteLogo,
+  rgpdEmail,
+}: {
+  event: EventDetailDTO;
+  siteTitle: string;
+  siteLogo: string | null;
+  rgpdEmail: string;
+}) {
   const polesRef = React.useRef<HTMLDivElement>(null);
   return (
     <div className="hidden md:block">
-      <PublicNav orgNom={siteTitle || event.orgNom} accent={event.couleurTheme} siteLogo={siteLogo} />
+      <PublicNav
+        orgNom={siteTitle || event.orgNom}
+        accent={event.couleurTheme}
+        siteLogo={siteLogo}
+      />
 
       <div className="mx-auto max-w-6xl px-8">
         {/* Hero */}
@@ -134,10 +166,15 @@ function DesktopView({ event, siteTitle, siteLogo, rgpdEmail }: { event: EventDe
             </div>
             <Coverage event={event} className="mt-8 max-w-md" withAvatars />
           </div>
-          {event.banniere
-            ? <img src={event.banniere} alt={event.nom} className="h-[430px] w-full rounded-frame object-cover object-top shadow-card" />
-            : <div className="h-[430px] w-full rounded-frame shadow-card bg-hair" aria-hidden />
-          }
+          {event.banniere ? (
+            <img
+              src={event.banniere}
+              alt={event.nom}
+              className="h-[430px] w-full rounded-frame object-cover object-top shadow-card"
+            />
+          ) : (
+            <div className="h-[430px] w-full rounded-frame shadow-card bg-hair" aria-hidden />
+          )}
         </section>
 
         {/* Pourquoi participer */}
@@ -178,9 +215,13 @@ function DesktopView({ event, siteTitle, siteLogo, rgpdEmail }: { event: EventDe
           <span>Ensemble — le bénévolat scolaire, simplement.</span>
           <span className="flex items-center gap-3">
             {rgpdEmail && (
-              <a href={`mailto:${rgpdEmail}`} className="hover:underline">Contact</a>
+              <a href={`mailto:${rgpdEmail}`} className="hover:underline">
+                Contact
+              </a>
             )}
-            <Link to="/confidentialite" className="hover:underline">Confidentialité</Link>
+            <Link to="/confidentialite" className="hover:underline">
+              Confidentialité
+            </Link>
           </span>
         </footer>
       </div>
@@ -298,5 +339,7 @@ function PoleCard({ slug, pole }: { slug: string; pole: PoleDTO }) {
 
 /** Full-screen centered wrapper for loading and error states. */
 function Center({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <div className={`grid min-h-screen place-items-center text-label ${className}`}>{children}</div>;
+  return (
+    <div className={`grid min-h-screen place-items-center text-label ${className}`}>{children}</div>
+  );
 }

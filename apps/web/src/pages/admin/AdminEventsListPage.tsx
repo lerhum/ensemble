@@ -5,7 +5,6 @@ import type { EventDTO } from "@ensemble/db/shared";
 import { api } from "@/lib/api";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -32,7 +31,9 @@ const STATUS_CLASS: Record<string, string> = {
 /** Formats a date for display: uses ISO date if available, falls back to the free-text date string. */
 function formatDate(dateIso: string | null, dateTxt: string): string {
   if (dateIso) {
-    return new Intl.DateTimeFormat("fr-BE", { dateStyle: "full" }).format(new Date(dateIso + "T12:00:00"));
+    return new Intl.DateTimeFormat("fr-BE", { dateStyle: "full" }).format(
+      new Date(dateIso + "T12:00:00"),
+    );
   }
   return dateTxt || "—";
 }
@@ -48,7 +49,10 @@ export default function AdminEventsListPage() {
   const [dateIso, setDateIso] = React.useState("");
 
   React.useEffect(() => {
-    api.listAdminEvents().then(setEvents).finally(() => setLoading(false));
+    api
+      .listAdminEvents()
+      .then(setEvents)
+      .finally(() => setLoading(false));
   }, []);
 
   const handleCreate = async () => {
@@ -59,7 +63,9 @@ export default function AdminEventsListPage() {
         nom: nom.trim(),
         dateIso: dateIso || null,
         date: dateIso
-          ? new Intl.DateTimeFormat("fr-BE", { dateStyle: "full" }).format(new Date(dateIso + "T12:00:00"))
+          ? new Intl.DateTimeFormat("fr-BE", { dateStyle: "full" }).format(
+              new Date(dateIso + "T12:00:00"),
+            )
           : "",
       });
       navigate(`/admin/events/${ev.id}`);
@@ -99,7 +105,9 @@ export default function AdminEventsListPage() {
       {!loading && sorted.length === 0 && (
         <div className="rounded-card border border-dashed border-hair py-16 text-center">
           <p className="text-[15px] font-700 text-ink">Aucun événement</p>
-          <p className="mt-1 text-[13px] text-label">Créez votre premier événement pour commencer.</p>
+          <p className="mt-1 text-[13px] text-label">
+            Créez votre premier événement pour commencer.
+          </p>
           <Button className="mt-5" onClick={() => setShowDialog(true)}>
             <Plus className="h-4 w-4" />
             Créer un événement
@@ -120,7 +128,12 @@ export default function AdminEventsListPage() {
               <div className="min-w-0">
                 <div className="flex items-center gap-2.5">
                   <span className="text-[15px] font-700 text-ink truncate">{ev.nom}</span>
-                  <span className={cn("rounded-full px-2.5 py-0.5 text-[11px] font-700", STATUS_CLASS[ev.statut])}>
+                  <span
+                    className={cn(
+                      "rounded-full px-2.5 py-0.5 text-[11px] font-700",
+                      STATUS_CLASS[ev.statut],
+                    )}
+                  >
                     {STATUS_LABEL[ev.statut]}
                   </span>
                 </div>

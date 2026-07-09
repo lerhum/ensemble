@@ -12,7 +12,13 @@ import { Logo } from "@/components/Logo";
 export default function InstallPage() {
   const { needsSetup, loading, refresh } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = React.useState({ orgNom: "", rgpdEmail: "", email: "", password: "", confirmPassword: "" });
+  const [form, setForm] = React.useState({
+    orgNom: "",
+    rgpdEmail: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
   const [logoFile, setLogoFile] = React.useState<File | null>(null);
   const [logoPreview, setLogoPreview] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
@@ -43,7 +49,13 @@ export default function InstallPage() {
     setLogoWarning(null);
     setBusy(true);
     try {
-      await api.install({ orgNom: form.orgNom, rgpdEmail: form.rgpdEmail, email: form.email, password: form.password, confirmPassword: form.confirmPassword });
+      await api.install({
+        orgNom: form.orgNom,
+        rgpdEmail: form.rgpdEmail,
+        email: form.email,
+        password: form.password,
+        confirmPassword: form.confirmPassword,
+      });
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Échec de l'installation");
       setBusy(false);
@@ -53,7 +65,9 @@ export default function InstallPage() {
       try {
         await api.uploadSiteLogo(logoFile);
       } catch {
-        setLogoWarning("Le logo n'a pas pu être uploadé. Vous pourrez le configurer depuis les paramètres.");
+        setLogoWarning(
+          "Le logo n'a pas pu être uploadé. Vous pourrez le configurer depuis les paramètres.",
+        );
       }
     }
     await refresh();
@@ -75,14 +89,24 @@ export default function InstallPage() {
         <form className="space-y-4" onSubmit={submit}>
           <div className="space-y-1.5">
             <Label htmlFor="orgNom">Nom de l'école / du comité</Label>
-            <Input id="orgNom" value={form.orgNom} onChange={set("orgNom")} placeholder="Comité scolaire" required />
+            <Input
+              id="orgNom"
+              value={form.orgNom}
+              onChange={set("orgNom")}
+              placeholder="Comité scolaire"
+              required
+            />
             <p className="text-[12px] text-label">Affiché sur le site public.</p>
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="siteLogo">Logo de l'école (optionnel)</Label>
             <div className="flex items-center gap-3">
               {logoPreview && (
-                <img src={logoPreview} alt="Aperçu" className="h-10 w-auto rounded object-contain" />
+                <img
+                  src={logoPreview}
+                  alt="Aperçu"
+                  className="h-10 w-auto rounded object-contain"
+                />
               )}
               <label
                 htmlFor="siteLogo"
@@ -94,7 +118,10 @@ export default function InstallPage() {
                 <button
                   type="button"
                   className="text-[12px] text-label hover:text-danger"
-                  onClick={() => { setLogoFile(null); setLogoPreview(null); }}
+                  onClick={() => {
+                    setLogoFile(null);
+                    setLogoPreview(null);
+                  }}
                 >
                   Supprimer
                 </button>
@@ -110,20 +137,50 @@ export default function InstallPage() {
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="rgpdEmail">Email de contact RGPD</Label>
-            <Input id="rgpdEmail" type="email" value={form.rgpdEmail} onChange={set("rgpdEmail")} placeholder="dpo@ecole.be" required />
-            <p className="text-[12px] text-label">Affiché aux bénévoles pour exercer leurs droits (accès, suppression). Peut être le même que l'email admin.</p>
+            <Input
+              id="rgpdEmail"
+              type="email"
+              value={form.rgpdEmail}
+              onChange={set("rgpdEmail")}
+              placeholder="dpo@ecole.be"
+              required
+            />
+            <p className="text-[12px] text-label">
+              Affiché aux bénévoles pour exercer leurs droits (accès, suppression). Peut être le
+              même que l'email admin.
+            </p>
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="email">Email de l'administrateur</Label>
-            <Input id="email" type="email" value={form.email} onChange={set("email")} placeholder="admin@ecole.be" required />
+            <Input
+              id="email"
+              type="email"
+              value={form.email}
+              onChange={set("email")}
+              placeholder="admin@ecole.be"
+              required
+            />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="password">Mot de passe</Label>
-            <Input id="password" type="password" value={form.password} onChange={set("password")} placeholder="8 caractères minimum" required />
+            <Input
+              id="password"
+              type="password"
+              value={form.password}
+              onChange={set("password")}
+              placeholder="8 caractères minimum"
+              required
+            />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="confirm">Confirmer le mot de passe</Label>
-            <Input id="confirm" type="password" value={form.confirmPassword} onChange={set("confirmPassword")} required />
+            <Input
+              id="confirm"
+              type="password"
+              value={form.confirmPassword}
+              onChange={set("confirmPassword")}
+              required
+            />
           </div>
           {error && <p className="text-sm font-600 text-danger">{error}</p>}
           {logoWarning && <p className="text-sm text-warn">{logoWarning}</p>}

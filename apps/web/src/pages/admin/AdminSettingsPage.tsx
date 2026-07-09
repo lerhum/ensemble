@@ -18,9 +18,15 @@ export default function AdminSettingsPage() {
   const fileRef = React.useRef<HTMLInputElement>(null);
 
   // Sync si les valeurs globales changent (ex. après install)
-  React.useEffect(() => { setTitle(siteTitle); }, [siteTitle]);
-  React.useEffect(() => { setLogo(siteLogo); }, [siteLogo]);
-  React.useEffect(() => { setRgpd(rgpdEmail); }, [rgpdEmail]);
+  React.useEffect(() => {
+    setTitle(siteTitle);
+  }, [siteTitle]);
+  React.useEffect(() => {
+    setLogo(siteLogo);
+  }, [siteLogo]);
+  React.useEffect(() => {
+    setRgpd(rgpdEmail);
+  }, [rgpdEmail]);
 
   React.useEffect(() => {
     api.getSettings().then((s) => setReminderHoursBefore(s.reminderHoursBefore));
@@ -97,7 +103,8 @@ export default function AdminSettingsPage() {
                 placeholder="dpo@ecole.be"
               />
               <p className="text-[12px] text-label">
-                Affiché aux bénévoles lors de l'inscription pour exercer leurs droits (accès, suppression, rectification).
+                Affiché aux bénévoles lors de l'inscription pour exercer leurs droits (accès,
+                suppression, rectification).
               </p>
             </div>
 
@@ -140,9 +147,7 @@ export default function AdminSettingsPage() {
         </section>
 
         <section>
-          <p className="mb-4 text-[11px] font-800 uppercase tracking-[.1em] text-label2">
-            Rappels
-          </p>
+          <p className="mb-4 text-[11px] font-800 uppercase tracking-[.1em] text-label2">Rappels</p>
           <div className="space-y-1.5">
             <Label htmlFor="reminderHoursBefore">Délai de rappel (heures avant le créneau)</Label>
             <Input
@@ -155,7 +160,8 @@ export default function AdminSettingsPage() {
               onBlur={saveReminderHoursBefore}
             />
             <p className="text-[12px] text-label">
-              Email de rappel automatique envoyé aux bénévoles confirmés ce nombre d'heures avant le début de leur créneau.
+              Email de rappel automatique envoyé aux bénévoles confirmés ce nombre d'heures avant le
+              début de leur créneau.
             </p>
           </div>
         </section>

@@ -10,8 +10,12 @@ export default function PrivacyPage() {
     <div className="min-h-screen bg-[#F9F9F8] px-4 py-12">
       <div className="mx-auto max-w-2xl space-y-8">
         <div>
-          <Link to="/" className="text-[13px] text-label hover:underline">← Retour</Link>
-          <h1 className="mt-4 text-3xl font-800 tracking-tighter2 text-ink">Politique de confidentialité</h1>
+          <Link to="/" className="text-[13px] text-label hover:underline">
+            ← Retour
+          </Link>
+          <h1 className="mt-4 text-3xl font-800 tracking-tighter2 text-ink">
+            Politique de confidentialité
+          </h1>
           <p className="mt-2 text-sm text-label">Conformément au Règlement (UE) 2016/679 (RGPD)</p>
         </div>
 
@@ -20,8 +24,13 @@ export default function PrivacyPage() {
             Le responsable du traitement des données collectées via cette plateforme est{" "}
             <strong>{org}</strong>.
             {rgpdEmail && (
-              <> Pour toute question relative à vos données, contactez :{" "}
-                <a href={`mailto:${rgpdEmail}`} className="underline text-navy">{rgpdEmail}</a>.
+              <>
+                {" "}
+                Pour toute question relative à vos données, contactez :{" "}
+                <a href={`mailto:${rgpdEmail}`} className="underline text-navy">
+                  {rgpdEmail}
+                </a>
+                .
               </>
             )}
           </p>
@@ -35,8 +44,9 @@ export default function PrivacyPage() {
             <li>Numéro de téléphone (optionnel)</li>
           </ul>
           <p className="mt-3">
-            Ces données sont collectées sur la base de votre consentement (Art. 6.1.a RGPD)
-            et dans le cadre de l'exécution d'une mission d'intérêt général (organisation d'un événement scolaire).
+            Ces données sont collectées sur la base de votre consentement (Art. 6.1.a RGPD) et dans
+            le cadre de l'exécution d'une mission d'intérêt général (organisation d'un événement
+            scolaire).
           </p>
         </Section>
 
@@ -58,17 +68,32 @@ export default function PrivacyPage() {
         <Section title="Vos droits">
           <p>Conformément au RGPD, vous disposez des droits suivants :</p>
           <ul className="mt-2 list-disc pl-5 space-y-1">
-            <li><strong>Droit d'accès</strong> — consulter vos données via la page « Mes inscriptions »</li>
-            <li><strong>Droit de rectification</strong> — corriger vos informations</li>
-            <li><strong>Droit à l'effacement</strong> — supprimer votre compte depuis « Mes inscriptions »</li>
-            <li><strong>Droit d'opposition</strong> — vous opposer au traitement de vos données</li>
+            <li>
+              <strong>Droit d'accès</strong> — consulter vos données via la page « Mes inscriptions
+              »
+            </li>
+            <li>
+              <strong>Droit de rectification</strong> — corriger vos informations
+            </li>
+            <li>
+              <strong>Droit à l'effacement</strong> — supprimer votre compte depuis « Mes
+              inscriptions »
+            </li>
+            <li>
+              <strong>Droit d'opposition</strong> — vous opposer au traitement de vos données
+            </li>
           </ul>
           {rgpdEmail && (
             <p className="mt-3">
               Pour exercer ces droits, rendez-vous sur la page{" "}
-              <Link to="/mes-inscriptions" className="underline text-navy">Mes inscriptions</Link>{" "}
+              <Link to="/mes-inscriptions" className="underline text-navy">
+                Mes inscriptions
+              </Link>{" "}
               ou contactez{" "}
-              <a href={`mailto:${rgpdEmail}`} className="underline text-navy">{rgpdEmail}</a>.
+              <a href={`mailto:${rgpdEmail}`} className="underline text-navy">
+                {rgpdEmail}
+              </a>
+              .
             </p>
           )}
           <p className="mt-3">
@@ -87,9 +112,9 @@ export default function PrivacyPage() {
 
         <Section title="Cookies">
           <p>
-            Ce site utilise uniquement un cookie de session technique, nécessaire au bon fonctionnement
-            du service (maintien de votre connexion). Ce cookie ne nécessite pas de consentement
-            selon les lignes directrices de l'APD.
+            Ce site utilise uniquement un cookie de session technique, nécessaire au bon
+            fonctionnement du service (maintien de votre connexion). Ce cookie ne nécessite pas de
+            consentement selon les lignes directrices de l'APD.
           </p>
         </Section>
       </div>

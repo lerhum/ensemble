@@ -5,13 +5,17 @@ interface Props {
   orgNom: string;
   accent: string;
   siteLogo?: string | null;
-  eventSlug?: string;
   /** Width/padding classes for the inner wrapper, matched to the page's content container so the logo and menu line up with it. */
   containerClassName?: string;
 }
 
 /** Top navigation bar for the public event page: school branding, "Mes inscriptions" link, and volunteer session controls. */
-export function PublicNav({ orgNom, accent, siteLogo, eventSlug, containerClassName = "max-w-6xl px-8" }: Props) {
+export function PublicNav({
+  orgNom,
+  accent,
+  siteLogo,
+  containerClassName = "max-w-6xl px-8",
+}: Props) {
   const { token, session, sessionLoading, logout } = useVolunteer();
   const navigate = useNavigate();
 
@@ -34,7 +38,10 @@ export function PublicNav({ orgNom, accent, siteLogo, eventSlug, containerClassN
           {siteLogo ? (
             <img src={siteLogo} alt={orgNom} className="h-11 w-auto object-contain" />
           ) : (
-            <span className="text-[17px] font-800 tracking-tighter2 text-ink" style={{ color: accent }}>
+            <span
+              className="text-[17px] font-800 tracking-tighter2 text-ink"
+              style={{ color: accent }}
+            >
               {orgNom}
             </span>
           )}

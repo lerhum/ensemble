@@ -9,7 +9,14 @@ import { AdminLayout, StatCard } from "@/components/admin/AdminLayout";
 import { Jauge } from "@/components/primitives/Jauge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { initials } from "@/lib/utils";
 
@@ -29,13 +36,7 @@ export default function AdminPilotagePage() {
   return <PilotageInner event={event} reload={reload} />;
 }
 
-function PilotageInner({
-  event,
-  reload,
-}: {
-  event: EventDetailDTO;
-  reload: () => Promise<void>;
-}) {
+function PilotageInner({ event, reload }: { event: EventDetailDTO; reload: () => Promise<void> }) {
   const [attente, setAttente] = React.useState<VolunteerDTO[]>([]);
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -44,17 +45,21 @@ function PilotageInner({
     setAttente(r.volunteers);
   }, [event.id]);
 
-  React.useEffect(() => { fetchAttente(); }, [fetchAttente]);
+  React.useEffect(() => {
+    fetchAttente();
+  }, [fetchAttente]);
 
   const refresh = async () => {
     setRefreshing(true);
-    try { await Promise.all([reload(), fetchAttente()]); }
-    finally { setRefreshing(false); }
+    try {
+      await Promise.all([reload(), fetchAttente()]);
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   // Compteurs dérivés
   const c = event.counters;
-  const totalCreneaux = c.nbCreneaux;
   const completsCount = event.poles.flatMap((p) =>
     p.taches.flatMap((t) =>
       t.creneaux.filter((cr) => slotStatus(cr.inscrits, cr.necessaires) === "complet"),
@@ -81,13 +86,30 @@ function PilotageInner({
       {/* Stats */}
       <div className="mb-7 flex flex-wrap gap-x-12 gap-y-4 rounded-card border border-hair bg-white px-6 py-5">
         <StatCard
-          value={<><span>{c.inscrits}</span><span className="text-label"> / {c.necessaires}</span></>}
+          value={
+            <>
+              <span>{c.inscrits}</span>
+              <span className="text-label"> / {c.necessaires}</span>
+            </>
+          }
           label="Bénévoles inscrits"
         />
-        <StatCard value={`${pct} %`} label="Couverture globale" accent={pct >= 100 ? "green" : pct >= 60 ? "default" : "coral"} />
+        <StatCard
+          value={`${pct} %`}
+          label="Couverture globale"
+          accent={pct >= 100 ? "green" : pct >= 60 ? "default" : "coral"}
+        />
         <StatCard value={completsCount} label={`Créneaux complets`} accent="green" />
-        <StatCard value={urgentsCount} label="Créneaux urgents" accent={urgentsCount > 0 ? "coral" : "default"} />
-        <StatCard value={attente.length} label="En attente de confirmation" accent={attente.length > 0 ? "amber" : "default"} />
+        <StatCard
+          value={urgentsCount}
+          label="Créneaux urgents"
+          accent={urgentsCount > 0 ? "coral" : "default"}
+        />
+        <StatCard
+          value={attente.length}
+          label="En attente de confirmation"
+          accent={attente.length > 0 ? "amber" : "default"}
+        />
       </div>
 
       {/* Couverture par pôle */}
@@ -153,7 +175,8 @@ function PilotageInner({
       {/* À confirmer */}
       <section>
         <p className="mb-4 text-[11px] font-800 uppercase tracking-[.1em] text-label2">
-          À confirmer{attente.length > 0 && <span className="ml-2 text-warn">{attente.length}</span>}
+          À confirmer
+          {attente.length > 0 && <span className="ml-2 text-warn">{attente.length}</span>}
         </p>
 
         {attente.length === 0 ? (

@@ -1,4 +1,5 @@
 import { defineConfig } from "vite";
+import { coverageConfigDefaults } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import { fileURLToPath, URL } from "node:url";
 
@@ -19,5 +20,11 @@ export default defineConfig({
   },
   test: {
     environment: "node",
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "json-summary", "lcov"],
+      reportsDirectory: "coverage",
+      exclude: [...coverageConfigDefaults.exclude, "src/main.tsx", "src/components/ui/**"],
+    },
   },
 });

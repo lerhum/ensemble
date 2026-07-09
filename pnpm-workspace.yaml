@@ -7,3 +7,4 @@ allowBuilds:
   esbuild: true
   workerd: true
   sharp: false
+  core-js: false

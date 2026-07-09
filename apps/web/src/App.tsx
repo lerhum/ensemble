@@ -46,14 +46,56 @@ export default function App() {
             <Route path="/benevole/connexion" element={<VolunteerLoginPage />} />
 
             {/* Admin : liste des événements */}
-            <Route path="/admin" element={<A><AdminEventsListPage /></A>} />
+            <Route
+              path="/admin"
+              element={
+                <A>
+                  <AdminEventsListPage />
+                </A>
+              }
+            />
 
             {/* Admin : pilotage + édition d'un événement spécifique */}
-            <Route path="/admin/events/:id" element={<A><AdminPilotagePage /></A>} />
-            <Route path="/admin/events/:id/edition" element={<A><AdminEventEditPage /></A>} />
-            <Route path="/admin/events/:id/poles" element={<A><AdminPolesPage /></A>} />
-            <Route path="/admin/events/:id/volunteers" element={<A><AdminVolunteersPage /></A>} />
-            <Route path="/admin/settings" element={<A><AdminSettingsPage /></A>} />
+            <Route
+              path="/admin/events/:id"
+              element={
+                <A>
+                  <AdminPilotagePage />
+                </A>
+              }
+            />
+            <Route
+              path="/admin/events/:id/edition"
+              element={
+                <A>
+                  <AdminEventEditPage />
+                </A>
+              }
+            />
+            <Route
+              path="/admin/events/:id/poles"
+              element={
+                <A>
+                  <AdminPolesPage />
+                </A>
+              }
+            />
+            <Route
+              path="/admin/events/:id/volunteers"
+              element={
+                <A>
+                  <AdminVolunteersPage />
+                </A>
+              }
+            />
+            <Route
+              path="/admin/settings"
+              element={
+                <A>
+                  <AdminSettingsPage />
+                </A>
+              }
+            />
 
             <Route path="*" element={<NotFoundPage />} />
           </Routes>

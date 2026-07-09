@@ -61,7 +61,9 @@ function makePole(creneauxDefs: { necessaires: number; inscriptions: number }[],
           fin: "12:00",
           necessaires: def.necessaires,
           position: i,
-          inscriptions: Array.from({ length: def.inscriptions }, (_, j) => ({ id: `ins-${i}-${j}` })),
+          inscriptions: Array.from({ length: def.inscriptions }, (_, j) => ({
+            id: `ins-${i}-${j}`,
+          })),
         })),
       },
     ],
@@ -81,7 +83,10 @@ describe("volunteersToCsv", () => {
   });
 
   it("produces one data line per volunteer", () => {
-    const csv = volunteersToCsv([makeVolunteer(), makeVolunteer({ id: "v-2", email: "bob@test.com" })]);
+    const csv = volunteersToCsv([
+      makeVolunteer(),
+      makeVolunteer({ id: "v-2", email: "bob@test.com" }),
+    ]);
     const lines = csv.split("\r\n");
     expect(lines).toHaveLength(3); // header + 2 data
   });
@@ -101,7 +106,12 @@ describe("volunteersToCsv", () => {
 
   it("joins multiple poles with ' / '", () => {
     const csv = volunteersToCsv([
-      makeVolunteer({ poles: [{ id: "p-1", nom: "Bar" }, { id: "p-2", nom: "Grimage" }] }),
+      makeVolunteer({
+        poles: [
+          { id: "p-1", nom: "Bar" },
+          { id: "p-2", nom: "Grimage" },
+        ],
+      }),
     ]);
     expect(csv).toContain("Bar / Grimage");
   });
@@ -126,8 +136,19 @@ describe("volunteersToCsv", () => {
 // ── filterVolunteers ──────────────────────────────────────────────────────────
 
 describe("filterVolunteers", () => {
-  const alice = makeVolunteer({ statut: "confirme", poles: [{ id: "p-1", nom: "Bar" }], creneaux: [{ id: "cr-1", tacheId: "t-1", tache: "Serveur", debut: "10:00", fin: "12:00" }] });
-  const bob = makeVolunteer({ id: "v-2", nom: "Bob Martin", email: "bob@example.com", statut: "attente", poles: [{ id: "p-2", nom: "Grimage" }], creneaux: [{ id: "cr-2", tacheId: "t-2", tache: "Maquillage", debut: "14:00", fin: "16:00" }] });
+  const alice = makeVolunteer({
+    statut: "confirme",
+    poles: [{ id: "p-1", nom: "Bar" }],
+    creneaux: [{ id: "cr-1", tacheId: "t-1", tache: "Serveur", debut: "10:00", fin: "12:00" }],
+  });
+  const bob = makeVolunteer({
+    id: "v-2",
+    nom: "Bob Martin",
+    email: "bob@example.com",
+    statut: "attente",
+    poles: [{ id: "p-2", nom: "Grimage" }],
+    creneaux: [{ id: "cr-2", tacheId: "t-2", tache: "Maquillage", debut: "14:00", fin: "16:00" }],
+  });
   const list = [alice, bob];
 
   it("filters by tache UUID", () => {
@@ -188,7 +209,13 @@ describe("filterVolunteers", () => {
 describe("assembleEventDetail", () => {
   it("returns all-zero counters for an event with no poles", () => {
     const dto = assembleEventDetail(makeEvent([]));
-    expect(dto.counters).toEqual({ inscrits: 0, necessaires: 0, nbPoles: 0, nbCreneaux: 0, aCompleter: 0 });
+    expect(dto.counters).toEqual({
+      inscrits: 0,
+      necessaires: 0,
+      nbPoles: 0,
+      nbCreneaux: 0,
+      aCompleter: 0,
+    });
     expect(dto.poles).toHaveLength(0);
   });
 

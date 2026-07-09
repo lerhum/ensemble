@@ -100,47 +100,45 @@ export function assembleEventDetail(ev: EventWithTree): EventDetailDTO {
   let nbCreneaux = 0;
   let aCompleter = 0;
 
-  const poles: PoleDTO[] = [...ev.poles]
-    .sort(asc())
-    .map((p) => {
-      let pInscrits = 0;
-      let pNecessaires = 0;
-      let pNbCreneaux = 0;
-      const taches = [...p.taches].sort(asc()).map((t) => {
-        const creneaux = [...t.creneaux].sort(asc()).map((cr) => {
-          const inscrits = cr.inscriptions.length;
-          pInscrits += inscrits;
-          pNecessaires += cr.necessaires;
-          pNbCreneaux += 1;
-          nbCreneaux += 1;
-          totalInscrits += inscrits;
-          totalNecessaires += cr.necessaires;
-          const statut = slotStatus(inscrits, cr.necessaires);
-          if (statut !== "complet") aCompleter += 1;
-          return {
-            id: cr.id,
-            debut: cr.debut,
-            fin: cr.fin,
-            necessaires: cr.necessaires,
-            inscrits,
-            position: cr.position,
-            statut,
-          };
-        });
-        return { id: t.id, nom: t.nom, description: t.description, position: t.position, creneaux };
+  const poles: PoleDTO[] = [...ev.poles].sort(asc()).map((p) => {
+    let pInscrits = 0;
+    let pNecessaires = 0;
+    let pNbCreneaux = 0;
+    const taches = [...p.taches].sort(asc()).map((t) => {
+      const creneaux = [...t.creneaux].sort(asc()).map((cr) => {
+        const inscrits = cr.inscriptions.length;
+        pInscrits += inscrits;
+        pNecessaires += cr.necessaires;
+        pNbCreneaux += 1;
+        nbCreneaux += 1;
+        totalInscrits += inscrits;
+        totalNecessaires += cr.necessaires;
+        const statut = slotStatus(inscrits, cr.necessaires);
+        if (statut !== "complet") aCompleter += 1;
+        return {
+          id: cr.id,
+          debut: cr.debut,
+          fin: cr.fin,
+          necessaires: cr.necessaires,
+          inscrits,
+          position: cr.position,
+          statut,
+        };
       });
-      return {
-        id: p.id,
-        nom: p.nom,
-        description: p.description,
-        position: p.position,
-        taches,
-        inscrits: pInscrits,
-        necessaires: pNecessaires,
-        nbCreneaux: pNbCreneaux,
-        placesLibres: Math.max(0, pNecessaires - pInscrits),
-      };
+      return { id: t.id, nom: t.nom, description: t.description, position: t.position, creneaux };
     });
+    return {
+      id: p.id,
+      nom: p.nom,
+      description: p.description,
+      position: p.position,
+      taches,
+      inscrits: pInscrits,
+      necessaires: pNecessaires,
+      nbCreneaux: pNbCreneaux,
+      placesLibres: Math.max(0, pNecessaires - pInscrits),
+    };
+  });
 
   return {
     id: ev.id,
@@ -189,7 +187,15 @@ export async function buildMesInscriptionsByVolunteerId(
   return {
     // Session bénévole : n'existe que pour un email/mot de passe défini, donc email non-null ici.
     volunteer: { nom: vol.nom, email: vol.email!, statut: vol.statut },
-    event: { nom: event.nom, date: event.date, horaires: event.horaires, lieu: event.lieu, slug: event.slug, orgNom: event.orgNom, couleurTheme: event.couleurTheme },
+    event: {
+      nom: event.nom,
+      date: event.date,
+      horaires: event.horaires,
+      lieu: event.lieu,
+      slug: event.slug,
+      orgNom: event.orgNom,
+      couleurTheme: event.couleurTheme,
+    },
     inscriptions: vol.inscriptions.map((ins) => ({
       poleNom: ins.creneau.tache.pole.nom,
       tacheNom: ins.creneau.tache.nom,
@@ -251,7 +257,8 @@ export function filterVolunteers(dtos: VolunteerDTO[], filter: VolunteerFilter):
     if (filter.pole && !v.poles.some((p) => p.id === filter.pole)) return false;
     if (filter.tache && !v.creneaux.some((cr) => cr.tacheId === filter.tache)) return false;
     if (filter.creneau && !v.creneaux.some((cr) => cr.id === filter.creneau)) return false;
-    if (q && !(v.nom.toLowerCase().includes(q) || (v.email ?? "").toLowerCase().includes(q))) return false;
+    if (q && !(v.nom.toLowerCase().includes(q) || (v.email ?? "").toLowerCase().includes(q)))
+      return false;
     return true;
   });
 }

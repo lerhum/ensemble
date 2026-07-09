@@ -44,6 +44,8 @@ export default {
 
   scheduled(_event: ScheduledEvent, env: WorkerEnv, ctx: ExecutionContext) {
     const { db, email } = buildConfig(env);
-    ctx.waitUntil(sendDueReminders(db, email).then((n) => console.log(`[reminders] ${n} email(s) envoyé(s)`)));
+    ctx.waitUntil(
+      sendDueReminders(db, email).then((n) => console.log(`[reminders] ${n} email(s) envoyé(s)`)),
+    );
   },
 };

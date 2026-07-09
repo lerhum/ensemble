@@ -8,7 +8,10 @@ export default function EventRedirectPage() {
   const [event, setEvent] = React.useState<EventDetailDTO | null | undefined>(undefined);
 
   React.useEffect(() => {
-    api.getCurrentEvent().then(setEvent).catch(() => setEvent(null));
+    api
+      .getCurrentEvent()
+      .then(setEvent)
+      .catch(() => setEvent(null));
   }, []);
 
   if (event === undefined) return null;

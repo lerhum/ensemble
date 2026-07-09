@@ -182,11 +182,17 @@ export const volunteersRelations = relations(volunteers, ({ one, many }) => ({
 }));
 
 export const volunteerSessionsRelations = relations(volunteerSessions, ({ one }) => ({
-  volunteer: one(volunteers, { fields: [volunteerSessions.volunteerId], references: [volunteers.id] }),
+  volunteer: one(volunteers, {
+    fields: [volunteerSessions.volunteerId],
+    references: [volunteers.id],
+  }),
 }));
 
 export const volunteerTokensRelations = relations(volunteerTokens, ({ one }) => ({
-  volunteer: one(volunteers, { fields: [volunteerTokens.volunteerId], references: [volunteers.id] }),
+  volunteer: one(volunteers, {
+    fields: [volunteerTokens.volunteerId],
+    references: [volunteers.id],
+  }),
 }));
 
 export const inscriptionsRelations = relations(inscriptions, ({ one }) => ({

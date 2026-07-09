@@ -13,7 +13,10 @@ export default function ConfirmPage() {
   const [state, setState] = React.useState<"loading" | "ok" | "already" | "error">("loading");
 
   React.useEffect(() => {
-    if (!token) { setState("error"); return; }
+    if (!token) {
+      setState("error");
+      return;
+    }
     api
       .confirmerToken(token)
       .then((r) => setState(r.ok ? (r.alreadyConfirmed ? "already" : "ok") : "error"))

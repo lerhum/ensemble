@@ -1,7 +1,7 @@
 # Ensemble
 
 **Ensemble** is a web app for managing **school volunteering** (French-language, Belgian schools).
-Parents discover a school event (e.g. *Demo Got's Talent*), read its story, browse **pôles**
+Parents discover a school event (e.g. _Demo Got's Talent_), read its story, browse **pôles**
 (Bar & Buvette, Pêche aux canards, Grimage…) and sign up for one or more **créneaux**.
 The school committee manages the event: customizable public page, pôle/tâche/créneau
 configuration, volunteer tracking (filters + CSV export).
@@ -10,11 +10,11 @@ configuration, volunteer tracking (filters + CSV export).
 
 **pnpm** monorepo (one data schema, two drivers depending on environment):
 
-| Workspace | Stack | Role |
-| --------- | ----- | ---- |
-| `apps/web` | React + Vite + TypeScript + Tailwind + shadcn/ui | Frontend (Manrope, per-school theming) |
-| `apps/api` | Hono + TypeScript + zod | REST API — runs on **Node** (dev) **and Cloudflare Workers** (prod) |
-| `packages/db` | Drizzle ORM + PostgreSQL | Schema, migrations, seed, shared types + zod schemas |
+| Workspace     | Stack                                            | Role                                                                |
+| ------------- | ------------------------------------------------ | ------------------------------------------------------------------- |
+| `apps/web`    | React + Vite + TypeScript + Tailwind + shadcn/ui | Frontend (Manrope, per-school theming)                              |
+| `apps/api`    | Hono + TypeScript + zod                          | REST API — runs on **Node** (dev) **and Cloudflare Workers** (prod) |
+| `packages/db` | Drizzle ORM + PostgreSQL                         | Schema, migrations, seed, shared types + zod schemas                |
 
 - **Local dev**: Postgres via Docker, `pg` driver.
 - **Prod**: Cloudflare Pages (web) + Worker (api) + **Neon** (managed Postgres), driver
@@ -33,7 +33,7 @@ Then open **http://localhost:5173**.
 
 On **first launch**, the app shows a first-run setup wizard (`/install`): no admin is
 pre-created — you define the committee account (name, email, password). The seed creates demo
-content (*Demo Got's Talent*: 6 pôles, 18 créneaux, 32 signups).
+content (_Demo Got's Talent_: 6 pôles, 18 créneaux, 32 signups).
 
 `make` shortcuts:
 
@@ -74,17 +74,17 @@ Event → Pôles → Tâches → Créneaux        +  signups (créneau ↔ bén�
 
 ## API (excerpt)
 
-| Method | Route | Access |
-| ------ | ----- | ------ |
-| `GET` | `/api/install/status` · `POST /api/install` | installer (409 if already installed) |
-| `POST` | `/api/auth/login` · `/api/auth/logout` · `GET /api/auth/me` | session (signed cookie) |
-| `GET` | `/api/events/:slug` | public (event + pôles/tâches/créneaux + counters) |
-| `POST`/`DELETE` | `/api/creneaux/:id/inscriptions` | public (multi-créneau signup) |
-| `*` | `/api/poles\|taches\|creneaux` (+ `/reorder`) | admin (CRUD + reordering) |
-| `POST`/`PATCH` | `/api/events` (+ `/:id/banner`) | admin |
-| `GET` | `/api/events/:id/volunteers[.csv]?q=&pole=&tache=&creneau=&statut=` | admin (filters + CSV export) |
-| `POST` | `/api/events/:id/volunteers/broadcast` | admin (email a filtered group or explicit ids) |
-| `POST` | `/api/reminders/run` | admin (manual trigger for due slot-reminder emails; runs on a Cron Trigger in prod) |
+| Method          | Route                                                               | Access                                                                              |
+| --------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `GET`           | `/api/install/status` · `POST /api/install`                         | installer (409 if already installed)                                                |
+| `POST`          | `/api/auth/login` · `/api/auth/logout` · `GET /api/auth/me`         | session (signed cookie)                                                             |
+| `GET`           | `/api/events/:slug`                                                 | public (event + pôles/tâches/créneaux + counters)                                   |
+| `POST`/`DELETE` | `/api/creneaux/:id/inscriptions`                                    | public (multi-créneau signup)                                                       |
+| `*`             | `/api/poles\|taches\|creneaux` (+ `/reorder`)                       | admin (CRUD + reordering)                                                           |
+| `POST`/`PATCH`  | `/api/events` (+ `/:id/banner`)                                     | admin                                                                               |
+| `GET`           | `/api/events/:id/volunteers[.csv]?q=&pole=&tache=&creneau=&statut=` | admin (filters + CSV export)                                                        |
+| `POST`          | `/api/events/:id/volunteers/broadcast`                              | admin (email a filtered group or explicit ids)                                      |
+| `POST`          | `/api/reminders/run`                                                | admin (manual trigger for due slot-reminder emails; runs on a Cron Trigger in prod) |
 
 Portable Node/Workers authentication (PBKDF2 via WebCrypto, DB-backed sessions). Zod validation, JSON errors.
 
