@@ -11,4 +11,3 @@ export function applyAccent(color: string | null | undefined): void {
 export function resetAccent(): void {
   applyAccent(DEFAULT_ACCENT);
 }
-export const testFormatCheck = {a:1,   b:2};
