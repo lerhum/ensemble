@@ -31,9 +31,18 @@ pnpm --filter @ensemble/web test        # vitest
 pnpm --filter @ensemble/api test        # vitest
 pnpm --filter @ensemble/db test         # vitest
 pnpm --filter @ensemble/web build       # production build
+pnpm lint                               # eslint across all workspaces
+pnpm format                             # prettier --write .
 ```
 
 Run typecheck and the relevant test suite(s) before opening a PR.
+
+## Automated PR quality gate
+
+Every PR triggers a Danger.js check (`.github/workflows/pr-quality-gate.yml`) that runs typecheck,
+tests, lint, and formatting, and reports a coverage summary. Typecheck and test failures block the
+PR; lint and formatting issues are posted as warnings (not blocking yet) since there's no baseline
+history for those checks — fix them anyway, they'll become blocking once the codebase is caught up.
 
 ## Naming convention
 
