@@ -52,6 +52,32 @@ Identifiers (files, functions, variables) are written in **English**. Domain ter
 mirrors how the codebase already names things, so match existing patterns in the file you're
 editing.
 
+## Internationalization
+
+Ensemble is being translated into French (default), Dutch, and English. New user-facing strings
+must go through `react-i18next`, not hardcoded JSX text:
+
+```tsx
+import { useTranslation } from "react-i18next";
+
+function MyComponent() {
+  const { t } = useTranslation("common"); // or "public" / "auth" / "admin" / "errors"
+  return <span>{t("nav.home")}</span>;
+}
+```
+
+- Locale files live in `apps/web/src/locales/{fr,nl,en}/<namespace>.json`. Add the French value
+  first — `nl`/`en` are filled in during the dedicated translation-content issues, so a key without
+  an `nl`/`en` entry yet is expected, not a bug.
+- The rendered locale is currently hardcoded to `fr` (`apps/web/src/i18n.ts`); URL-based locale
+  switching (`/nl/…`, `/en/…`) is separate, later work, so `nl`/`en` files existing as stubs
+  doesn't mean those locales are reachable in the app yet.
+- Once you migrate a file's hardcoded French text to `t()` calls, add it to the `files` list of the
+  `i18next/no-literal-string` block in `eslint.config.mjs` — this is an anti-regression guardrail
+  that only covers files explicitly opted in, so it grows one file at a time. Note it currently only
+  catches plain JSX text nodes, not string literals in attributes (`alt`, `placeholder`, …) or in
+  plain `.ts` files — real coverage, not yet complete coverage.
+
 ## Commit messages
 
 This repo follows [Conventional Commits](https://www.conventionalcommits.org/):

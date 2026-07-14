@@ -3,6 +3,7 @@ import tseslint from "typescript-eslint";
 import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
+import i18next from "eslint-plugin-i18next";
 import eslintConfigPrettier from "eslint-config-prettier";
 
 export default tseslint.config(
@@ -48,6 +49,16 @@ export default tseslint.config(
     files: ["apps/web/src/lib/*-context.tsx"],
     rules: {
       "react-refresh/only-export-components": "off",
+    },
+  },
+  {
+    // Anti-regression guardrail: files already migrated to react-i18next keys.
+    // Add a file here once its hardcoded French JSX text is migrated — see
+    // CONTRIBUTING.md § Internationalization.
+    files: ["apps/web/src/components/public/PublicNav.tsx"],
+    plugins: { i18next },
+    rules: {
+      "i18next/no-literal-string": "error",
     },
   },
   eslintConfigPrettier,

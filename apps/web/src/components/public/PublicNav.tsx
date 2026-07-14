@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useVolunteer } from "@/lib/volunteer-context";
 
 interface Props {
@@ -18,6 +19,7 @@ export function PublicNav({
 }: Props) {
   const { token, session, sessionLoading, logout } = useVolunteer();
   const navigate = useNavigate();
+  const { t } = useTranslation("common");
 
   const mesInscriptionsHref = session
     ? "/mes-inscriptions"
@@ -48,11 +50,11 @@ export function PublicNav({
         </div>
         <div className="flex items-center gap-6 text-sm font-700 text-ink2">
           <Link to="/" className="hidden hover:text-ink sm:inline">
-            Accueil
+            {t("nav.home")}
           </Link>
           {mesInscriptionsHref && (
             <Link to={mesInscriptionsHref} className="hidden hover:text-ink sm:inline">
-              Mes inscriptions
+              {t("nav.myRegistrations")}
             </Link>
           )}
           {!sessionLoading && session ? (
@@ -63,7 +65,7 @@ export function PublicNav({
                 onClick={handleLogout}
                 className="rounded-[10px] border border-hair px-3.5 py-2 text-ink hover:bg-surface"
               >
-                Se déconnecter
+                {t("nav.logout")}
               </button>
             </div>
           ) : (
@@ -71,7 +73,7 @@ export function PublicNav({
               to="/benevole/connexion"
               className="rounded-[10px] border border-hair px-3.5 py-2 text-ink hover:bg-surface"
             >
-              Se connecter
+              {t("nav.login")}
             </Link>
           )}
         </div>
