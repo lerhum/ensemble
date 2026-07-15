@@ -2,6 +2,7 @@ import * as React from "react";
 import { Download, Mail, Plus, Search, Trash2, X } from "lucide-react";
 import type { EventDetailDTO, VolunteerDTO, VolunteerFilter } from "@ensemble/db/shared";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api, ApiError } from "@/lib/api";
 import { useAdminEvent } from "@/lib/useEvent";
 import { initials } from "@/lib/utils";
@@ -42,10 +43,11 @@ const ALL = "all";
 export default function AdminVolunteersPage() {
   const { id = "" } = useParams<{ id: string }>();
   const { event, loading } = useAdminEvent(id);
+  const { t } = useTranslation("admin");
   if (loading || !event) {
     return (
-      <AdminLayout eyebrow="Bénévoles" title="Bénévoles">
-        <p className="text-label">Chargement…</p>
+      <AdminLayout eyebrow={t("layout.volunteers")} title={t("layout.volunteers")}>
+        <p className="text-label">{t("shared.loading")}</p>
       </AdminLayout>
     );
   }
@@ -54,6 +56,7 @@ export default function AdminVolunteersPage() {
 
 /** Inner component for the volunteer list, rendered once event data is loaded. Manages filters, table, and CSV export. */
 function VolunteersInner({ event }: { event: EventDetailDTO }) {
+  const { t } = useTranslation("admin");
   const [all, setAll] = React.useState<VolunteerDTO[]>([]);
   const [rows, setRows] = React.useState<VolunteerDTO[]>([]);
   const [filter, setFilter] = React.useState<VolunteerFilter>({});
@@ -164,21 +167,35 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
       setShowAddVolunteer(false);
       resetAddForm();
     } catch (e) {
-      setAddError(e instanceof ApiError ? e.message : "Erreur lors de l'ajout.");
+      setAddError(e instanceof ApiError ? e.message : t("volunteers.addError"));
     } finally {
       setAdding(false);
     }
   }
 
   const chips = [
-    filter.pole && { key: "pole", label: `Pôle : ${poleName(filter.pole)}` },
-    filter.tache && { key: "tache", label: `Tâche : ${tacheName(filter.tache)}` },
-    filter.creneau && { key: "creneau", label: `Créneau : ${creneauName(filter.creneau)}` },
+    filter.pole && {
+      key: "pole",
+      label: t("volunteers.chipPole", { value: poleName(filter.pole) }),
+    },
+    filter.tache && {
+      key: "tache",
+      label: t("volunteers.chipTask", { value: tacheName(filter.tache) }),
+    },
+    filter.creneau && {
+      key: "creneau",
+      label: t("volunteers.chipSlot", { value: creneauName(filter.creneau) }),
+    },
     filter.statut && {
       key: "statut",
-      label: `Statut : ${filter.statut === "confirme" ? "Confirmé" : "En attente"}`,
+      label: t("volunteers.chipStatus", {
+        value:
+          filter.statut === "confirme"
+            ? t("volunteers.statusConfirmed")
+            : t("volunteers.statusPending"),
+      }),
     },
-    filter.q && { key: "q", label: `« ${filter.q} »` },
+    filter.q && { key: "q", label: t("volunteers.chipSearch", { value: filter.q }) },
   ].filter(Boolean) as { key: string; label: string }[];
 
   const clearChip = (key: string) => {
@@ -225,29 +242,29 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
   return (
     <AdminLayout
       eyebrow={event.nom}
-      title="Bénévoles"
+      title={t("layout.volunteers")}
       actions={
         <>
           <Button variant="outline" onClick={() => setShowBroadcast(true)}>
-            <Mail className="h-4 w-4" /> Envoyer un message
+            <Mail className="h-4 w-4" /> {t("volunteers.sendMessage")}
           </Button>
           <Button variant="outline" asChild>
             <a href={api.volunteersCsvUrl(event.id, filter)}>
-              <Download className="h-4 w-4" /> Exporter CSV
+              <Download className="h-4 w-4" /> {t("volunteers.exportCsv")}
             </a>
           </Button>
           <Button variant="default" onClick={() => setShowAddVolunteer(true)}>
-            <Plus className="h-4 w-4" /> Inviter
+            <Plus className="h-4 w-4" /> {t("volunteers.invite")}
           </Button>
         </>
       }
     >
       {/* Stats */}
       <div className="mb-7 flex flex-wrap gap-x-12 gap-y-4 rounded-card border border-hair bg-white px-6 py-5">
-        <StatCard value={stats.total} label="Bénévoles" />
-        <StatCard value={stats.confirmes} label="Confirmés" accent="green" />
-        <StatCard value={stats.attente} label="En attente" accent="amber" />
-        <StatCard value={stats.inscriptions} label="Inscriptions créneaux" />
+        <StatCard value={stats.total} label={t("volunteers.statTotal")} />
+        <StatCard value={stats.confirmes} label={t("volunteers.statConfirmed")} accent="green" />
+        <StatCard value={stats.attente} label={t("volunteers.statPending")} accent="amber" />
+        <StatCard value={stats.inscriptions} label={t("volunteers.statSlotSignups")} />
       </div>
 
       {/* Filtres */}
@@ -257,16 +274,16 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
           <Input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Rechercher un parent…"
+            placeholder={t("volunteers.searchPlaceholder")}
             className="pl-9"
           />
         </div>
         <Select value={filter.pole ?? ALL} onValueChange={setSel("pole")}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Pôle : Tous" />
+            <SelectValue placeholder={t("volunteers.poleAll")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={ALL}>Pôle : Tous</SelectItem>
+            <SelectItem value={ALL}>{t("volunteers.poleAll")}</SelectItem>
             {event.poles.map((p) => (
               <SelectItem key={p.id} value={p.id}>
                 {p.nom}
@@ -276,23 +293,23 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
         </Select>
         <Select value={filter.tache ?? ALL} onValueChange={setSel("tache")}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Tâche : Toutes" />
+            <SelectValue placeholder={t("volunteers.taskAll")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={ALL}>Tâche : Toutes</SelectItem>
-            {tacheOptions.map((t) => (
-              <SelectItem key={t.id} value={t.id}>
-                {t.label}
+            <SelectItem value={ALL}>{t("volunteers.taskAll")}</SelectItem>
+            {tacheOptions.map((task) => (
+              <SelectItem key={task.id} value={task.id}>
+                {task.label}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
         <Select value={filter.creneau ?? ALL} onValueChange={setSel("creneau")}>
           <SelectTrigger className="w-[220px]">
-            <SelectValue placeholder="Créneau : Tous" />
+            <SelectValue placeholder={t("volunteers.slotAll")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={ALL}>Créneau : Tous</SelectItem>
+            <SelectItem value={ALL}>{t("volunteers.slotAll")}</SelectItem>
             {creneauOptions.map((c) => (
               <SelectItem key={c.id} value={c.id}>
                 {c.label}
@@ -302,17 +319,17 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
         </Select>
         <Select value={filter.statut ?? ALL} onValueChange={setSel("statut")}>
           <SelectTrigger className="w-[170px]">
-            <SelectValue placeholder="Statut : Tous" />
+            <SelectValue placeholder={t("volunteers.statusAll")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={ALL}>Statut : Tous</SelectItem>
-            <SelectItem value="confirme">Confirmé</SelectItem>
-            <SelectItem value="attente">En attente</SelectItem>
+            <SelectItem value={ALL}>{t("volunteers.statusAll")}</SelectItem>
+            <SelectItem value="confirme">{t("volunteers.statusConfirmed")}</SelectItem>
+            <SelectItem value="attente">{t("volunteers.statusPending")}</SelectItem>
           </SelectContent>
         </Select>
         {chips.length > 0 && (
           <button onClick={reset} className="text-sm font-700 text-coral hover:underline">
-            Réinitialiser
+            {t("volunteers.reset")}
           </button>
         )}
       </div>
@@ -326,20 +343,20 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
               className="inline-flex items-center gap-1.5 rounded-full bg-chip px-3 py-1 text-[13px] font-600 text-navy"
             >
               {c.label}
-              <button onClick={() => clearChip(c.key)} aria-label="Retirer le filtre">
+              <button onClick={() => clearChip(c.key)} aria-label={t("volunteers.removeFilter")}>
                 <X className="h-3.5 w-3.5" />
               </button>
             </span>
           ))}
           <span className="text-[13px] text-label">
-            {rows.length} bénévole{rows.length > 1 ? "s" : ""} sur {stats.total}
+            {t("volunteers.filteredCount", { count: rows.length, total: stats.total })}
           </span>
         </div>
       )}
 
       {lastSent !== null && (
         <p className="mt-3 text-[13px] font-600 text-[#2F7E59]">
-          Message envoyé à {lastSent} bénévole{lastSent > 1 ? "s" : ""}.
+          {t("volunteers.broadcastSent", { count: lastSent })}
         </p>
       )}
 
@@ -350,16 +367,16 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
             <TableRow className="bg-surface hover:bg-surface">
               <TableHead className="w-10">
                 <Checkbox
-                  aria-label="Tout sélectionner"
+                  aria-label={t("volunteers.selectAll")}
                   checked={rows.length > 0 && selected.size === rows.length}
                   onCheckedChange={(checked) => toggleAll(checked === true)}
                 />
               </TableHead>
-              <TableHead>Bénévole</TableHead>
-              <TableHead>Pôle</TableHead>
-              <TableHead>Créneaux</TableHead>
-              <TableHead>Contact</TableHead>
-              <TableHead>Statut</TableHead>
+              <TableHead>{t("volunteers.colVolunteer")}</TableHead>
+              <TableHead>{t("volunteers.colPole")}</TableHead>
+              <TableHead>{t("volunteers.colSlots")}</TableHead>
+              <TableHead>{t("volunteers.colContact")}</TableHead>
+              <TableHead>{t("volunteers.colStatus")}</TableHead>
               <TableHead className="w-10" />
             </TableRow>
           </TableHeader>
@@ -367,7 +384,7 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
             {rows.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="py-12 text-center text-label">
-                  Aucun bénévole ne correspond aux filtres.
+                  {t("volunteers.noMatches")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -375,7 +392,7 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
                 <TableRow key={v.id} className={v.statut === "attente" ? "bg-surface2" : ""}>
                   <TableCell>
                     <Checkbox
-                      aria-label={`Sélectionner ${v.nom}`}
+                      aria-label={t("volunteers.select", { nom: v.nom })}
                       checked={selected.has(v.id)}
                       onCheckedChange={(checked) => toggleOne(v.id, checked === true)}
                     />
@@ -396,15 +413,15 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
                   </TableCell>
                   <TableCell>
                     <Badge variant="default">
-                      {v.creneaux.length} créneau{v.creneaux.length > 1 ? "x" : ""}
+                      {t("shared.slotsCount", { count: v.creneaux.length })}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm text-ink2">{v.tel || "—"}</TableCell>
                   <TableCell>
                     {v.statut === "confirme" ? (
-                      <Badge variant="success">Confirmé</Badge>
+                      <Badge variant="success">{t("volunteers.statusConfirmed")}</Badge>
                     ) : (
-                      <Badge variant="warn">En attente</Badge>
+                      <Badge variant="warn">{t("volunteers.statusPending")}</Badge>
                     )}
                   </TableCell>
                   <TableCell>
@@ -415,19 +432,19 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
                           disabled={deletingId === v.id}
                           onClick={() => deleteVolunteer(v.id)}
                         >
-                          {deletingId === v.id ? "…" : "Confirmer"}
+                          {deletingId === v.id ? "…" : t("volunteers.confirm")}
                         </button>
                         <button
                           className="text-[12px] text-label hover:text-ink"
                           onClick={() => setConfirmId(null)}
                         >
-                          Annuler
+                          {t("volunteers.cancel")}
                         </button>
                       </div>
                     ) : (
                       <button
                         className="rounded p-1 text-label2 hover:text-danger"
-                        aria-label="Supprimer ce bénévole"
+                        aria-label={t("volunteers.deleteVolunteer")}
                         onClick={() => setConfirmId(v.id)}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -444,44 +461,44 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
       <Dialog open={showBroadcast} onOpenChange={setShowBroadcast}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Envoyer un message</DialogTitle>
+            <DialogTitle>{t("volunteers.broadcastTitle")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <p className="text-[13px] text-label">
               {selected.size > 0
-                ? `${recipientCount} bénévole${recipientCount > 1 ? "s" : ""} sélectionné${recipientCount > 1 ? "s" : ""}`
-                : `${recipientCount} bénévole${recipientCount > 1 ? "s" : ""} filtré${recipientCount > 1 ? "s" : ""}`}
+                ? t("volunteers.broadcastSelectedCount", { count: recipientCount })
+                : t("volunteers.broadcastFilteredCount", { count: recipientCount })}
             </p>
             <div className="space-y-1.5">
-              <Label htmlFor="broadcast-subject">Sujet *</Label>
+              <Label htmlFor="broadcast-subject">{t("volunteers.subjectLabel")}</Label>
               <Input
                 id="broadcast-subject"
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
-                placeholder="Ex : Rappel pour ton créneau"
+                placeholder={t("volunteers.subjectPlaceholder")}
                 autoFocus
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="broadcast-message">Message *</Label>
+              <Label htmlFor="broadcast-message">{t("volunteers.messageLabel")}</Label>
               <Textarea
                 id="broadcast-message"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Ton message…"
+                placeholder={t("volunteers.messagePlaceholder")}
                 rows={6}
               />
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowBroadcast(false)}>
-              Annuler
+              {t("volunteers.cancel")}
             </Button>
             <Button
               onClick={handleBroadcast}
               disabled={!subject.trim() || !message.trim() || sending || recipientCount === 0}
             >
-              {sending ? "Envoi…" : "Envoyer"}
+              {sending ? t("volunteers.sending") : t("volunteers.send")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -496,17 +513,15 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Ajouter un bénévole</DialogTitle>
+            <DialogTitle>{t("volunteers.addVolunteerTitle")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
-            <p className="text-[13px] text-label">
-              Un simple prénom suffit — l'email et le téléphone sont facultatifs.
-            </p>
+            <p className="text-[13px] text-label">{t("volunteers.addVolunteerHint")}</p>
             <div className="space-y-1.5">
-              <Label htmlFor="add-creneau">Créneau *</Label>
+              <Label htmlFor="add-creneau">{t("volunteers.slotLabel")}</Label>
               <Select value={addCreneauId} onValueChange={setAddCreneauId}>
                 <SelectTrigger id="add-creneau">
-                  <SelectValue placeholder="Choisir un créneau" />
+                  <SelectValue placeholder={t("volunteers.slotPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {creneauOptions.map((c) => (
@@ -518,42 +533,42 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="add-nom">Prénom ou nom complet *</Label>
+              <Label htmlFor="add-nom">{t("volunteers.nameLabel")}</Label>
               <Input
                 id="add-nom"
                 value={addNom}
                 onChange={(e) => setAddNom(e.target.value)}
-                placeholder="Ex : Julie ou Julie Dupont"
+                placeholder={t("volunteers.namePlaceholder")}
                 autoFocus
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="add-email">Email (optionnel)</Label>
+              <Label htmlFor="add-email">{t("volunteers.emailLabel")}</Label>
               <Input
                 id="add-email"
                 type="email"
                 value={addEmail}
                 onChange={(e) => setAddEmail(e.target.value)}
-                placeholder="julie@exemple.com"
+                placeholder={t("volunteers.emailPlaceholder")}
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="add-tel">Téléphone (optionnel)</Label>
+              <Label htmlFor="add-tel">{t("volunteers.phoneLabel")}</Label>
               <Input
                 id="add-tel"
                 value={addTel}
                 onChange={(e) => setAddTel(e.target.value)}
-                placeholder="04 12 34 56 78"
+                placeholder={t("volunteers.phonePlaceholder")}
               />
             </div>
             {addError && <p className="text-[13px] font-600 text-danger">{addError}</p>}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAddVolunteer(false)}>
-              Annuler
+              {t("volunteers.cancel")}
             </Button>
             <Button onClick={addVolunteer} disabled={!addCreneauId || !addNom.trim() || adding}>
-              {adding ? "Ajout…" : "Ajouter"}
+              {adding ? t("volunteers.adding") : t("volunteers.add")}
             </Button>
           </DialogFooter>
         </DialogContent>

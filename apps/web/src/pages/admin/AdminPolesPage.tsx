@@ -2,6 +2,7 @@ import * as React from "react";
 import { ChevronDown, GripVertical, Plus, X } from "lucide-react";
 import type { EventDetailDTO, PoleDTO, TacheDTO } from "@ensemble/db/shared";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api } from "@/lib/api";
 import { useAdminEvent } from "@/lib/useEvent";
 import { cn, initials } from "@/lib/utils";
@@ -17,10 +18,11 @@ import { statusMeta } from "@/components/primitives/status";
 export default function AdminPolesPage() {
   const { id = "" } = useParams<{ id: string }>();
   const { event, loading, reload } = useAdminEvent(id);
+  const { t } = useTranslation("admin");
   if (loading || !event) {
     return (
-      <AdminLayout eyebrow="Configuration" title="Pôles & créneaux">
-        <p className="text-label">Chargement…</p>
+      <AdminLayout eyebrow={t("poles.eyebrowSuffix")} title={t("layout.polesAndSlots")}>
+        <p className="text-label">{t("shared.loading")}</p>
       </AdminLayout>
     );
   }
@@ -29,13 +31,14 @@ export default function AdminPolesPage() {
 
 /** Inner component for the poles editor, rendered once event data is loaded. */
 function PolesInner({ event, reload }: { event: EventDetailDTO; reload: () => Promise<void> }) {
+  const { t } = useTranslation("admin");
   const c = event.counters;
   const [open, setOpen] = React.useState<string | null>(event.poles[0]?.id ?? null);
 
   const addPole = async () => {
     const pole = (await api.createPole({
       eventId: event.id,
-      nom: "Nouveau pôle",
+      nom: t("poles.newPoleName"),
       description: "",
     })) as { id: string };
     await reload();
@@ -51,11 +54,11 @@ function PolesInner({ event, reload }: { event: EventDetailDTO; reload: () => Pr
 
   return (
     <AdminLayout
-      eyebrow={`${event.nom} · Configuration`}
-      title="Pôles & créneaux"
+      eyebrow={`${event.nom} · ${t("poles.eyebrowSuffix")}`}
+      title={t("layout.polesAndSlots")}
       actions={
         <Button variant="default" onClick={addPole}>
-          <Plus className="h-4 w-4" /> Ajouter un pôle
+          <Plus className="h-4 w-4" /> {t("poles.addPole")}
         </Button>
       }
     >
@@ -68,11 +71,11 @@ function PolesInner({ event, reload }: { event: EventDetailDTO; reload: () => Pr
               <span className="text-label"> / {c.necessaires}</span>
             </>
           }
-          label="Bénévoles inscrits"
+          label={t("poles.statVolunteers")}
         />
-        <StatCard value={c.nbPoles} label="Pôles" />
-        <StatCard value={c.nbCreneaux} label="Créneaux" />
-        <StatCard value={c.aCompleter} label="À compléter" accent="coral" />
+        <StatCard value={c.nbPoles} label={t("poles.statPoles")} />
+        <StatCard value={c.nbCreneaux} label={t("poles.statSlots")} />
+        <StatCard value={c.aCompleter} label={t("poles.statToComplete")} accent="coral" />
       </div>
 
       <div className="space-y-4">
@@ -103,15 +106,16 @@ function PoleCard({
   onToggle: () => void;
   reload: () => Promise<void>;
 }) {
+  const { t } = useTranslation("admin");
   const [nom, setNom] = React.useState(pole.nom);
   const [description, setDescription] = React.useState(pole.description);
   const meta = statusMeta(pole.inscrits, pole.necessaires);
   const poleLabel =
     pole.placesLibres === 0
-      ? "Complet"
+      ? t("poles.poleFull")
       : meta.status === "urgent"
-        ? "À compléter"
-        : `${pole.placesLibres} place${pole.placesLibres > 1 ? "s" : ""} à pourvoir`;
+        ? t("poles.poleToComplete")
+        : t("poles.placesToFill", { count: pole.placesLibres });
 
   const saveNom = async () => {
     if (nom.trim() && nom !== pole.nom) await api.updatePole(pole.id, { nom: nom.trim() });
@@ -120,11 +124,11 @@ function PoleCard({
     if (description !== pole.description) await api.updatePole(pole.id, { description });
   };
   const addTache = async () => {
-    await api.createTache({ poleId: pole.id, nom: "Nouvelle tâche", description: "" });
+    await api.createTache({ poleId: pole.id, nom: t("poles.newTaskName"), description: "" });
     await reload();
   };
   const deletePole = async () => {
-    if (confirm(`Supprimer le pôle « ${pole.nom} » ?`)) {
+    if (confirm(t("poles.confirmDeletePole", { nom: pole.nom }))) {
       await api.deletePole(pole.id);
       await reload();
     }
@@ -153,7 +157,7 @@ function PoleCard({
             className="min-w-0 flex-1 rounded-[8px] bg-transparent px-1 py-0.5 font-800 text-ink outline-none focus:bg-surface"
           />
           <span className="shrink-0 text-sm text-label">
-            {pole.inscrits} / {pole.necessaires} inscrits
+            {pole.inscrits} / {pole.necessaires} {t("poles.enrolledSuffix")}
           </span>
         </div>
         <span
@@ -162,7 +166,7 @@ function PoleCard({
         >
           {poleLabel}
         </span>
-        <button onClick={onToggle} aria-label="Déplier">
+        <button onClick={onToggle} aria-label={t("poles.collapse")}>
           <ChevronDown
             className={cn("h-5 w-5 text-label transition-transform", expanded && "rotate-180")}
           />
@@ -177,19 +181,19 @@ function PoleCard({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               onBlur={saveDescription}
-              placeholder="Description du pôle (optionnelle)…"
+              placeholder={t("poles.descriptionPlaceholder")}
               className="w-full rounded-[8px] bg-transparent px-1 py-0.5 text-sm text-ink2 outline-none placeholder:text-label2 focus:bg-surface"
             />
           </div>
 
           {/* En-têtes de colonnes */}
           <div className="grid grid-cols-[1fr_110px_110px_120px_140px_90px_28px] items-center gap-3 px-2 pb-2 pt-4 text-[11px] font-800 uppercase tracking-[.08em] text-label">
-            <span>Tâche</span>
-            <span>Début</span>
-            <span>Fin</span>
-            <span>Nécessaires</span>
-            <span>Inscrits</span>
-            <span>Statut</span>
+            <span>{t("poles.colTask")}</span>
+            <span>{t("poles.colStart")}</span>
+            <span>{t("poles.colEnd")}</span>
+            <span>{t("poles.colRequired")}</span>
+            <span>{t("poles.colEnrolled")}</span>
+            <span>{t("poles.colStatus")}</span>
             <span />
           </div>
 
@@ -201,10 +205,10 @@ function PoleCard({
 
           <div className="mt-3 flex items-center justify-between">
             <button onClick={addTache} className="text-sm font-700 text-brand hover:underline">
-              + Ajouter une tâche
+              {t("poles.addTask")}
             </button>
             <button onClick={deletePole} className="text-sm font-600 text-label hover:text-danger">
-              Supprimer le pôle
+              {t("poles.deletePole")}
             </button>
           </div>
         </div>
@@ -215,6 +219,7 @@ function PoleCard({
 
 /** Task group within a pole: inline name editing, slot rows, add slot button, and drag-to-reorder slots. */
 function TacheGroup({ tache, reload }: { tache: TacheDTO; reload: () => Promise<void> }) {
+  const { t } = useTranslation("admin");
   const [nom, setNom] = React.useState(tache.nom);
 
   const saveNom = async () => {
@@ -249,13 +254,13 @@ function TacheGroup({ tache, reload }: { tache: TacheDTO; reload: () => Promise<
           className="rounded-[8px] bg-transparent px-1 py-0.5 font-700 text-ink outline-none focus:bg-surface"
         />
         <span className="rounded-full bg-chip px-2 py-0.5 text-[11px] font-700 text-navy">
-          {tache.creneaux.length} créneau{tache.creneaux.length > 1 ? "x" : ""}
+          {t("shared.slotsCount", { count: tache.creneaux.length })}
         </span>
         <button
           onClick={addCreneau}
           className="ml-auto text-sm font-700 text-brand hover:underline"
         >
-          + créneau
+          {t("poles.addSlot")}
         </button>
       </div>
       {tache.creneaux.map((cr, i) => (
@@ -275,6 +280,7 @@ function CreneauRow({
   creneau: TacheDTO["creneaux"][number];
   reload: () => Promise<void>;
 }) {
+  const { t } = useTranslation("admin");
   const [debut, setDebut] = React.useState(creneau.debut);
   const [fin, setFin] = React.useState(creneau.fin);
   const [nec, setNec] = React.useState(creneau.necessaires);
@@ -297,7 +303,7 @@ function CreneauRow({
         value={debut}
         onChange={(e) => setDebut(e.target.value)}
         onBlur={() => debut !== creneau.debut && patch({ debut })}
-        placeholder="13:00"
+        placeholder={t("poles.startPlaceholder")}
         inputMode="numeric"
         pattern="[0-2][0-9]:[0-5][0-9]"
         className="h-9"
@@ -306,7 +312,7 @@ function CreneauRow({
         value={fin}
         onChange={(e) => setFin(e.target.value)}
         onBlur={() => fin !== creneau.fin && patch({ fin })}
-        placeholder="14:00"
+        placeholder={t("poles.endPlaceholder")}
         inputMode="numeric"
         pattern="[0-2][0-9]:[0-5][0-9]"
         className="h-9"
@@ -333,7 +339,7 @@ function CreneauRow({
       <BadgeStatut inscrits={creneau.inscrits} necessaires={creneau.necessaires} />
       <button
         onClick={del}
-        aria-label="Supprimer le créneau"
+        aria-label={t("poles.deleteSlot")}
         className="text-label2 hover:text-danger"
       >
         <X className="h-4 w-4" />

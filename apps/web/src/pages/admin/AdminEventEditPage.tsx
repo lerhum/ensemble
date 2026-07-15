@@ -1,11 +1,12 @@
 import * as React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Check, Upload } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { EventDetailDTO } from "@ensemble/db/shared";
 import { api } from "@/lib/api";
 import { useAdminEvent } from "@/lib/useEvent";
 import { applyAccent } from "@/lib/theme";
-import { cn } from "@/lib/utils";
+import { cn, formatFullDate } from "@/lib/utils";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,18 +15,12 @@ import { Textarea } from "@/components/ui/textarea";
 
 const SWATCHES = ["#1C3A5E", "#DA4A40", "#2F7E59", "#E8A13A", "#7A5CC0"];
 
-/** Formats an ISO date string as a full French-Belgian date (e.g. "jeudi 15 mai 2025"). */
-function toFrenchDate(iso: string): string {
-  return new Intl.DateTimeFormat("fr-BE", { dateStyle: "full" }).format(
-    new Date(iso + "T12:00:00"),
-  );
-}
-
 /** Admin event edit page: edit event details, banner, and theme color. */
 export default function AdminEventEditPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { event, loading, error, reload } = useAdminEvent(id ?? "");
+  const { t } = useTranslation("admin");
 
   if (!id) {
     navigate("/admin");
@@ -34,18 +29,18 @@ export default function AdminEventEditPage() {
 
   if (loading) {
     return (
-      <AdminLayout eyebrow="Événements · Édition" title="Chargement…">
-        <p className="text-label">Chargement…</p>
+      <AdminLayout eyebrow={t("dashboard.eyebrow")} title={t("shared.loading")}>
+        <p className="text-label">{t("shared.loading")}</p>
       </AdminLayout>
     );
   }
 
   if (error || !event) {
     return (
-      <AdminLayout eyebrow="Événements · Édition" title="Événement introuvable">
-        <p className="text-label">{error ?? "Cet événement n'existe pas."}</p>
+      <AdminLayout eyebrow={t("dashboard.eyebrow")} title={t("dashboard.eventNotFound")}>
+        <p className="text-label">{error ?? t("dashboard.eventNotFoundBody")}</p>
         <Button className="mt-4" variant="outline" onClick={() => navigate("/admin")}>
-          ← Retour aux événements
+          {t("dashboard.backToEvents")}
         </Button>
       </AdminLayout>
     );
@@ -56,6 +51,7 @@ export default function AdminEventEditPage() {
 
 /** Inner component for the event dashboard, rendered once event data is loaded. */
 function DashboardInner({ event, reload }: { event: EventDetailDTO; reload: () => Promise<void> }) {
+  const { t, i18n } = useTranslation("admin");
   const [form, setForm] = React.useState({
     nom: event.nom,
     date: event.date,
@@ -85,7 +81,7 @@ function DashboardInner({ event, reload }: { event: EventDetailDTO; reload: () =
     setForm((f) => ({
       ...f,
       dateIso: iso,
-      date: iso ? toFrenchDate(iso) : f.date,
+      date: iso ? formatFullDate(iso, i18n.language) : f.date,
     }));
   };
 
@@ -111,15 +107,15 @@ function DashboardInner({ event, reload }: { event: EventDetailDTO; reload: () =
 
   return (
     <AdminLayout
-      eyebrow="Événements · Édition"
-      title={event.nom || "Nouvel événement"}
+      eyebrow={t("dashboard.eyebrow")}
+      title={event.nom || t("dashboard.untitledEvent")}
       actions={
         <>
           <Button variant="outline" onClick={() => publish("brouillon")} disabled={saving}>
-            Brouillon
+            {t("dashboard.saveDraft")}
           </Button>
           <Button variant="default" onClick={() => publish("publie")} disabled={saving}>
-            {statut === "publie" ? "Mettre à jour" : "Publier l'événement"}
+            {statut === "publie" ? t("dashboard.publishUpdate") : t("dashboard.publish")}
           </Button>
         </>
       }
@@ -128,10 +124,10 @@ function DashboardInner({ event, reload }: { event: EventDetailDTO; reload: () =
         {/* Informations */}
         <div>
           <p className="mb-4 text-[11px] font-800 uppercase tracking-[.1em] text-label2">
-            Informations
+            {t("dashboard.infoSection")}
           </p>
           <div className="space-y-5">
-            <Field label="Nom de l'événement">
+            <Field label={t("dashboard.eventNameLabel")}>
               <Input
                 value={form.nom}
                 onChange={set("nom")}
@@ -139,7 +135,7 @@ function DashboardInner({ event, reload }: { event: EventDetailDTO; reload: () =
               />
             </Field>
             <div className="grid grid-cols-2 gap-4">
-              <Field label="Date">
+              <Field label={t("dashboard.dateLabel")}>
                 <Input
                   type="date"
                   value={form.dateIso}
@@ -148,23 +144,23 @@ function DashboardInner({ event, reload }: { event: EventDetailDTO; reload: () =
                 />
                 {form.date && <p className="mt-1 text-[12px] text-label capitalize">{form.date}</p>}
               </Field>
-              <Field label="Horaires">
+              <Field label={t("dashboard.scheduleLabel")}>
                 <Input
                   value={form.horaires}
                   onChange={set("horaires")}
-                  placeholder="14h00 – 20h00"
+                  placeholder={t("dashboard.schedulePlaceholder")}
                   onBlur={() => persist({ horaires: form.horaires })}
                 />
               </Field>
             </div>
-            <Field label="Lieu">
+            <Field label={t("dashboard.locationLabel")}>
               <Input
                 value={form.lieu}
                 onChange={set("lieu")}
                 onBlur={() => persist({ lieu: form.lieu })}
               />
             </Field>
-            <Field label="L'histoire de la fête">
+            <Field label={t("dashboard.storyLabel")}>
               <Textarea
                 value={form.histoire}
                 onChange={set("histoire")}
@@ -173,29 +169,29 @@ function DashboardInner({ event, reload }: { event: EventDetailDTO; reload: () =
                 rows={5}
               />
               <div className="mt-1 text-right text-[12px] text-label">
-                {form.histoire.length} / 600 caractères
+                {t("dashboard.charCount", { count: form.histoire.length })}
               </div>
             </Field>
             <div className="mt-2 border-t border-hair pt-5">
               <p className="mb-4 text-[11px] font-800 uppercase tracking-[.1em] text-label2">
-                Section « Pourquoi participer »
+                {t("dashboard.whySection")}
               </p>
               <div className="space-y-4">
-                <Field label="Titre">
+                <Field label={t("dashboard.titleLabel")}>
                   <Input
                     value={form.pourquoiTitre}
                     onChange={set("pourquoiTitre")}
                     onBlur={() => persist({ pourquoiTitre: form.pourquoiTitre })}
-                    placeholder="Ex : Une fête portée par les parents"
+                    placeholder={t("dashboard.titlePlaceholder")}
                   />
                 </Field>
-                <Field label="Texte">
+                <Field label={t("dashboard.textLabel")}>
                   <Textarea
                     value={form.pourquoiTexte}
                     onChange={set("pourquoiTexte")}
                     onBlur={() => persist({ pourquoiTexte: form.pourquoiTexte })}
                     rows={4}
-                    placeholder="Expliquez pourquoi les parents devraient participer…"
+                    placeholder={t("dashboard.textPlaceholder")}
                   />
                 </Field>
               </div>
@@ -206,16 +202,20 @@ function DashboardInner({ event, reload }: { event: EventDetailDTO; reload: () =
         {/* Personnalisation */}
         <div>
           <p className="mb-4 text-[11px] font-800 uppercase tracking-[.1em] text-label2">
-            Personnalisation
+            {t("dashboard.customizationSection")}
           </p>
 
-          <Label className="mb-1.5 block">Bannière</Label>
+          <Label className="mb-1.5 block">{t("dashboard.bannerLabel")}</Label>
           <div className="overflow-hidden rounded-[14px] border border-hair bg-surface">
             {banniere ? (
-              <img src={banniere} alt="Bannière" className="h-36 w-full object-cover" />
+              <img
+                src={banniere}
+                alt={t("dashboard.bannerLabel")}
+                className="h-36 w-full object-cover"
+              />
             ) : (
               <div className="flex h-36 items-center justify-center text-sm text-label2">
-                Aucune bannière
+                {t("dashboard.noBanner")}
               </div>
             )}
           </div>
@@ -226,10 +226,10 @@ function DashboardInner({ event, reload }: { event: EventDetailDTO; reload: () =
             className="mt-2"
             onClick={() => fileRef.current?.click()}
           >
-            <Upload className="h-4 w-4" /> Remplacer
+            <Upload className="h-4 w-4" /> {t("shared.replace")}
           </Button>
 
-          <Label className="mb-1.5 mt-6 block">Couleur du thème</Label>
+          <Label className="mb-1.5 mt-6 block">{t("dashboard.themeColorLabel")}</Label>
           <div className="flex items-center gap-2.5">
             {SWATCHES.map((color) => (
               <button
@@ -243,7 +243,7 @@ function DashboardInner({ event, reload }: { event: EventDetailDTO; reload: () =
                   form.couleurTheme.toLowerCase() === color.toLowerCase() && "ring-2 ring-ink",
                 )}
                 style={{ background: color }}
-                aria-label={`Couleur ${color}`}
+                aria-label={t("dashboard.colorAriaLabel", { color })}
               >
                 {form.couleurTheme.toLowerCase() === color.toLowerCase() && (
                   <Check className="h-4 w-4 text-white" />
@@ -260,7 +260,7 @@ function DashboardInner({ event, reload }: { event: EventDetailDTO; reload: () =
 
           {/* Aperçu page publique */}
           <p className="mb-2 mt-6 text-[11px] font-800 uppercase tracking-[.1em] text-label2">
-            Aperçu page publique
+            {t("dashboard.publicPreview")}
           </p>
           <div className="overflow-hidden rounded-card border border-hair bg-white shadow-soft">
             {banniere ? (
@@ -270,17 +270,17 @@ function DashboardInner({ event, reload }: { event: EventDetailDTO; reload: () =
             )}
             <div className="p-4">
               <p className="text-[11px] font-800 uppercase tracking-[.1em] text-label2">
-                Fête de l'école
+                {t("dashboard.previewKicker")}
               </p>
               <h3 className="mt-1 text-lg font-800 leading-tight tracking-tighter2 text-ink">
                 {form.nom}
               </h3>
               <p className="mt-0.5 text-[13px] text-label">
-                {form.date || "—"}
+                {form.date || t("eventsList.emptyValue")}
                 {form.horaires ? ` · ${form.horaires}` : ""}
               </p>
               <Button variant="brand" size="sm" className="mt-3 w-full">
-                Je participe
+                {t("dashboard.previewParticipate")}
               </Button>
             </div>
           </div>
