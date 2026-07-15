@@ -87,6 +87,8 @@ export const volunteers = pgTable("volunteers", {
   tel: text("tel"),
   statut: volunteerStatut("statut").notNull().default("confirme"),
   passwordHash: text("password_hash"),
+  // Langue captée à l'inscription (fr/nl/en) — pour l'envoi d'emails localisés.
+  locale: text("locale").notNull().default("fr"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

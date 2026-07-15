@@ -121,6 +121,7 @@ publicRoutes.post("/creneaux/:id/inscriptions", async (c) => {
         email: body.email,
         tel: body.tel ?? null,
         statut: "attente",
+        locale: body.locale,
       })
       .returning();
     volunteerId = created!.id;

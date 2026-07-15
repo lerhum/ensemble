@@ -1,0 +1,1 @@
+ALTER TABLE "volunteers" ADD COLUMN "locale" text DEFAULT 'fr' NOT NULL;

@@ -262,8 +262,16 @@ export const inscriptionSchema = z.object({
   nom: z.string().min(1, V.nomRequired),
   email: z.string().email(V.emailInvalid),
   tel: z.string().nullish(),
+  // Absent ou invalide retombe silencieusement sur "fr" — ne doit jamais faire échouer
+  // l'inscription à cause d'une valeur de langue inattendue.
+  locale: z
+    .string()
+    .optional()
+    .transform((v): "fr" | "nl" | "en" => (v === "nl" || v === "en" ? v : "fr")),
 });
-export type InscriptionInput = z.infer<typeof inscriptionSchema>;
+// z.input (not z.infer/z.output): callers may omit locale — the transform that defaults it to
+// "fr" only applies on the server side when the schema actually parses the request body.
+export type InscriptionInput = z.input<typeof inscriptionSchema>;
 
 // Inscription manuelle par l'admin : nom seul suffit, email/tel optionnels.
 export const adminInscriptionSchema = z.object({
