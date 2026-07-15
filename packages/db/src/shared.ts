@@ -20,14 +20,11 @@ export function slotStatus(inscrits: number, necessaires: number): SlotStatus {
 }
 
 // Jetons couleur (exacts README) — réutilisés badges, jauges, pastilles.
-export const STATUS_COLORS: Record<
-  SlotStatus,
-  { fg: string; bg: string; bar: string; label: string }
-> = {
-  complet: { fg: "#2F7E59", bg: "#EAF4EF", bar: "#2F7E59", label: "Complet" },
-  cours: { fg: "#1C3A5E", bg: "#EEF1F4", bar: "#1C3A5E", label: "En cours" },
-  ambre: { fg: "#B5781E", bg: "#FBF1DF", bar: "#E8A13A", label: "1 place" },
-  urgent: { fg: "#C7443A", bg: "#FBE9E7", bar: "#DA4A40", label: "Urgent" },
+export const STATUS_COLORS: Record<SlotStatus, { fg: string; bg: string; bar: string }> = {
+  complet: { fg: "#2F7E59", bg: "#EAF4EF", bar: "#2F7E59" },
+  cours: { fg: "#1C3A5E", bg: "#EEF1F4", bar: "#1C3A5E" },
+  ambre: { fg: "#B5781E", bg: "#FBF1DF", bar: "#E8A13A" },
+  urgent: { fg: "#C7443A", bg: "#FBE9E7", bar: "#DA4A40" },
 };
 
 // ── Énumérations métier ──────────────────────────────────────────────────
@@ -144,6 +141,25 @@ export interface VolunteerSessionDTO {
 }
 
 // ── Schémas zod (validation des bodies d'API) ────────────────────────────
+// Clés stables (pas de prose française) — voir packages/i18n pour les valeurs résolues
+// (namespace "validation"). Rien ne lit result.error.flatten().fieldErrors aujourd'hui, mais
+// garder les deux synchronisés évite un piège pour une future UI d'erreurs de champ inline.
+const V = {
+  hhmm: "validation.hhmm",
+  hexColor: "validation.hexColor",
+  orgNomRequired: "validation.orgNomRequired",
+  rgpdEmailInvalid: "validation.rgpdEmailInvalid",
+  emailInvalid: "validation.emailInvalid",
+  passwordMinLength: "validation.passwordMinLength",
+  passwordsMismatch: "validation.passwordsMismatch",
+  passwordRequired: "validation.passwordRequired",
+  dateIsoFormat: "validation.dateIsoFormat",
+  tokenRequired: "validation.tokenRequired",
+  nomRequired: "validation.nomRequired",
+  subjectRequired: "validation.subjectRequired",
+  messageRequired: "validation.messageRequired",
+} as const;
+
 export const settingsUpdateSchema = z.object({
   siteTitle: z.string().min(1).optional(),
   siteLogo: z.string().url().nullish(),
@@ -152,27 +168,27 @@ export const settingsUpdateSchema = z.object({
 });
 export type SettingsUpdateInput = z.infer<typeof settingsUpdateSchema>;
 
-const hhmm = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Heure attendue au format HH:MM");
+const hhmm = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, V.hhmm);
 
-const hexColor = z.string().regex(/^#([0-9a-fA-F]{6})$/, "Couleur hex attendue (#RRGGBB)");
+const hexColor = z.string().regex(/^#([0-9a-fA-F]{6})$/, V.hexColor);
 
 export const installSchema = z
   .object({
-    orgNom: z.string().min(1, "Nom de l'organisation requis"),
-    rgpdEmail: z.string().email("Email RGPD invalide"),
-    email: z.string().email("Email invalide"),
-    password: z.string().min(8, "Mot de passe : 8 caractères minimum"),
+    orgNom: z.string().min(1, V.orgNomRequired),
+    rgpdEmail: z.string().email(V.rgpdEmailInvalid),
+    email: z.string().email(V.emailInvalid),
+    password: z.string().min(8, V.passwordMinLength),
     confirmPassword: z.string(),
   })
   .refine((d) => d.password === d.confirmPassword, {
-    message: "Les mots de passe ne correspondent pas",
+    message: V.passwordsMismatch,
     path: ["confirmPassword"],
   });
 export type InstallInput = z.infer<typeof installSchema>;
 
 export const loginSchema = z.object({
-  email: z.string().email("Email invalide"),
-  password: z.string().min(1, "Mot de passe requis"),
+  email: z.string().email(V.emailInvalid),
+  password: z.string().min(1, V.passwordRequired),
 });
 export type LoginInput = z.infer<typeof loginSchema>;
 
@@ -188,7 +204,7 @@ export const eventInputSchema = z.object({
   statut: z.enum(["brouillon", "publie", "archive"]).default("brouillon"),
   dateIso: z
     .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Format YYYY-MM-DD attendu")
+    .regex(/^\d{4}-\d{2}-\d{2}$/, V.dateIsoFormat)
     .nullish(),
   pourquoiTitre: z.string().default(""),
   pourquoiTexte: z.string().default(""),
@@ -225,34 +241,34 @@ export type ReorderInput = z.infer<typeof reorderSchema>;
 
 export const definePasswordSchema = z
   .object({
-    token: z.string().min(1, "Token requis"),
-    password: z.string().min(8, "Mot de passe : 8 caractères minimum"),
+    token: z.string().min(1, V.tokenRequired),
+    password: z.string().min(8, V.passwordMinLength),
     confirmPassword: z.string(),
   })
   .refine((d) => d.password === d.confirmPassword, {
-    message: "Les mots de passe ne correspondent pas",
+    message: V.passwordsMismatch,
     path: ["confirmPassword"],
   });
 export type DefinePasswordInput = z.infer<typeof definePasswordSchema>;
 
 export const volunteerLoginSchema = z.object({
-  email: z.string().email("Email invalide"),
-  password: z.string().min(1, "Mot de passe requis"),
+  email: z.string().email(V.emailInvalid),
+  password: z.string().min(1, V.passwordRequired),
 });
 export type VolunteerLoginInput = z.infer<typeof volunteerLoginSchema>;
 
 // Inscription multi-créneaux : identité du bénévole (créée si nouvelle).
 export const inscriptionSchema = z.object({
-  nom: z.string().min(1, "Nom requis"),
-  email: z.string().email("Email invalide"),
+  nom: z.string().min(1, V.nomRequired),
+  email: z.string().email(V.emailInvalid),
   tel: z.string().nullish(),
 });
 export type InscriptionInput = z.infer<typeof inscriptionSchema>;
 
 // Inscription manuelle par l'admin : nom seul suffit, email/tel optionnels.
 export const adminInscriptionSchema = z.object({
-  nom: z.string().min(1, "Nom requis"),
-  email: z.string().email("Email invalide").nullish(),
+  nom: z.string().min(1, V.nomRequired),
+  email: z.string().email(V.emailInvalid).nullish(),
   tel: z.string().nullish(),
 });
 export type AdminInscriptionInput = z.infer<typeof adminInscriptionSchema>;
@@ -269,8 +285,8 @@ export type VolunteerFilter = z.infer<typeof volunteerFilterSchema>;
 
 // Diffusion admin ciblée : soit un filtre bénévoles, soit une liste explicite d'ids.
 export const broadcastSchema = z.object({
-  subject: z.string().min(1, "Sujet requis"),
-  message: z.string().min(1, "Message requis"),
+  subject: z.string().min(1, V.subjectRequired),
+  message: z.string().min(1, V.messageRequired),
   filter: volunteerFilterSchema.optional(),
   volunteerIds: z.array(z.string().uuid()).optional(),
 });

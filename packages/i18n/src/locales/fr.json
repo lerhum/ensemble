@@ -1,5 +1,20 @@
 {
   "errors": {
     "notFound": "Ressource introuvable"
+  },
+  "validation": {
+    "hhmm": "Heure attendue au format HH:MM",
+    "hexColor": "Couleur hex attendue (#RRGGBB)",
+    "orgNomRequired": "Nom de l'organisation requis",
+    "rgpdEmailInvalid": "Email RGPD invalide",
+    "emailInvalid": "Email invalide",
+    "passwordMinLength": "Mot de passe : 8 caractères minimum",
+    "passwordsMismatch": "Les mots de passe ne correspondent pas",
+    "passwordRequired": "Mot de passe requis",
+    "dateIsoFormat": "Format YYYY-MM-DD attendu",
+    "tokenRequired": "Token requis",
+    "nomRequired": "Nom requis",
+    "subjectRequired": "Sujet requis",
+    "messageRequired": "Message requis"
   }
 }
