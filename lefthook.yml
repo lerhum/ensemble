@@ -2,7 +2,7 @@ pre-commit:
   parallel: true
   jobs:
     - name: format
-      glob: "*.{js,jsx,ts,tsx,json,css,md,yml,yaml}"
+      glob: "*.{js,jsx,mjs,cjs,ts,tsx,json,css,md,yml,yaml}"
       run: pnpm exec prettier --check {staged_files}
 
     - name: related unit tests
