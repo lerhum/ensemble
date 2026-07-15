@@ -1,6 +1,7 @@
 // Métadonnées d'affichage d'un créneau dérivées de inscrits/necessaires.
 // S'appuie sur slotStatus + jetons couleur partagés (@ensemble/db/shared).
 import { slotStatus, STATUS_COLORS, type SlotStatus } from "@ensemble/db/shared";
+import i18n from "@/i18n";
 
 export interface StatusMeta {
   status: SlotStatus;
@@ -21,12 +22,10 @@ export function statusMeta(inscrits: number, necessaires: number): StatusMeta {
   const placesLibres = Math.max(0, necessaires - inscrits);
   const label =
     status === "complet"
-      ? "Complet"
+      ? i18n.t("status.complet", { ns: "common" })
       : status === "urgent"
-        ? "Urgent"
-        : status === "ambre"
-          ? "1 place"
-          : `${placesLibres} places`;
+        ? i18n.t("status.urgent", { ns: "common" })
+        : i18n.t("status.placesLeft", { ns: "common", count: placesLibres });
   const badgeVariant =
     status === "complet"
       ? "success"

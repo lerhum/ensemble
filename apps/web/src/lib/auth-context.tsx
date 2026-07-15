@@ -1,5 +1,6 @@
 import * as React from "react";
 import type { SessionUserDTO } from "@ensemble/db/shared";
+import i18n from "@/i18n";
 import { api } from "./api";
 
 interface AuthState {
@@ -60,6 +61,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 /** Returns the current auth state and methods. Must be used inside &lt;AuthProvider&gt;. */
 export function useAuth(): AuthState {
   const ctx = React.useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth doit être utilisé dans <AuthProvider>");
+  if (!ctx) throw new Error(i18n.t("errors.authProviderMissing", { ns: "common" }));
   return ctx;
 }
