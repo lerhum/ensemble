@@ -47,6 +47,9 @@ importers:
       '@ensemble/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@ensemble/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@hono/node-server':
         specifier: ^1.13.7
         version: 1.19.14(hono@4.12.27)
@@ -99,6 +102,9 @@ importers:
       '@ensemble/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@ensemble/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
       '@fontsource/manrope':
         specifier: ^5.1.0
         version: 5.2.8
@@ -233,6 +239,21 @@ importers:
       tsx:
         specifier: ^4.19.2
         version: 4.22.4
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.0.0
+        version: 3.2.6(@types/node@22.20.0)(jiti@1.21.7)(tsx@4.22.4)
+
+  packages/i18n:
+    devDependencies:
+      '@vitest/coverage-v8':
+        specifier: ^3.2.7
+        version: 3.2.7(vitest@3.2.6(@types/node@22.20.0)(jiti@1.21.7)(tsx@4.22.4))
+      eslint:
+        specifier: ^10.6.0
+        version: 10.6.0(jiti@1.21.7)
       typescript:
         specifier: ^5.6.3
         version: 5.9.3
@@ -399,11 +420,11 @@ packages:
 
   '@esbuild-kit/core-utils@3.3.2':
     resolution: {integrity: sha512-sPRAnw9CdSsRmEtnsl2WXWdyquogVpB3yZ3dgwJfe8zrOzTsV7cJvmwrKVa+0ma5BoiGJ+BoqkMvawbayKUsqQ==}
-    deprecated: 'Merged into tsx: https://tsx.is'
+    deprecated: 'Merged into tsx: https://tsx.hirok.io'
 
   '@esbuild-kit/esm-loader@2.6.5':
     resolution: {integrity: sha512-FxEMIkJKnodyA1OaCUoEvbYRkoZlLZ4d/eXFu9Fh8CbBBgP5EmZxrfTRyN0qpXZ4vOvqnE5YdRdcrmUUXuU+dA==}
-    deprecated: 'Merged into tsx: https://tsx.is'
+    deprecated: 'Merged into tsx: https://tsx.hirok.io'
 
   '@esbuild-plugins/node-globals-polyfill@0.2.3':
     resolution: {integrity: sha512-r3MIryXDeXDOZh7ih1l/yE9ZLORCd5e8vWg02azWRGj5SPTuoh69A2AIyn0Z31V/kHBfZ4HgWJ+OK3GTTwLmnw==}

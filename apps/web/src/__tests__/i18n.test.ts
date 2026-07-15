@@ -18,4 +18,11 @@ describe("i18n", () => {
       expect(i18n.hasResourceBundle("fr", ns)).toBe(true);
     }
   });
+
+  it("resolves the errors namespace from the shared @ensemble/i18n package, not a local file", () => {
+    // The "errors" i18next namespace resource is already dictionaries.fr.errors (the object
+    // sliced from under the "errors." prefix in @ensemble/i18n), so the key here is "notFound",
+    // not "errors.notFound".
+    expect(i18n.t("notFound", { ns: "errors" })).toBe("Ressource introuvable");
+  });
 });

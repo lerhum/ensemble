@@ -1,5 +1,6 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
+import { dictionaries } from "@ensemble/i18n";
 
 import commonFr from "./locales/fr/common.json";
 import commonNl from "./locales/nl/common.json";
@@ -13,14 +14,35 @@ import authEn from "./locales/en/auth.json";
 import adminFr from "./locales/fr/admin.json";
 import adminNl from "./locales/nl/admin.json";
 import adminEn from "./locales/en/admin.json";
-import errorsFr from "./locales/fr/errors.json";
-import errorsNl from "./locales/nl/errors.json";
-import errorsEn from "./locales/en/errors.json";
+
+// The "errors" namespace is sourced from @ensemble/i18n, not a local locales/*/errors.json file —
+// it's the single source of truth shared with the API, so error keys aren't duplicated.
+function errorsNamespace(locale: keyof typeof dictionaries): Record<string, string> {
+  return (dictionaries[locale].errors as Record<string, string> | undefined) ?? {};
+}
 
 const resources = {
-  fr: { common: commonFr, public: publicFr, auth: authFr, admin: adminFr, errors: errorsFr },
-  nl: { common: commonNl, public: publicNl, auth: authNl, admin: adminNl, errors: errorsNl },
-  en: { common: commonEn, public: publicEn, auth: authEn, admin: adminEn, errors: errorsEn },
+  fr: {
+    common: commonFr,
+    public: publicFr,
+    auth: authFr,
+    admin: adminFr,
+    errors: errorsNamespace("fr"),
+  },
+  nl: {
+    common: commonNl,
+    public: publicNl,
+    auth: authNl,
+    admin: adminNl,
+    errors: errorsNamespace("nl"),
+  },
+  en: {
+    common: commonEn,
+    public: publicEn,
+    auth: authEn,
+    admin: adminEn,
+    errors: errorsNamespace("en"),
+  },
 } as const;
 
 i18n
