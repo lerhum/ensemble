@@ -1,6 +1,6 @@
 import { Route } from "react-router-dom";
 import { RequireAdmin } from "@/components/RequireAdmin";
-import { LocaleBoundary } from "@/lib/locale-boundary";
+import { LocaleBoundary, LocaleRootRedirect, type SupportedLocale } from "@/lib/locale-boundary";
 import InstallPage from "@/pages/InstallPage";
 import LoginPage from "@/pages/LoginPage";
 import VolunteerLoginPage from "@/pages/VolunteerLoginPage";
@@ -27,11 +27,22 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
  * The page route tree, with paths relative to whichever ancestor consumed the locale segment
  * (none for the bare/French branch, "nl"/"en" otherwise) — see routeElements().
  */
-function appRouteElements() {
+function appRouteElements(lng: SupportedLocale) {
   return (
     <>
       {/* Public */}
-      <Route index element={<EventRedirectPage />} />
+      <Route
+        index
+        element={
+          lng === "fr" ? (
+            <LocaleRootRedirect>
+              <EventRedirectPage />
+            </LocaleRootRedirect>
+          ) : (
+            <EventRedirectPage />
+          )
+        }
+      />
       <Route path="e/:slug" element={<EventParentPage />} />
       <Route path="e/:slug/pole/:poleId" element={<PoleSelectionPage />} />
       <Route path="confirmer/:token" element={<ConfirmPage />} />
@@ -113,12 +124,12 @@ export function routeElements() {
   return (
     <>
       <Route path="nl" element={<LocaleBoundary lng="nl" />}>
-        {appRouteElements()}
+        {appRouteElements("nl")}
       </Route>
       <Route path="en" element={<LocaleBoundary lng="en" />}>
-        {appRouteElements()}
+        {appRouteElements("en")}
       </Route>
-      <Route element={<LocaleBoundary lng="fr" />}>{appRouteElements()}</Route>
+      <Route element={<LocaleBoundary lng="fr" />}>{appRouteElements("fr")}</Route>
     </>
   );
 }
