@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Logo } from "@/components/Logo";
+import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/lib/auth-context";
 import { api } from "@/lib/api";
@@ -156,6 +157,9 @@ export function AdminLayout({ eyebrow, title, actions, children }: AdminLayoutPr
               </span>
             ))}
           </nav>
+          <div className="px-3">
+            <LocaleSwitcher />
+          </div>
           <div className="flex items-center gap-3 px-2 pt-4 border-t border-hair">
             <Avatar className="h-9 w-9">
               <AvatarFallback>

@@ -44,10 +44,15 @@ export default tseslint.config(
     },
   },
   {
-    // Context providers co-locate their hook with the Provider component, and routes.tsx
-    // exports a JSX-returning route-tree function alongside a small local component — both
-    // break Fast Refresh but are the established pattern here.
-    files: ["apps/web/src/lib/*-context.tsx", "apps/web/src/routes.tsx"],
+    // Context providers co-locate their hook with the Provider component, routes.tsx exports
+    // a JSX-returning route-tree function alongside a small local component, and
+    // locale-boundary.tsx co-locates the locale-prefix helper/constant with its two small
+    // components — all three break Fast Refresh but are the established pattern here.
+    files: [
+      "apps/web/src/lib/*-context.tsx",
+      "apps/web/src/routes.tsx",
+      "apps/web/src/lib/locale-boundary.tsx",
+    ],
     rules: {
       "react-refresh/only-export-components": "off",
     },
@@ -82,6 +87,7 @@ export default tseslint.config(
       "apps/web/src/components/primitives/status.ts",
       "apps/web/src/lib/auth-context.tsx",
       "apps/web/src/lib/volunteer-context.tsx",
+      "apps/web/src/components/LocaleSwitcher.tsx",
     ],
     plugins: { i18next },
     rules: {

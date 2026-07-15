@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useVolunteer } from "@/lib/volunteer-context";
+import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 
 interface Props {
   orgNom: string;
@@ -76,6 +77,7 @@ export function PublicNav({
               {t("nav.login")}
             </Link>
           )}
+          <LocaleSwitcher />
         </div>
       </div>
     </nav>

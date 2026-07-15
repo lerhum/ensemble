@@ -13,5 +13,11 @@
   },
   "errors": {
     "authProviderMissing": "useAuth doit être utilisé dans <AuthProvider>"
+  },
+  "localeSwitcher": {
+    "label": "Changer de langue",
+    "fr": "Français",
+    "nl": "Nederlands",
+    "en": "English"
   }
 }
