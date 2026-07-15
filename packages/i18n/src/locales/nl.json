@@ -1,1 +1,72 @@
-{}
+{
+  "errors": {
+    "notFound": "Bron niet gevonden",
+    "eventNotFound": "Evenement niet gevonden",
+    "creneauNotFound": "Tijdslot niet gevonden",
+    "volunteerNotFound": "Vrijwilliger niet gevonden",
+    "poleNotFound": "Stand niet gevonden",
+    "tacheNotFound": "Taak niet gevonden",
+    "fileMissing": "Bestand ontbreekt",
+    "linkInvalidOrExpired": "Ongeldige of verlopen link.",
+    "unauthorized": "Niet geauthenticeerd",
+    "invalidCredentials": "Onjuist e-mailadres of wachtwoord.",
+    "forbidden": "Toegang geweigerd",
+    "slotFull": "Dit tijdslot is volzet.",
+    "installAlreadyDone": "De installatie is al uitgevoerd.",
+    "validationFailed": "Ongeldige gegevens",
+    "routeNotFound": "Route niet gevonden",
+    "internalError": "Serverfout",
+    "tokenNotFound": "Token niet gevonden."
+  },
+  "validation": {
+    "hhmm": "Tijd verwacht in het formaat HH:MM",
+    "hexColor": "Hexkleur verwacht (#RRGGBB)",
+    "orgNomRequired": "Naam van de organisatie vereist",
+    "rgpdEmailInvalid": "Ongeldige AVG-e-mail",
+    "emailInvalid": "Ongeldige e-mail",
+    "passwordMinLength": "Wachtwoord: minimaal 8 tekens",
+    "passwordsMismatch": "De wachtwoorden komen niet overeen",
+    "passwordRequired": "Wachtwoord vereist",
+    "dateIsoFormat": "Formaat YYYY-MM-DD verwacht",
+    "tokenRequired": "Token vereist",
+    "nomRequired": "Naam vereist",
+    "subjectRequired": "Onderwerp vereist",
+    "messageRequired": "Bericht vereist"
+  },
+  "emails": {
+    "greeting": "Hallo {nom} 👋",
+    "textGreeting": "Hallo {nom},",
+    "signature": "Ensemble",
+    "confirmation": {
+      "subject": "Bevestig je deelname — Ensemble",
+      "htmlTitle": "Bevestig je deelname",
+      "intro": "Bedankt voor je inschrijving! Klik op onderstaande knop om je deelname te bevestigen.",
+      "confirmButton": "Mijn deelname bevestigen",
+      "viewSignups": "Of bekijk direct je inschrijvingen:",
+      "createAccess": "💡 Maak je persoonlijke toegang aan om je inschrijvingen op elk moment terug te vinden:",
+      "setPasswordLink": "Mijn wachtwoord instellen →",
+      "expiry": "Deze links verlopen na 7 dagen. Als je deze inschrijving niet hebt aangevraagd, negeer dan deze e-mail.",
+      "textIntro": "Bedankt voor je inschrijving! Bevestig je deelname door deze link te openen:",
+      "textExpiry": "Deze link verloopt na 7 dagen."
+    },
+    "reminder": {
+      "subject": "Herinnering — je tijdslot komt eraan ({event})",
+      "htmlTitle": "Herinnering tijdslot",
+      "intro": "Kleine herinnering: je tijdslot voor {event} komt eraan.",
+      "thanks": "Bedankt voor je inzet!"
+    },
+    "broadcast": {
+      "htmlTitle": "Bericht"
+    }
+  },
+  "csv": {
+    "headerNom": "Naam",
+    "headerEmail": "E-mail",
+    "headerTel": "Telefoon",
+    "headerPoles": "Stand(s)",
+    "headerCreneaux": "Tijdsloten",
+    "headerStatut": "Status",
+    "statusConfirmed": "Bevestigd",
+    "statusPending": "In afwachting"
+  }
+}

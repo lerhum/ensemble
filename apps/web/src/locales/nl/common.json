@@ -1,1 +1,24 @@
-{}
+{
+  "nav": {
+    "home": "Home",
+    "myRegistrations": "Mijn inschrijvingen",
+    "logout": "Uitloggen",
+    "login": "Inloggen"
+  },
+  "status": {
+    "complet": "Volzet",
+    "urgent": "Dringend",
+    "placesLeft_one": "nog {{count}} plaats",
+    "placesLeft_other": "nog {{count}} plaatsen"
+  },
+  "errors": {
+    "authProviderMissing": "useAuth moet worden gebruikt binnen <AuthProvider>",
+    "loadFailed": "Laden mislukt"
+  },
+  "localeSwitcher": {
+    "label": "Taal wijzigen",
+    "fr": "Français",
+    "nl": "Nederlands",
+    "en": "English"
+  }
+}

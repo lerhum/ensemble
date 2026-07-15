@@ -1,1 +1,163 @@
-{}
+{
+  "shared": {
+    "loading": "Laden…",
+    "error": "Fout",
+    "participate": "Ik doe mee",
+    "confirmParticipation": "Bevestig je deelname",
+    "signingUp": "Bezig met inschrijven…",
+    "signupFailed": "Inschrijven mislukt. Probeer opnieuw.",
+    "placesRemaining_one": "nog {{count}} plaats",
+    "placesRemaining_other": "nog {{count}} plaatsen",
+    "slotsCount_one": "{{count}} tijdslot",
+    "slotsCount_other": "{{count}} tijdsloten"
+  },
+  "eventParent": {
+    "kicker": "Schoolfeest",
+    "polesHeadingMobile": "De stands",
+    "ctaSubtitle": "Kies je tijdsloten in de volgende stap.",
+    "viewProgram": "Bekijk het programma",
+    "parentsSignedUp": " / {{necessaires}} ouders ingeschreven",
+    "placesLabel": "{{count}} plaatsen",
+    "whyParticipate": "Waarom meedoen",
+    "choosePole": "Kies je stand",
+    "polesSummary": "{{nbPoles}} stands · {{aCompleter}} tijdsloten in te vullen",
+    "footerTagline": "Ensemble — schoolvrijwilligerswerk, eenvoudig gemaakt.",
+    "contact": "Contact",
+    "confidentiality": "Privacy",
+    "poleFull": "Volzet",
+    "poleCardSlots": "{{count}} tijdsloten",
+    "view": "Bekijken"
+  },
+  "eventRedirect": {
+    "noEvent": "Momenteel geen actief evenement",
+    "comeBackLater": "Kom binnenkort terug."
+  },
+  "poleSelection": {
+    "poleNotFound": "Stand niet gevonden",
+    "coverageLabel": "Dekking van de stand",
+    "signupSuccess": "Bedankt! Je inschrijving is geregistreerd.",
+    "confirmationEmailSent": "Er is een e-mail verzonden. Klik op de link om je deelname te bevestigen en je toegang te beveiligen.",
+    "viewMySignups": "Bekijk mijn inschrijvingen →",
+    "aboutPole": "De stand",
+    "tasksAndSlots": "Taken & tijdsloten",
+    "clickToSignupDesktop": "Klik op « Ik doe mee » om je rechtstreeks in te schrijven.",
+    "clickToSignupMobile": "Klik op « Ik doe mee » voor het tijdslot dat je uitkomt."
+  },
+  "inscriptionDialog": {
+    "description": "Laat ons je gegevens achter om je inschrijving af te ronden.",
+    "emailLabel": "E-mail",
+    "prefilledFromParent": "Je gegevens zijn al ingevuld.",
+    "prefilledFromLookup": "We hebben je teruggevonden — je gegevens zijn al ingevuld.",
+    "nameLabel": "Volledige naam",
+    "phoneLabel": "Telefoon (optioneel)",
+    "phonePlaceholder": "0470 00 00 00",
+    "privacyNoticePrefix": "Je gegevens (naam, e-mail, tel.) worden uitsluitend gebruikt om dit evenement te organiseren. Je kunt de verwijdering ervan aanvragen via « Mijn inschrijvingen »",
+    "privacyNoticeContactPrefix": "of door contact op te nemen met"
+  },
+  "confirmationDialog": {
+    "confirmAs": "Inschrijving bevestigen als",
+    "confirm": "Bevestigen",
+    "editInfo": "Mijn gegevens wijzigen"
+  },
+  "confirm": {
+    "verifying": "Bezig met verifiëren…",
+    "invalidLinkTitle": "Ongeldige of verlopen link",
+    "invalidLinkBody": "Deze bevestigingslink is niet meer geldig. Neem indien nodig contact op met de organisator.",
+    "backToHome": "Terug naar home",
+    "alreadyConfirmedTitle": "Deelname al bevestigd",
+    "confirmedTitle": "Deelname bevestigd!",
+    "alreadyConfirmedBody": "Je deelname was al bevestigd.",
+    "confirmedBody": "Bedankt! Je deelname is geregistreerd.",
+    "viewMySignups": "Bekijk mijn inschrijvingen",
+    "createAccessTitle": "Maak je persoonlijke toegang aan",
+    "createAccessBody": "Stel een wachtwoord in om je inschrijvingen terug te vinden en je met één klik in te schrijven.",
+    "setPassword": "Mijn wachtwoord instellen"
+  },
+  "mesInscriptions": {
+    "backToHome": "Terug naar home",
+    "breadcrumb": "Mijn inschrijvingen",
+    "title": "Mijn inschrijvingen",
+    "confirmed": "Deelname bevestigd",
+    "pendingTitle": "In afwachting van bevestiging",
+    "pendingBody": "Bekijk je e-mail om je deelname te bevestigen.",
+    "volunteerKicker": "Vrijwilliger",
+    "eventKicker": "Evenement",
+    "viewEvent": "Bekijk het evenement →",
+    "mySlots": "Mijn tijdsloten ({{count}})",
+    "noSlots": "Geen tijdsloten geregistreerd.",
+    "keepLinkHint": "Bewaar deze link — hiermee kun je je inschrijvingen terugvinden.",
+    "myDataKicker": "Mijn gegevens",
+    "deleteDataBody": "Je kunt de verwijdering aanvragen van al je persoonsgegevens (naam, e-mail, telefoon en inschrijvingen).",
+    "deleteData": "Mijn gegevens verwijderen",
+    "deleteConfirmPrompt": "Deze actie kan niet ongedaan worden gemaakt. Bevestigen?",
+    "deleting": "Bezig met verwijderen…",
+    "confirmDelete": "Ja, verwijderen",
+    "cancel": "Annuleren",
+    "invalidLink": "Ongeldige of verlopen link.",
+    "notConnected": "Niet ingelogd of sessie verlopen."
+  },
+  "privacy": {
+    "back": "← Terug",
+    "title": "Privacybeleid",
+    "subtitle": "Overeenkomstig Verordening (EU) 2016/679 (AVG)",
+    "defaultOrgName": "het organiserend comité",
+    "responsible": {
+      "title": "Verwerkingsverantwoordelijke",
+      "intro": "De verwerkingsverantwoordelijke voor de via dit platform verzamelde gegevens is",
+      "contactPrefix": "Voor alle vragen over uw gegevens, contacteer:"
+    },
+    "dataCollected": {
+      "title": "Verzamelde gegevens",
+      "intro": "Bij uw inschrijving als vrijwilliger verzamelen wij:",
+      "fullName": "Volledige naam",
+      "email": "E-mailadres",
+      "phone": "Telefoonnummer (optioneel)",
+      "basis": "Deze gegevens worden verzameld op basis van uw toestemming (Art. 6.1.a AVG) en in het kader van de uitvoering van een taak van algemeen belang (organisatie van een schoolevenement)."
+    },
+    "purposes": {
+      "title": "Doeleinden van de verwerking",
+      "slots": "Beheer van inschrijvingen voor vrijwilligerstijdsloten",
+      "communication": "Communicatie over het evenement (bevestiging, herinneringen)",
+      "coordination": "Coördinatie van vrijwilligers door de organisatoren"
+    },
+    "retention": {
+      "title": "Bewaartermijn",
+      "text": "Uw gegevens worden bewaard tot het einde van het evenement waarvoor u bent ingeschreven, en vervolgens binnen een redelijke termijn verwijderd of geanonimiseerd."
+    },
+    "rights": {
+      "title": "Uw rechten",
+      "intro": "Overeenkomstig de AVG beschikt u over de volgende rechten:",
+      "access": {
+        "label": "Recht van inzage",
+        "description": "uw gegevens raadplegen via de pagina « Mijn inschrijvingen »"
+      },
+      "rectification": {
+        "label": "Recht op rectificatie",
+        "description": "uw gegevens corrigeren"
+      },
+      "erasure": {
+        "label": "Recht op verwijdering",
+        "description": "uw account verwijderen via « Mijn inschrijvingen »"
+      },
+      "objection": {
+        "label": "Recht van bezwaar",
+        "description": "zich verzetten tegen de verwerking van uw gegevens"
+      },
+      "exercisePrefix": "Om deze rechten uit te oefenen, ga naar de pagina",
+      "exerciseLinkText": "Mijn inschrijvingen",
+      "exerciseOr": "of contacteer",
+      "complaintPrefix": "U heeft eveneens het recht om een klacht in te dienen bij de",
+      "complaintLinkText": "Belgische Gegevensbeschermingsautoriteit (GBA)",
+      "complaintSuffix": "."
+    },
+    "cookies": {
+      "title": "Cookies",
+      "text": "Deze site gebruikt uitsluitend een technische sessiecookie, noodzakelijk voor de goede werking van de dienst (het behouden van uw verbinding). Deze cookie vereist geen toestemming volgens de richtlijnen van de GBA."
+    }
+  },
+  "notFound": {
+    "title": "Pagina niet gevonden",
+    "body": "Deze pagina bestaat niet (meer).",
+    "backToEvent": "→ Terug naar het evenement"
+  }
+}

@@ -13,7 +13,7 @@ describe("i18n", () => {
     expect(i18n.t("nav.login", { ns: "common" })).toBe("Se connecter");
   });
 
-  it("has all five namespaces registered for French, including still-empty stubs", () => {
+  it("has all five namespaces registered for French", () => {
     for (const ns of ["common", "public", "auth", "admin", "errors"]) {
       expect(i18n.hasResourceBundle("fr", ns)).toBe(true);
     }

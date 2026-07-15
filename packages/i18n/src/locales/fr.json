@@ -68,5 +68,8 @@
     "headerStatut": "Statut",
     "statusConfirmed": "Confirmé",
     "statusPending": "En attente"
+  },
+  "_test": {
+    "fallbackProbe": "Sonde de test — repli FR uniquement, jamais traduite intentionnellement"
   }
 }

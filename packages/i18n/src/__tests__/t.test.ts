@@ -20,8 +20,12 @@ describe("t", () => {
   });
 
   it("falls back to French when the key is missing in the requested locale, without warning", () => {
+    // errors.notFound now has real nl/en content (D1), so it can no longer probe the fallback
+    // path — _test.fallbackProbe is a dedicated fr-only fixture kept for exactly this purpose.
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-    expect(t("nl", "errors.notFound")).toBe("Ressource introuvable");
+    expect(t("nl", "_test.fallbackProbe")).toBe(
+      "Sonde de test — repli FR uniquement, jamais traduite intentionnellement",
+    );
     expect(warn).not.toHaveBeenCalled();
     warn.mockRestore();
   });
