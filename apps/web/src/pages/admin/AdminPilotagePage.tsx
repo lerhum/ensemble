@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useParams } from "react-router-dom";
 import { CheckCircle2, RefreshCw } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { EventDetailDTO, VolunteerDTO } from "@ensemble/db/shared";
 import { STATUS_COLORS, slotStatus } from "@ensemble/db/shared";
 import { api } from "@/lib/api";
@@ -24,11 +25,12 @@ import { initials } from "@/lib/utils";
 export default function AdminPilotagePage() {
   const { id = "" } = useParams<{ id: string }>();
   const { event, loading, reload } = useAdminEvent(id);
+  const { t } = useTranslation("admin");
 
   if (loading || !event) {
     return (
-      <AdminLayout eyebrow="Pilotage" title="Tableau de bord">
-        <p className="text-label">Chargement…</p>
+      <AdminLayout eyebrow={t("shared.pilotage")} title={t("layout.dashboard")}>
+        <p className="text-label">{t("shared.loading")}</p>
       </AdminLayout>
     );
   }
@@ -37,6 +39,7 @@ export default function AdminPilotagePage() {
 }
 
 function PilotageInner({ event, reload }: { event: EventDetailDTO; reload: () => Promise<void> }) {
+  const { t } = useTranslation("admin");
   const [attente, setAttente] = React.useState<VolunteerDTO[]>([]);
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -75,11 +78,11 @@ function PilotageInner({ event, reload }: { event: EventDetailDTO; reload: () =>
   return (
     <AdminLayout
       eyebrow={event.nom}
-      title="Tableau de bord"
+      title={t("layout.dashboard")}
       actions={
         <Button variant="outline" size="sm" onClick={refresh} disabled={refreshing}>
           <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
-          Actualiser
+          {t("pilotage.refresh")}
         </Button>
       }
     >
@@ -92,22 +95,22 @@ function PilotageInner({ event, reload }: { event: EventDetailDTO; reload: () =>
               <span className="text-label"> / {c.necessaires}</span>
             </>
           }
-          label="Bénévoles inscrits"
+          label={t("pilotage.statVolunteers")}
         />
         <StatCard
           value={`${pct} %`}
-          label="Couverture globale"
+          label={t("pilotage.statCoverage")}
           accent={pct >= 100 ? "green" : pct >= 60 ? "default" : "coral"}
         />
-        <StatCard value={completsCount} label={`Créneaux complets`} accent="green" />
+        <StatCard value={completsCount} label={t("pilotage.statSlotsComplete")} accent="green" />
         <StatCard
           value={urgentsCount}
-          label="Créneaux urgents"
+          label={t("pilotage.statSlotsUrgent")}
           accent={urgentsCount > 0 ? "coral" : "default"}
         />
         <StatCard
           value={attente.length}
-          label="En attente de confirmation"
+          label={t("pilotage.statPendingConfirmation")}
           accent={attente.length > 0 ? "amber" : "default"}
         />
       </div>
@@ -115,10 +118,10 @@ function PilotageInner({ event, reload }: { event: EventDetailDTO; reload: () =>
       {/* Couverture par pôle */}
       <section className="mb-10">
         <p className="mb-4 text-[11px] font-800 uppercase tracking-[.1em] text-label2">
-          Couverture par pôle
+          {t("pilotage.coverageByPole")}
         </p>
         {event.poles.length === 0 ? (
-          <p className="text-sm text-label">Aucun pôle configuré.</p>
+          <p className="text-sm text-label">{t("pilotage.noPolesConfigured")}</p>
         ) : (
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             {event.poles.map((pole) => (
@@ -157,13 +160,13 @@ function PilotageInner({ event, reload }: { event: EventDetailDTO; reload: () =>
                           );
                         })}
                         {tache.creneaux.length === 0 && (
-                          <span className="text-[12px] text-label2">Aucun créneau</span>
+                          <span className="text-[12px] text-label2">{t("pilotage.noSlots")}</span>
                         )}
                       </div>
                     </div>
                   ))}
                   {pole.taches.length === 0 && (
-                    <p className="text-[12px] text-label2">Aucune tâche</p>
+                    <p className="text-[12px] text-label2">{t("pilotage.noTasks")}</p>
                   )}
                 </div>
               </div>
@@ -175,24 +178,24 @@ function PilotageInner({ event, reload }: { event: EventDetailDTO; reload: () =>
       {/* À confirmer */}
       <section>
         <p className="mb-4 text-[11px] font-800 uppercase tracking-[.1em] text-label2">
-          À confirmer
+          {t("pilotage.toConfirm")}
           {attente.length > 0 && <span className="ml-2 text-warn">{attente.length}</span>}
         </p>
 
         {attente.length === 0 ? (
           <div className="flex items-center gap-3 rounded-card border border-hair bg-white px-6 py-5 text-success">
             <CheckCircle2 className="h-5 w-5 shrink-0" />
-            <p className="text-sm font-700">Tous les bénévoles ont confirmé leur participation.</p>
+            <p className="text-sm font-700">{t("pilotage.allConfirmed")}</p>
           </div>
         ) : (
           <div className="overflow-hidden rounded-card border border-hair bg-white">
             <Table>
               <TableHeader>
                 <TableRow className="bg-surface hover:bg-surface">
-                  <TableHead>Bénévole</TableHead>
-                  <TableHead>Téléphone</TableHead>
-                  <TableHead>Pôle(s)</TableHead>
-                  <TableHead>Créneaux</TableHead>
+                  <TableHead>{t("pilotage.tableVolunteer")}</TableHead>
+                  <TableHead>{t("pilotage.tablePhone")}</TableHead>
+                  <TableHead>{t("pilotage.tablePoles")}</TableHead>
+                  <TableHead>{t("pilotage.tableSlots")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

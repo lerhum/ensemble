@@ -75,6 +75,10 @@ export default tseslint.config(
       "apps/web/src/pages/admin/AdminEventsListPage.tsx",
       "apps/web/src/pages/admin/AdminSettingsPage.tsx",
       "apps/web/src/components/admin/AdminLayout.tsx",
+      "apps/web/src/pages/admin/AdminEventEditPage.tsx",
+      "apps/web/src/pages/admin/AdminPilotagePage.tsx",
+      "apps/web/src/pages/admin/AdminPolesPage.tsx",
+      "apps/web/src/pages/admin/AdminVolunteersPage.tsx",
     ],
     plugins: { i18next },
     rules: {
