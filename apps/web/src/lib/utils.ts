@@ -25,3 +25,13 @@ export function initials(nom: string): string {
     .map((p) => p[0]?.toUpperCase() ?? "")
     .join("");
 }
+
+const DATE_LOCALES: Record<string, string> = { fr: "fr-BE", nl: "nl-BE", en: "en-GB" };
+
+/** Formats an ISO date (YYYY-MM-DD) as a full localized date, e.g. "jeudi 15 mai 2025". */
+export function formatFullDate(iso: string, locale: string): string {
+  const intlLocale = DATE_LOCALES[locale] ?? DATE_LOCALES.fr;
+  return new Intl.DateTimeFormat(intlLocale, { dateStyle: "full" }).format(
+    new Date(iso + "T12:00:00"),
+  );
+}

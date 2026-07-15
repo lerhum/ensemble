@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { formatHeure, formatPlage, initials, cn } from "@/lib/utils.js";
+import { formatHeure, formatPlage, initials, formatFullDate, cn } from "@/lib/utils.js";
 
 describe("formatHeure", () => {
   it("converts HH:MM to HHhMM", () => {
@@ -14,6 +14,24 @@ describe("formatPlage", () => {
   it("formats a time range as HHhMM – HHhMM", () => {
     expect(formatPlage("08:30", "10:00")).toBe("08h30 – 10h00");
     expect(formatPlage("14:00", "16:30")).toBe("14h00 – 16h30");
+  });
+});
+
+describe("formatFullDate", () => {
+  it("formats a full date in French by default (fr-BE)", () => {
+    expect(formatFullDate("2025-05-15", "fr")).toBe("jeudi 15 mai 2025");
+  });
+
+  it("formats a full date in Dutch (nl-BE)", () => {
+    expect(formatFullDate("2025-05-15", "nl")).toBe("donderdag 15 mei 2025");
+  });
+
+  it("formats a full date in English (en-GB)", () => {
+    expect(formatFullDate("2025-05-15", "en")).toBe("Thursday, 15 May 2025");
+  });
+
+  it("falls back to French for an unsupported locale", () => {
+    expect(formatFullDate("2025-05-15", "xx")).toBe("jeudi 15 mai 2025");
   });
 });
 

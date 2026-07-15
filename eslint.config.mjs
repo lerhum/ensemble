@@ -71,6 +71,10 @@ export default tseslint.config(
       "apps/web/src/pages/stubs.tsx",
       "apps/web/src/components/InscriptionDialog.tsx",
       "apps/web/src/components/ConfirmationDialog.tsx",
+      "apps/web/src/pages/admin/AdminDashboardPage.tsx",
+      "apps/web/src/pages/admin/AdminEventsListPage.tsx",
+      "apps/web/src/pages/admin/AdminSettingsPage.tsx",
+      "apps/web/src/components/admin/AdminLayout.tsx",
     ],
     plugins: { i18next },
     rules: {

@@ -10,14 +10,13 @@ import {
   LogOut,
   Pencil,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Logo } from "@/components/Logo";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/lib/auth-context";
 import { api } from "@/lib/api";
 import { initials } from "@/lib/utils";
 import { cn } from "@/lib/utils";
-
-const NAV_DISABLED = [{ label: "Communications", icon: Megaphone }];
 
 interface AdminLayoutProps {
   eyebrow?: string;
@@ -31,6 +30,9 @@ export function AdminLayout({ eyebrow, title, actions, children }: AdminLayoutPr
   const { user, refresh } = useAuth();
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation("admin");
+
+  const NAV_DISABLED = [{ label: t("layout.communications"), icon: Megaphone }];
 
   /** Signs out the current admin and redirects to the login page. */
   async function logout() {
@@ -41,15 +43,30 @@ export function AdminLayout({ eyebrow, title, actions, children }: AdminLayoutPr
 
   const eventNav = id
     ? [
-        { to: `/admin/events/${id}`, label: "Tableau de bord", icon: LayoutDashboard, end: true },
+        {
+          to: `/admin/events/${id}`,
+          label: t("layout.dashboard"),
+          icon: LayoutDashboard,
+          end: true,
+        },
         {
           to: `/admin/events/${id}/edition`,
-          label: "Éditer l'événement",
+          label: t("layout.editEvent"),
           icon: Pencil,
           end: false,
         },
-        { to: `/admin/events/${id}/poles`, label: "Pôles & créneaux", icon: ListTodo, end: false },
-        { to: `/admin/events/${id}/volunteers`, label: "Bénévoles", icon: Users, end: false },
+        {
+          to: `/admin/events/${id}/poles`,
+          label: t("layout.polesAndSlots"),
+          icon: ListTodo,
+          end: false,
+        },
+        {
+          to: `/admin/events/${id}/volunteers`,
+          label: t("layout.volunteers"),
+          icon: Users,
+          end: false,
+        },
       ]
     : null;
 
@@ -68,10 +85,10 @@ export function AdminLayout({ eyebrow, title, actions, children }: AdminLayoutPr
               className="mt-6 flex items-center gap-1.5 px-3 text-[12px] font-700 text-label hover:text-ink transition-colors"
             >
               <ChevronLeft className="h-3.5 w-3.5" />
-              Événements
+              {t("layout.backToEvents")}
             </Link>
             <p className="mt-5 px-3 text-[11px] font-800 uppercase tracking-[.1em] text-label2">
-              Pilotage
+              {t("shared.pilotage")}
             </p>
             <nav className="mt-2 flex flex-col gap-1">
               {eventNav.map((item) => (
@@ -95,7 +112,7 @@ export function AdminLayout({ eyebrow, title, actions, children }: AdminLayoutPr
         ) : (
           <>
             <p className="mt-8 px-3 text-[11px] font-800 uppercase tracking-[.1em] text-label2">
-              Pilotage
+              {t("shared.pilotage")}
             </p>
             <nav className="mt-2 flex flex-col gap-1">
               <NavLink
@@ -109,7 +126,7 @@ export function AdminLayout({ eyebrow, title, actions, children }: AdminLayoutPr
                 }
               >
                 <CalendarDays className="h-[18px] w-[18px]" />
-                Événements
+                {t("layout.events")}
               </NavLink>
             </nav>
           </>
@@ -127,7 +144,7 @@ export function AdminLayout({ eyebrow, title, actions, children }: AdminLayoutPr
               }
             >
               <Settings className="h-[18px] w-[18px]" />
-              Paramètres
+              {t("layout.settings")}
             </NavLink>
             {NAV_DISABLED.map((item) => (
               <span
@@ -141,16 +158,20 @@ export function AdminLayout({ eyebrow, title, actions, children }: AdminLayoutPr
           </nav>
           <div className="flex items-center gap-3 px-2 pt-4 border-t border-hair">
             <Avatar className="h-9 w-9">
-              <AvatarFallback>{initials(user?.nom || "Comité")}</AvatarFallback>
+              <AvatarFallback>
+                {initials(user?.nom || t("layout.committeeFallback"))}
+              </AvatarFallback>
             </Avatar>
             <div className="min-w-0 flex-1 leading-tight">
-              <p className="text-sm font-700 text-ink truncate">{user?.nom || "Comité"}</p>
-              <p className="text-[12px] text-label">Administrateur</p>
+              <p className="text-sm font-700 text-ink truncate">
+                {user?.nom || t("layout.committeeFallback")}
+              </p>
+              <p className="text-[12px] text-label">{t("layout.administrator")}</p>
             </div>
             <button
               onClick={logout}
               className="shrink-0 rounded-lg p-1.5 text-label2 hover:bg-surface hover:text-danger"
-              title="Se déconnecter"
+              title={t("layout.logout")}
             >
               <LogOut className="h-4 w-4" />
             </button>
