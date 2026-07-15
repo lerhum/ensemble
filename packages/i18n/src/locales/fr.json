@@ -1,6 +1,22 @@
 {
   "errors": {
-    "notFound": "Ressource introuvable"
+    "notFound": "Ressource introuvable",
+    "eventNotFound": "Événement introuvable",
+    "creneauNotFound": "Créneau introuvable",
+    "volunteerNotFound": "Bénévole introuvable",
+    "poleNotFound": "Pôle introuvable",
+    "tacheNotFound": "Tâche introuvable",
+    "fileMissing": "Fichier manquant",
+    "linkInvalidOrExpired": "Lien invalide ou expiré.",
+    "unauthorized": "Non authentifié",
+    "invalidCredentials": "Email ou mot de passe incorrect.",
+    "forbidden": "Accès refusé",
+    "slotFull": "Ce créneau est complet.",
+    "installAlreadyDone": "L'installation a déjà été effectuée.",
+    "validationFailed": "Données invalides",
+    "routeNotFound": "Route introuvable",
+    "internalError": "Erreur serveur",
+    "tokenNotFound": "Token introuvable."
   },
   "validation": {
     "hhmm": "Heure attendue au format HH:MM",

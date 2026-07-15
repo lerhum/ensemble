@@ -45,13 +45,13 @@ export function createApp(config: AppConfig) {
   app.route("/api", publicRoutes);
   app.route("/api", adminRoutes);
 
-  app.notFound((c) => c.json({ error: "Route introuvable" }, 404));
+  app.notFound((c) => c.json({ error: "routeNotFound" }, 404));
   app.onError((err, c) => {
     if (err instanceof ApiError) {
       return c.json({ error: err.message, issues: err.issues }, err.status as 400);
     }
     console.error("[api] erreur non gérée:", err);
-    return c.json({ error: "Erreur serveur" }, 500);
+    return c.json({ error: "internalError" }, 500);
   });
 
   return app;

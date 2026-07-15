@@ -25,4 +25,8 @@ describe("i18n", () => {
     // not "errors.notFound".
     expect(i18n.t("notFound", { ns: "errors" })).toBe("Ressource introuvable");
   });
+
+  it("resolves an apps/api stable error key (C1) to its French sentence", () => {
+    expect(i18n.t("slotFull", { ns: "errors" })).toBe("Ce créneau est complet.");
+  });
 });

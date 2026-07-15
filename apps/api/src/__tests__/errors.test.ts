@@ -20,28 +20,32 @@ describe("ApiError", () => {
 });
 
 describe("error factory functions", () => {
-  it("notFound returns 404 with default message", () => {
+  it("notFound returns 404 with the default key", () => {
     const e = notFound();
     expect(e.status).toBe(404);
-    expect(e.message).toBeTruthy();
+    expect(e.message).toBe("notFound");
   });
 
-  it("notFound accepts a custom message", () => {
-    expect(notFound("Créneau introuvable").message).toBe("Créneau introuvable");
+  it("notFound accepts a custom key", () => {
+    expect(notFound("creneauNotFound").message).toBe("creneauNotFound");
   });
 
-  it("unauthorized returns 401", () => {
-    expect(unauthorized().status).toBe(401);
+  it("unauthorized returns 401 with the default key", () => {
+    const e = unauthorized();
+    expect(e.status).toBe(401);
+    expect(e.message).toBe("unauthorized");
   });
 
-  it("forbidden returns 403", () => {
-    expect(forbidden().status).toBe(403);
+  it("forbidden returns 403 with the default key", () => {
+    const e = forbidden();
+    expect(e.status).toBe(403);
+    expect(e.message).toBe("forbidden");
   });
 
-  it("conflict returns 409 with the provided message", () => {
-    const e = conflict("Slug déjà utilisé");
+  it("conflict returns 409 with the provided key", () => {
+    const e = conflict("slotFull");
     expect(e.status).toBe(409);
-    expect(e.message).toBe("Slug déjà utilisé");
+    expect(e.message).toBe("slotFull");
   });
 });
 
@@ -53,12 +57,13 @@ describe("validate", () => {
     expect(result).toEqual({ name: "Alice", age: 30 });
   });
 
-  it("throws ApiError 400 on invalid data", () => {
+  it("throws ApiError 400 with the validationFailed key on invalid data", () => {
     expect(() => validate(schema, { name: "", age: "oops" })).toThrow(ApiError);
     try {
       validate(schema, { name: "" });
     } catch (e) {
       expect((e as ApiError).status).toBe(400);
+      expect((e as ApiError).message).toBe("validationFailed");
       expect((e as ApiError).issues).toBeDefined();
     }
   });

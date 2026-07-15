@@ -11,20 +11,20 @@ export class ApiError extends Error {
   }
 }
 
-/** Creates a 404 ApiError. */
-export const notFound = (msg = "Ressource introuvable") => new ApiError(404, msg);
-/** Creates a 401 ApiError. */
-export const unauthorized = (msg = "Non authentifié") => new ApiError(401, msg);
-/** Creates a 403 ApiError. */
-export const forbidden = (msg = "Accès refusé") => new ApiError(403, msg);
-/** Creates a 409 ApiError. */
+/** Creates a 404 ApiError. `msg` is a stable key from the "errors" i18n namespace, not a sentence. */
+export const notFound = (msg = "notFound") => new ApiError(404, msg);
+/** Creates a 401 ApiError. `msg` is a stable key from the "errors" i18n namespace, not a sentence. */
+export const unauthorized = (msg = "unauthorized") => new ApiError(401, msg);
+/** Creates a 403 ApiError. `msg` is a stable key from the "errors" i18n namespace, not a sentence. */
+export const forbidden = (msg = "forbidden") => new ApiError(403, msg);
+/** Creates a 409 ApiError. `msg` is a stable key from the "errors" i18n namespace, not a sentence. */
 export const conflict = (msg: string) => new ApiError(409, msg);
 
 /** Validates data against a Zod schema; throws a 400 ApiError with flattened issues on failure. */
 export function validate<T>(schema: z.ZodType<T>, data: unknown): T {
   const result = schema.safeParse(data);
   if (!result.success) {
-    throw new ApiError(400, "Données invalides", result.error.flatten());
+    throw new ApiError(400, "validationFailed", result.error.flatten());
   }
   return result.data;
 }

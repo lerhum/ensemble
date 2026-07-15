@@ -31,7 +31,7 @@ installRoutes.get("/status", async (c) => {
 /** Creates the first admin account (WordPress-style setup). Locked if an admin already exists. */
 installRoutes.post("/", async (c) => {
   const db = c.get("db");
-  if ((await adminCount(db)) > 0) throw conflict("L'installation a déjà été effectuée.");
+  if ((await adminCount(db)) > 0) throw conflict("installAlreadyDone");
   const body = validate(installSchema, await c.req.json().catch(() => ({})));
   const passwordHash = await hashPassword(body.password);
   const [user] = await db

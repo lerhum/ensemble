@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import type { EventDetailDTO } from "@ensemble/db/shared";
 import { api, ApiError } from "./api";
 
@@ -15,17 +16,18 @@ export function useEvent(slug: string): EventState {
   const [event, setEvent] = React.useState<EventDetailDTO | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  const { t } = useTranslation("common");
 
   const reload = React.useCallback(async () => {
     setError(null);
     try {
       setEvent(await api.getEvent(slug));
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Erreur de chargement");
+      setError(err instanceof ApiError ? t(err.message, { ns: "errors" }) : t("errors.loadFailed"));
     } finally {
       setLoading(false);
     }
-  }, [slug]);
+  }, [slug, t]);
 
   React.useEffect(() => {
     void reload();
@@ -39,17 +41,18 @@ export function useAdminEvent(id: string): EventState {
   const [event, setEvent] = React.useState<EventDetailDTO | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  const { t } = useTranslation("common");
 
   const reload = React.useCallback(async () => {
     setError(null);
     try {
       setEvent(await api.getAdminEvent(id));
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Erreur de chargement");
+      setError(err instanceof ApiError ? t(err.message, { ns: "errors" }) : t("errors.loadFailed"));
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, t]);
 
   React.useEffect(() => {
     void reload();

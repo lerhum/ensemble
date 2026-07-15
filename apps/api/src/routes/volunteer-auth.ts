@@ -75,7 +75,7 @@ volunteerAuthRoutes.post("/define-password", async (c) => {
     where: and(eq(volunteerTokens.token, body.token), gt(volunteerTokens.expiresAt, now)),
     with: { volunteer: true },
   });
-  if (!tokenRow) throw notFound("Lien invalide ou expiré.");
+  if (!tokenRow) throw notFound("linkInvalidOrExpired");
 
   const passwordHash = await hashPassword(body.password);
 

@@ -32,7 +32,7 @@ export default function LoginPage() {
       await login(email, password);
       navigate("/admin", { replace: true });
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : t("login.loginFailed"));
+      setError(err instanceof ApiError ? t(err.message, { ns: "errors" }) : t("login.loginFailed"));
     } finally {
       setBusy(false);
     }
