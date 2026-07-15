@@ -59,7 +59,9 @@ export default function InstallPage() {
         confirmPassword: form.confirmPassword,
       });
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : t("install.installFailed"));
+      setError(
+        err instanceof ApiError ? t(err.message, { ns: "errors" }) : t("install.installFailed"),
+      );
       setBusy(false);
       return;
     }

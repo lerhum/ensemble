@@ -2,7 +2,7 @@ import * as React from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { CheckCircle2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { api } from "@/lib/api";
+import { api, ApiError } from "@/lib/api";
 import { useVolunteer } from "@/lib/volunteer-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,7 +41,8 @@ export default function DefinirMotDePassePage() {
       setDone(true);
       setTimeout(() => navigate("/mes-inscriptions"), 1500);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : t("setPassword.genericError");
+      const msg =
+        err instanceof ApiError ? t(err.message, { ns: "errors" }) : t("setPassword.genericError");
       setError(msg);
     } finally {
       setBusy(false);

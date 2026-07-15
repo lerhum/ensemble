@@ -12,7 +12,8 @@
     "placesLeft_other": "{{count}} places"
   },
   "errors": {
-    "authProviderMissing": "useAuth doit être utilisé dans <AuthProvider>"
+    "authProviderMissing": "useAuth doit être utilisé dans <AuthProvider>",
+    "loadFailed": "Erreur de chargement"
   },
   "localeSwitcher": {
     "label": "Changer de langue",

@@ -14,7 +14,7 @@ authRoutes.post("/login", async (c) => {
   const db = c.get("db");
   const [u] = await db.select().from(users).where(eq(users.email, body.email)).limit(1);
   if (!u || !(await verifyPassword(body.password, u.passwordHash))) {
-    throw unauthorized("Email ou mot de passe incorrect.");
+    throw unauthorized("invalidCredentials");
   }
   await createSession(c, u.id);
   return c.json({ user: { id: u.id, email: u.email, nom: u.nom, role: u.role } });

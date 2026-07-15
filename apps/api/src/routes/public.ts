@@ -36,7 +36,7 @@ publicRoutes.get("/events/current", async (c) => {
 /** Returns a published event's full detail by slug; 404 if not found or not published. */
 publicRoutes.get("/events/:slug", async (c) => {
   const detail = await buildEventDetailBySlug(c.get("db"), c.req.param("slug"), true);
-  if (!detail) throw notFound("Événement introuvable");
+  if (!detail) throw notFound("eventNotFound");
   return c.json(detail);
 });
 
@@ -87,8 +87,8 @@ publicRoutes.post("/creneaux/:id/inscriptions", async (c) => {
   const body = validate(inscriptionSchema, await c.req.json().catch(() => ({})));
 
   const cr = await loadCreneau(db, id);
-  if (!cr) throw notFound("Créneau introuvable");
-  if (cr.inscriptions.length >= cr.necessaires) throw conflict("Ce créneau est complet.");
+  if (!cr) throw notFound("creneauNotFound");
+  if (cr.inscriptions.length >= cr.necessaires) throw conflict("slotFull");
 
   const eventId = cr.tache.pole.eventId;
 
@@ -159,10 +159,10 @@ publicRoutes.delete("/creneaux/:id/inscriptions", async (c) => {
   const id = c.req.param("id");
   const body = await c.req.json().catch(() => ({}) as { email?: string });
   const emailAddr = (body as { email?: string }).email;
-  if (!emailAddr) throw notFound("Bénévole introuvable");
+  if (!emailAddr) throw notFound("volunteerNotFound");
 
   const cr = await loadCreneau(db, id);
-  if (!cr) throw notFound("Créneau introuvable");
+  if (!cr) throw notFound("creneauNotFound");
   const eventId = cr.tache.pole.eventId;
 
   const [vol] = await db
@@ -189,7 +189,7 @@ publicRoutes.get("/confirmer/:token", async (c) => {
     with: { volunteer: true },
   });
 
-  if (!row) return c.json({ ok: false, error: "Lien invalide ou expiré." }, 400);
+  if (!row) return c.json({ ok: false, error: "linkInvalidOrExpired" }, 400);
 
   if (!row.confirmedAt) {
     await Promise.all([
@@ -204,23 +204,23 @@ publicRoutes.get("/confirmer/:token", async (c) => {
 /** Returns a volunteer's signup summary via their email-link token. */
 publicRoutes.get("/mes-inscriptions/:token", async (c) => {
   const dto = await buildMesInscriptions(c.get("db"), c.req.param("token"));
-  if (!dto) return c.json({ error: "Token introuvable." }, 404);
+  if (!dto) return c.json({ error: "tokenNotFound" }, 404);
   return c.json(dto);
 });
 
 /** Returns the signed-in volunteer's signup summary via their session cookie. */
 publicRoutes.get("/mes-inscriptions", async (c) => {
   const session = await resolveVolunteerSession(c);
-  if (!session) return c.json({ error: "Non authentifié." }, 401);
+  if (!session) return c.json({ error: "unauthorized" }, 401);
   const dto = await buildMesInscriptionsByVolunteerId(c.get("db"), session.volunteerId);
-  if (!dto) return c.json({ error: "Bénévole introuvable." }, 404);
+  if (!dto) return c.json({ error: "volunteerNotFound" }, 404);
   return c.json(dto);
 });
 
 /** Deletes the current volunteer's account and all their data (GDPR right to erasure). */
 publicRoutes.delete("/volunteers/me", async (c) => {
   const session = await resolveVolunteerSession(c);
-  if (!session) return c.json({ error: "Non authentifié." }, 401);
+  if (!session) return c.json({ error: "unauthorized" }, 401);
   await c.get("db").delete(volunteers).where(eq(volunteers.id, session.volunteerId));
   return c.json({ ok: true });
 });

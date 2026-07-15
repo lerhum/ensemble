@@ -167,7 +167,9 @@ function VolunteersInner({ event }: { event: EventDetailDTO }) {
       setShowAddVolunteer(false);
       resetAddForm();
     } catch (e) {
-      setAddError(e instanceof ApiError ? e.message : t("volunteers.addError"));
+      setAddError(
+        e instanceof ApiError ? t(e.message, { ns: "errors" }) : t("volunteers.addError"),
+      );
     } finally {
       setAdding(false);
     }

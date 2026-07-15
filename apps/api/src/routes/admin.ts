@@ -71,7 +71,7 @@ adminRoutes.get("/admin/events", async (c) => {
 /** Returns a single event's full detail by id. */
 adminRoutes.get("/admin/events/:id", async (c) => {
   const detail = await buildEventDetailById(c.get("db"), c.req.param("id"));
-  if (!detail) throw notFound("Événement introuvable");
+  if (!detail) throw notFound("eventNotFound");
   return c.json(detail);
 });
 
@@ -82,7 +82,7 @@ adminRoutes.post("/admin/events/:id/duplicate", async (c) => {
     where: eq(events.id, c.req.param("id")),
     with: { poles: { with: { taches: { with: { creneaux: true } } } } },
   });
-  if (!src) throw notFound("Événement introuvable");
+  if (!src) throw notFound("eventNotFound");
 
   let slug = slugify(`${src.nom}-copie`) || "evenement-copie";
   const [clash] = await db.select({ id: events.id }).from(events).where(eq(events.slug, slug));
@@ -175,7 +175,7 @@ adminRoutes.patch("/events/:id", async (c) => {
   const patch = { ...body };
   if (patch.banniere === undefined) delete (patch as Record<string, unknown>).banniere;
   const [ev] = await db.update(events).set(patch).where(eq(events.id, id)).returning();
-  if (!ev) throw notFound("Événement introuvable");
+  if (!ev) throw notFound("eventNotFound");
   return c.json(await buildEventDetailById(db, ev.id));
 });
 
@@ -185,14 +185,14 @@ adminRoutes.post("/events/:id/banner", async (c) => {
   const id = c.req.param("id");
   const form = await c.req.formData();
   const file = form.get("file");
-  if (!file || typeof file === "string") throw notFound("Fichier manquant");
+  if (!file || typeof file === "string") throw notFound("fileMissing");
   // Le type d'entrée FormData diffère entre @types/node et workers-types : on
   // s'appuie sur l'interface Blob commune (arrayBuffer + type).
   const blob = file as unknown as { arrayBuffer(): Promise<ArrayBuffer>; type?: string };
   const bytes = new Uint8Array(await blob.arrayBuffer());
   const { url } = await c.get("storage").put(`banner-${id}`, bytes, blob.type || "image/jpeg");
   const [ev] = await db.update(events).set({ banniere: url }).where(eq(events.id, id)).returning();
-  if (!ev) throw notFound("Événement introuvable");
+  if (!ev) throw notFound("eventNotFound");
   return c.json({ url });
 });
 
@@ -246,7 +246,7 @@ adminRoutes.patch("/settings", async (c) => {
 adminRoutes.post("/settings/logo", async (c) => {
   const form = await c.req.formData();
   const file = form.get("file");
-  if (!file || typeof file === "string") throw notFound("Fichier manquant");
+  if (!file || typeof file === "string") throw notFound("fileMissing");
   const blob = file as unknown as { arrayBuffer(): Promise<ArrayBuffer>; type?: string };
   const bytes = new Uint8Array(await blob.arrayBuffer());
   const { url } = await c.get("storage").put("site-logo", bytes, blob.type || "image/png");
@@ -295,7 +295,7 @@ adminRoutes.patch("/poles/:id", async (c) => {
     .set(body)
     .where(eq(poles.id, c.req.param("id")))
     .returning();
-  if (!row) throw notFound("Pôle introuvable");
+  if (!row) throw notFound("poleNotFound");
   return c.json(row);
 });
 
@@ -306,7 +306,7 @@ adminRoutes.delete("/poles/:id", async (c) => {
     .delete(poles)
     .where(eq(poles.id, c.req.param("id")))
     .returning();
-  if (!row) throw notFound("Pôle introuvable");
+  if (!row) throw notFound("poleNotFound");
   return c.json({ ok: true });
 });
 
@@ -332,7 +332,7 @@ adminRoutes.patch("/taches/:id", async (c) => {
     .set(body)
     .where(eq(taches.id, c.req.param("id")))
     .returning();
-  if (!row) throw notFound("Tâche introuvable");
+  if (!row) throw notFound("tacheNotFound");
   return c.json(row);
 });
 
@@ -343,7 +343,7 @@ adminRoutes.delete("/taches/:id", async (c) => {
     .delete(taches)
     .where(eq(taches.id, c.req.param("id")))
     .returning();
-  if (!row) throw notFound("Tâche introuvable");
+  if (!row) throw notFound("tacheNotFound");
   return c.json({ ok: true });
 });
 
@@ -375,7 +375,7 @@ adminRoutes.patch("/creneaux/:id", async (c) => {
     .set(body)
     .where(eq(creneaux.id, c.req.param("id")))
     .returning();
-  if (!row) throw notFound("Créneau introuvable");
+  if (!row) throw notFound("creneauNotFound");
   return c.json(row);
 });
 
@@ -386,7 +386,7 @@ adminRoutes.delete("/creneaux/:id", async (c) => {
     .delete(creneaux)
     .where(eq(creneaux.id, c.req.param("id")))
     .returning();
-  if (!row) throw notFound("Créneau introuvable");
+  if (!row) throw notFound("creneauNotFound");
   return c.json({ ok: true });
 });
 
@@ -423,8 +423,8 @@ adminRoutes.post("/admin/creneaux/:id/volunteers", async (c) => {
   const body = validate(adminInscriptionSchema, await c.req.json().catch(() => ({})));
 
   const cr = await loadCreneau(db, id);
-  if (!cr) throw notFound("Créneau introuvable");
-  if (cr.inscriptions.length >= cr.necessaires) throw conflict("Ce créneau est complet.");
+  if (!cr) throw notFound("creneauNotFound");
+  if (cr.inscriptions.length >= cr.necessaires) throw conflict("slotFull");
 
   const eventId = cr.tache.pole.eventId;
   let volunteerId: string;
