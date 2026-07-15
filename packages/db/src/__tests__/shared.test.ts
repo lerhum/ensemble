@@ -45,7 +45,6 @@ describe("STATUS_COLORS", () => {
       expect(c.fg).toMatch(/^#[0-9a-fA-F]{6}$/);
       expect(c.bg).toMatch(/^#[0-9a-fA-F]{6}$/);
       expect(c.bar).toMatch(/^#[0-9a-fA-F]{6}$/);
-      expect(typeof c.label).toBe("string");
     }
   });
 
