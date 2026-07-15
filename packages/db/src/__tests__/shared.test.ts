@@ -8,6 +8,7 @@ import {
   volunteerFilterSchema,
   broadcastSchema,
   settingsUpdateSchema,
+  inscriptionSchema,
 } from "../shared.js";
 
 describe("slotStatus", () => {
@@ -239,6 +240,28 @@ describe("broadcastSchema", () => {
 
   it("rejects an empty message", () => {
     expect(broadcastSchema.safeParse({ subject: "Rappel", message: "" }).success).toBe(false);
+  });
+});
+
+describe("inscriptionSchema locale", () => {
+  const base = { nom: "Alice", email: "alice@example.com" };
+
+  it("defaults to fr when locale is absent", () => {
+    const r = inscriptionSchema.safeParse(base);
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.locale).toBe("fr");
+  });
+
+  it("accepts a supported locale", () => {
+    const r = inscriptionSchema.safeParse({ ...base, locale: "nl" });
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.locale).toBe("nl");
+  });
+
+  it("silently falls back to fr for an unsupported locale, never rejecting", () => {
+    const r = inscriptionSchema.safeParse({ ...base, locale: "xx" });
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.locale).toBe("fr");
   });
 });
 
