@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api, ApiError } from "@/lib/api";
 import { useVolunteer } from "@/lib/volunteer-context";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { Label } from "@/components/ui/label";
 export default function VolunteerLoginPage() {
   const navigate = useNavigate();
   const { refreshSession } = useVolunteer();
+  const { t } = useTranslation("auth");
 
   const [form, setForm] = React.useState({ email: "", password: "" });
   const [busy, setBusy] = React.useState(false);
@@ -28,9 +30,9 @@ export default function VolunteerLoginPage() {
       navigate("/mes-inscriptions");
     } catch (err: unknown) {
       if (err instanceof ApiError && err.status === 401) {
-        setError("Email ou mot de passe incorrect.");
+        setError(t("volunteerLogin.invalidCredentials"));
       } else {
-        setError("Une erreur est survenue. Réessaie.");
+        setError(t("volunteerLogin.genericError"));
       }
     } finally {
       setBusy(false);
@@ -42,18 +44,18 @@ export default function VolunteerLoginPage() {
       <div className="mx-auto max-w-sm space-y-6">
         <div>
           <Link to="/" className="text-[13px] text-label hover:underline">
-            ‹ Retour à l'accueil
+            {t("shared.backToHome")}
           </Link>
-          <h1 className="mt-3 text-2xl font-800 tracking-tighter2 text-ink">Se connecter</h1>
-          <p className="mt-1 text-sm text-label">
-            Retrouve tes inscriptions et t'inscrire en un clic.
-          </p>
+          <h1 className="mt-3 text-2xl font-800 tracking-tighter2 text-ink">
+            {t("volunteerLogin.title")}
+          </h1>
+          <p className="mt-1 text-sm text-label">{t("volunteerLogin.subtitle")}</p>
         </div>
 
         <div className="rounded-card border border-hair bg-white p-6">
           <form className="space-y-4" onSubmit={submit}>
             <div className="space-y-1.5">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("shared.emailLabel")}</Label>
               <Input
                 id="email"
                 type="email"
@@ -64,7 +66,7 @@ export default function VolunteerLoginPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="password">Mot de passe</Label>
+              <Label htmlFor="password">{t("shared.passwordLabel")}</Label>
               <Input
                 id="password"
                 type="password"
@@ -75,14 +77,14 @@ export default function VolunteerLoginPage() {
             </div>
             {error && <p className="text-sm font-600 text-danger">{error}</p>}
             <Button type="submit" variant="brand" size="lg" className="w-full" disabled={busy}>
-              {busy ? "Connexion…" : "Se connecter"}
+              {busy ? t("shared.loggingIn") : t("shared.login")}
             </Button>
           </form>
         </div>
 
         <p className="text-center text-[13px] text-label">
-          Pas encore de mot de passe ?{" "}
-          <span className="text-navy">Clique sur le lien reçu dans ton email de confirmation.</span>
+          {t("volunteerLogin.noPasswordYet")}{" "}
+          <span className="text-navy">{t("volunteerLogin.noPasswordHint")}</span>
         </p>
       </div>
     </div>

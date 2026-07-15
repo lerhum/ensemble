@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { CheckCircle2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { api } from "@/lib/api";
 import { useVolunteer } from "@/lib/volunteer-context";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ export default function DefinirMotDePassePage() {
   const { token = "" } = useParams();
   const navigate = useNavigate();
   const { refreshSession } = useVolunteer();
+  const { t } = useTranslation("auth");
 
   const [form, setForm] = React.useState({ password: "", confirmPassword: "" });
   const [busy, setBusy] = React.useState(false);
@@ -24,7 +26,7 @@ export default function DefinirMotDePassePage() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (form.password !== form.confirmPassword) {
-      setError("Les mots de passe ne correspondent pas.");
+      setError(t("setPassword.mismatchError"));
       return;
     }
     setBusy(true);
@@ -39,7 +41,7 @@ export default function DefinirMotDePassePage() {
       setDone(true);
       setTimeout(() => navigate("/mes-inscriptions"), 1500);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Une erreur est survenue.";
+      const msg = err instanceof Error ? err.message : t("setPassword.genericError");
       setError(msg);
     } finally {
       setBusy(false);
@@ -50,8 +52,8 @@ export default function DefinirMotDePassePage() {
     return (
       <Center>
         <CheckCircle2 className="h-10 w-10 text-success" />
-        <p className="mt-4 text-lg font-700 text-ink">Mot de passe défini !</p>
-        <p className="mt-1 text-sm text-label">Redirection vers tes inscriptions…</p>
+        <p className="mt-4 text-lg font-700 text-ink">{t("setPassword.successTitle")}</p>
+        <p className="mt-1 text-sm text-label">{t("setPassword.successSubtitle")}</p>
       </Center>
     );
   }
@@ -61,30 +63,30 @@ export default function DefinirMotDePassePage() {
       <div className="mx-auto max-w-sm space-y-6">
         <div>
           <Link to="/" className="text-[13px] text-label hover:underline">
-            ‹ Retour à l'accueil
+            {t("shared.backToHome")}
           </Link>
-          <h1 className="mt-3 text-2xl font-800 tracking-tighter2 text-ink">Crée ton accès</h1>
-          <p className="mt-1 text-sm text-label">
-            Définis un mot de passe pour retrouver tes inscriptions à tout moment.
-          </p>
+          <h1 className="mt-3 text-2xl font-800 tracking-tighter2 text-ink">
+            {t("setPassword.title")}
+          </h1>
+          <p className="mt-1 text-sm text-label">{t("setPassword.subtitle")}</p>
         </div>
 
         <div className="rounded-card border border-hair bg-white p-6">
           <form className="space-y-4" onSubmit={submit}>
             <div className="space-y-1.5">
-              <Label htmlFor="password">Mot de passe</Label>
+              <Label htmlFor="password">{t("shared.passwordLabel")}</Label>
               <Input
                 id="password"
                 type="password"
                 value={form.password}
                 onChange={set("password")}
-                placeholder="8 caractères minimum"
+                placeholder={t("shared.passwordMinLengthPlaceholder")}
                 required
                 autoFocus
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+              <Label htmlFor="confirmPassword">{t("shared.confirmPasswordLabel")}</Label>
               <Input
                 id="confirmPassword"
                 type="password"
@@ -95,7 +97,7 @@ export default function DefinirMotDePassePage() {
             </div>
             {error && <p className="text-sm font-600 text-danger">{error}</p>}
             <Button type="submit" variant="brand" size="lg" className="w-full" disabled={busy}>
-              {busy ? "Enregistrement…" : "Définir mon mot de passe"}
+              {busy ? t("setPassword.submitBusy") : t("setPassword.submit")}
             </Button>
           </form>
         </div>

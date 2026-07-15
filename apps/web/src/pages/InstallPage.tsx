@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import { Logo } from "@/components/Logo";
 export default function InstallPage() {
   const { needsSetup, loading, refresh } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation("auth");
   const [form, setForm] = React.useState({
     orgNom: "",
     rgpdEmail: "",
@@ -57,7 +59,7 @@ export default function InstallPage() {
         confirmPassword: form.confirmPassword,
       });
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Échec de l'installation");
+      setError(err instanceof ApiError ? err.message : t("install.installFailed"));
       setBusy(false);
       return;
     }
@@ -65,9 +67,7 @@ export default function InstallPage() {
       try {
         await api.uploadSiteLogo(logoFile);
       } catch {
-        setLogoWarning(
-          "Le logo n'a pas pu être uploadé. Vous pourrez le configurer depuis les paramètres.",
-        );
+        setLogoWarning(t("install.logoUploadFailed"));
       }
     }
     await refresh();
@@ -80,31 +80,29 @@ export default function InstallPage() {
         <div className="mb-6 flex flex-col items-center gap-3 text-center">
           <Logo className="h-10" />
           <div>
-            <h1 className="text-2xl font-800 tracking-tighter2 text-ink">Bienvenue sur Ensemble</h1>
-            <p className="mt-1 text-sm text-label">
-              Créez le compte administrateur de votre comité pour démarrer.
-            </p>
+            <h1 className="text-2xl font-800 tracking-tighter2 text-ink">{t("install.title")}</h1>
+            <p className="mt-1 text-sm text-label">{t("install.subtitle")}</p>
           </div>
         </div>
         <form className="space-y-4" onSubmit={submit}>
           <div className="space-y-1.5">
-            <Label htmlFor="orgNom">Nom de l'école / du comité</Label>
+            <Label htmlFor="orgNom">{t("install.orgNomLabel")}</Label>
             <Input
               id="orgNom"
               value={form.orgNom}
               onChange={set("orgNom")}
-              placeholder="Comité scolaire"
+              placeholder={t("install.orgNomPlaceholder")}
               required
             />
-            <p className="text-[12px] text-label">Affiché sur le site public.</p>
+            <p className="text-[12px] text-label">{t("install.orgNomHint")}</p>
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="siteLogo">Logo de l'école (optionnel)</Label>
+            <Label htmlFor="siteLogo">{t("install.logoLabel")}</Label>
             <div className="flex items-center gap-3">
               {logoPreview && (
                 <img
                   src={logoPreview}
-                  alt="Aperçu"
+                  alt={t("install.logoPreviewAlt")}
                   className="h-10 w-auto rounded object-contain"
                 />
               )}
@@ -112,7 +110,7 @@ export default function InstallPage() {
                 htmlFor="siteLogo"
                 className="cursor-pointer rounded-[10px] border border-hair px-3.5 py-2 text-sm font-700 text-ink hover:bg-surface"
               >
-                {logoFile ? "Changer…" : "Choisir un fichier"}
+                {logoFile ? t("install.logoChange") : t("install.logoChoose")}
               </label>
               {logoFile && (
                 <button
@@ -123,7 +121,7 @@ export default function InstallPage() {
                     setLogoPreview(null);
                   }}
                 >
-                  Supprimer
+                  {t("install.logoRemove")}
                 </button>
               )}
             </div>
@@ -136,44 +134,41 @@ export default function InstallPage() {
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="rgpdEmail">Email de contact RGPD</Label>
+            <Label htmlFor="rgpdEmail">{t("install.rgpdEmailLabel")}</Label>
             <Input
               id="rgpdEmail"
               type="email"
               value={form.rgpdEmail}
               onChange={set("rgpdEmail")}
-              placeholder="dpo@ecole.be"
+              placeholder={t("install.rgpdEmailPlaceholder")}
               required
             />
-            <p className="text-[12px] text-label">
-              Affiché aux bénévoles pour exercer leurs droits (accès, suppression). Peut être le
-              même que l'email admin.
-            </p>
+            <p className="text-[12px] text-label">{t("install.rgpdEmailHint")}</p>
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="email">Email de l'administrateur</Label>
+            <Label htmlFor="email">{t("install.adminEmailLabel")}</Label>
             <Input
               id="email"
               type="email"
               value={form.email}
               onChange={set("email")}
-              placeholder="admin@ecole.be"
+              placeholder={t("install.adminEmailPlaceholder")}
               required
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="password">Mot de passe</Label>
+            <Label htmlFor="password">{t("shared.passwordLabel")}</Label>
             <Input
               id="password"
               type="password"
               value={form.password}
               onChange={set("password")}
-              placeholder="8 caractères minimum"
+              placeholder={t("shared.passwordMinLengthPlaceholder")}
               required
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="confirm">Confirmer le mot de passe</Label>
+            <Label htmlFor="confirm">{t("shared.confirmPasswordLabel")}</Label>
             <Input
               id="confirm"
               type="password"
@@ -185,7 +180,7 @@ export default function InstallPage() {
           {error && <p className="text-sm font-600 text-danger">{error}</p>}
           {logoWarning && <p className="text-sm text-warn">{logoWarning}</p>}
           <Button type="submit" variant="brand" size="lg" className="w-full" disabled={busy}>
-            {busy ? "Création…" : "Créer mon compte"}
+            {busy ? t("install.submitBusy") : t("install.submit")}
           </Button>
         </form>
       </Card>

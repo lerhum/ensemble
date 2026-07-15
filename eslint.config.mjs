@@ -56,7 +56,13 @@ export default tseslint.config(
     // Anti-regression guardrail: files already migrated to react-i18next keys.
     // Add a file here once its hardcoded French JSX text is migrated — see
     // CONTRIBUTING.md § Internationalization.
-    files: ["apps/web/src/components/public/PublicNav.tsx"],
+    files: [
+      "apps/web/src/components/public/PublicNav.tsx",
+      "apps/web/src/pages/InstallPage.tsx",
+      "apps/web/src/pages/LoginPage.tsx",
+      "apps/web/src/pages/VolunteerLoginPage.tsx",
+      "apps/web/src/pages/SetPasswordPage.tsx",
+    ],
     plugins: { i18next },
     rules: {
       "i18next/no-literal-string": "error",
