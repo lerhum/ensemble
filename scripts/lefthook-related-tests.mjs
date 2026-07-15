@@ -21,9 +21,13 @@ for (const { prefix, pkg } of WORKSPACES) {
   if (files.length === 0) continue;
 
   console.log(`\n→ vitest related (${pkg}): ${files.length} file(s)`);
-  const result = spawnSync("pnpm", ["--filter", pkg, "exec", "vitest", "related", "--run", ...files], {
-    stdio: "inherit",
-  });
+  const result = spawnSync(
+    "pnpm",
+    ["--filter", pkg, "exec", "vitest", "related", "--run", ...files],
+    {
+      stdio: "inherit",
+    },
+  );
 
   if (result.status !== 0) hadFailure = true;
 }
