@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Link, useParams } from "react-router-dom";
 import { ChevronLeft, CheckCircle2, Mail } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { EventDetailDTO, PoleDTO } from "@ensemble/db/shared";
 import { api } from "@/lib/api";
 import { useEvent } from "@/lib/useEvent";
@@ -19,15 +20,16 @@ import { ConfirmationDialog } from "@/components/ConfirmationDialog";
 export default function PoleSelectionPage() {
   const { slug = "", poleId = "" } = useParams();
   const { event, loading, error, reload } = useEvent(slug);
+  const { t } = useTranslation("public");
 
   React.useEffect(() => {
     if (event) applyAccent(event.couleurTheme);
   }, [event]);
 
-  if (loading) return <Center>Chargement…</Center>;
-  if (error || !event) return <Center className="text-danger">{error ?? "Erreur"}</Center>;
+  if (loading) return <Center>{t("shared.loading")}</Center>;
+  if (error || !event) return <Center className="text-danger">{error ?? t("shared.error")}</Center>;
   const pole = event.poles.find((p) => p.id === poleId);
-  if (!pole) return <Center className="text-danger">Pôle introuvable</Center>;
+  if (!pole) return <Center className="text-danger">{t("poleSelection.poleNotFound")}</Center>;
 
   return <PoleInner event={event} pole={pole} reload={reload} />;
 }
@@ -46,6 +48,7 @@ function PoleInner({
 }) {
   const { identite, session, saveIdentite, saveToken } = useVolunteer();
   const { siteTitle, siteLogo } = useAuth();
+  const { t, i18n } = useTranslation("public");
 
   const [activeCreneau, setActiveCreneau] = React.useState<{ id: string; label: string } | null>(
     null,
@@ -68,7 +71,7 @@ function PoleInner({
   }
 
   async function register(id: Identite) {
-    const r = await api.inscrire(activeCreneau!.id, id);
+    const r = await api.inscrire(activeCreneau!.id, { ...id, locale: i18n.language });
     if (!session) {
       saveIdentite(id);
       saveToken(r.token);
@@ -102,7 +105,7 @@ function PoleInner({
         <div>
           <h1 className="font-800 leading-tight text-ink">{pole.nom}</h1>
           <p className="text-[12px] text-label">
-            {event.nom} · {nbCreneaux} créneaux
+            {event.nom} · {t("shared.slotsCount", { count: nbCreneaux })}
           </p>
         </div>
       </header>
@@ -127,7 +130,7 @@ function PoleInner({
               <Jauge
                 inscrits={pole.inscrits}
                 necessaires={pole.necessaires}
-                label="Couverture du pôle"
+                label={t("poleSelection.coverageLabel")}
               />
             </div>
           </div>
@@ -137,22 +140,19 @@ function PoleInner({
           <div className="mt-5 rounded-card border border-success bg-success-bg px-4 py-4 text-success">
             <div className="flex items-center gap-2">
               <CheckCircle2 className="h-5 w-5 shrink-0" />
-              <span className="font-700">Merci ! Ton inscription est enregistrée.</span>
+              <span className="font-700">{t("poleSelection.signupSuccess")}</span>
             </div>
             {success.needsConfirmation && (
               <div className="mt-2 flex items-start gap-2 text-[13px] text-ink2">
                 <Mail className="mt-0.5 h-4 w-4 shrink-0 text-label" />
-                <span>
-                  Un email a été envoyé. Clique sur le lien pour confirmer ta participation et
-                  protéger ton accès.
-                </span>
+                <span>{t("poleSelection.confirmationEmailSent")}</span>
               </div>
             )}
             <Link
               to={session ? "/mes-inscriptions" : `/mes-inscriptions/${success.token}`}
               className="mt-3 inline-block text-[13px] font-700 text-navy underline-offset-2 hover:underline"
             >
-              Voir mes inscriptions →
+              {t("poleSelection.viewMySignups")}
             </Link>
           </div>
         )}
@@ -161,7 +161,9 @@ function PoleInner({
           {/* Carte pôle (desktop) */}
           <aside className="hidden md:block">
             <div className="rounded-card border border-hair bg-surface p-5">
-              <p className="text-[11px] font-800 uppercase tracking-[.1em] text-label2">Le pôle</p>
+              <p className="text-[11px] font-800 uppercase tracking-[.1em] text-label2">
+                {t("poleSelection.aboutPole")}
+              </p>
               <p className="mt-2 text-sm leading-relaxed text-ink2">{pole.description}</p>
             </div>
           </aside>
@@ -169,13 +171,13 @@ function PoleInner({
           {/* Tâches & créneaux */}
           <section>
             <div className="mb-3 hidden items-baseline justify-between md:flex">
-              <h2 className="text-lg font-800 tracking-tighter2 text-ink">Tâches &amp; créneaux</h2>
-              <p className="text-[13px] text-label">
-                Clique sur « Je participe » pour t'inscrire directement.
-              </p>
+              <h2 className="text-lg font-800 tracking-tighter2 text-ink">
+                {t("poleSelection.tasksAndSlots")}
+              </h2>
+              <p className="text-[13px] text-label">{t("poleSelection.clickToSignupDesktop")}</p>
             </div>
             <p className="mb-4 text-sm text-ink2 md:hidden">
-              Clique sur « Je participe » pour le créneau qui t'arrange.
+              {t("poleSelection.clickToSignupMobile")}
             </p>
 
             <div className="space-y-5">
@@ -188,7 +190,7 @@ function PoleInner({
                   <div className="hidden items-center gap-2 border-b border-hair px-5 py-3 md:flex">
                     <span className="font-800 text-ink">{tache.nom}</span>
                     <span className="rounded-full bg-chip px-2 py-0.5 text-[11px] font-700 text-navy">
-                      {tache.creneaux.length} créneau{tache.creneaux.length > 1 ? "x" : ""}
+                      {t("shared.slotsCount", { count: tache.creneaux.length })}
                     </span>
                     {tache.description && (
                       <span className="ml-auto text-[13px] text-label">{tache.description}</span>

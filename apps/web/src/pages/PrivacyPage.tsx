@@ -1,32 +1,33 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/lib/auth-context";
 
 /** GDPR privacy policy page, referencing the site title and RGPD contact email from settings. */
 export default function PrivacyPage() {
   const { siteTitle, rgpdEmail } = useAuth();
-  const org = siteTitle || "le comité organisateur";
+  const { t } = useTranslation("public");
+  const org = siteTitle || t("privacy.defaultOrgName");
 
   return (
     <div className="min-h-screen bg-[#F9F9F8] px-4 py-12">
       <div className="mx-auto max-w-2xl space-y-8">
         <div>
           <Link to="/" className="text-[13px] text-label hover:underline">
-            ← Retour
+            {t("privacy.back")}
           </Link>
           <h1 className="mt-4 text-3xl font-800 tracking-tighter2 text-ink">
-            Politique de confidentialité
+            {t("privacy.title")}
           </h1>
-          <p className="mt-2 text-sm text-label">Conformément au Règlement (UE) 2016/679 (RGPD)</p>
+          <p className="mt-2 text-sm text-label">{t("privacy.subtitle")}</p>
         </div>
 
-        <Section title="Responsable du traitement">
+        <Section title={t("privacy.responsible.title")}>
           <p>
-            Le responsable du traitement des données collectées via cette plateforme est{" "}
-            <strong>{org}</strong>.
+            {t("privacy.responsible.intro")} <strong>{org}</strong>.
             {rgpdEmail && (
               <>
                 {" "}
-                Pour toute question relative à vos données, contactez :{" "}
+                {t("privacy.responsible.contactPrefix")}{" "}
                 <a href={`mailto:${rgpdEmail}`} className="underline text-navy">
                   {rgpdEmail}
                 </a>
@@ -36,60 +37,55 @@ export default function PrivacyPage() {
           </p>
         </Section>
 
-        <Section title="Données collectées">
-          <p>Lors de votre inscription comme bénévole, nous collectons :</p>
+        <Section title={t("privacy.dataCollected.title")}>
+          <p>{t("privacy.dataCollected.intro")}</p>
           <ul className="mt-2 list-disc pl-5 space-y-1">
-            <li>Nom complet</li>
-            <li>Adresse email</li>
-            <li>Numéro de téléphone (optionnel)</li>
+            <li>{t("privacy.dataCollected.fullName")}</li>
+            <li>{t("privacy.dataCollected.email")}</li>
+            <li>{t("privacy.dataCollected.phone")}</li>
           </ul>
-          <p className="mt-3">
-            Ces données sont collectées sur la base de votre consentement (Art. 6.1.a RGPD) et dans
-            le cadre de l'exécution d'une mission d'intérêt général (organisation d'un événement
-            scolaire).
-          </p>
+          <p className="mt-3">{t("privacy.dataCollected.basis")}</p>
         </Section>
 
-        <Section title="Finalités du traitement">
+        <Section title={t("privacy.purposes.title")}>
           <ul className="list-disc pl-5 space-y-1">
-            <li>Gestion des inscriptions aux créneaux de bénévolat</li>
-            <li>Communication relative à l'événement (confirmation, rappels)</li>
-            <li>Coordination des bénévoles par les organisateurs</li>
+            <li>{t("privacy.purposes.slots")}</li>
+            <li>{t("privacy.purposes.communication")}</li>
+            <li>{t("privacy.purposes.coordination")}</li>
           </ul>
         </Section>
 
-        <Section title="Durée de conservation">
-          <p>
-            Vos données sont conservées jusqu'à la fin de l'événement auquel vous êtes inscrit·e,
-            puis supprimées ou anonymisées dans un délai raisonnable.
-          </p>
+        <Section title={t("privacy.retention.title")}>
+          <p>{t("privacy.retention.text")}</p>
         </Section>
 
-        <Section title="Vos droits">
-          <p>Conformément au RGPD, vous disposez des droits suivants :</p>
+        <Section title={t("privacy.rights.title")}>
+          <p>{t("privacy.rights.intro")}</p>
           <ul className="mt-2 list-disc pl-5 space-y-1">
             <li>
-              <strong>Droit d'accès</strong> — consulter vos données via la page « Mes inscriptions
-              »
+              <strong>{t("privacy.rights.access.label")}</strong> —{" "}
+              {t("privacy.rights.access.description")}
             </li>
             <li>
-              <strong>Droit de rectification</strong> — corriger vos informations
+              <strong>{t("privacy.rights.rectification.label")}</strong> —{" "}
+              {t("privacy.rights.rectification.description")}
             </li>
             <li>
-              <strong>Droit à l'effacement</strong> — supprimer votre compte depuis « Mes
-              inscriptions »
+              <strong>{t("privacy.rights.erasure.label")}</strong> —{" "}
+              {t("privacy.rights.erasure.description")}
             </li>
             <li>
-              <strong>Droit d'opposition</strong> — vous opposer au traitement de vos données
+              <strong>{t("privacy.rights.objection.label")}</strong> —{" "}
+              {t("privacy.rights.objection.description")}
             </li>
           </ul>
           {rgpdEmail && (
             <p className="mt-3">
-              Pour exercer ces droits, rendez-vous sur la page{" "}
+              {t("privacy.rights.exercisePrefix")}{" "}
               <Link to="/mes-inscriptions" className="underline text-navy">
-                Mes inscriptions
+                {t("privacy.rights.exerciseLinkText")}
               </Link>{" "}
-              ou contactez{" "}
+              {t("privacy.rights.exerciseOr")}{" "}
               <a href={`mailto:${rgpdEmail}`} className="underline text-navy">
                 {rgpdEmail}
               </a>
@@ -97,25 +93,21 @@ export default function PrivacyPage() {
             </p>
           )}
           <p className="mt-3">
-            Vous avez également le droit d'introduire une réclamation auprès de l'
+            {t("privacy.rights.complaintPrefix")}
             <a
               href="https://www.autoriteprotectiondonnees.be"
               target="_blank"
               rel="noopener noreferrer"
               className="underline text-navy"
             >
-              Autorité de protection des données (APD)
+              {t("privacy.rights.complaintLinkText")}
             </a>{" "}
-            belge.
+            {t("privacy.rights.complaintSuffix")}
           </p>
         </Section>
 
-        <Section title="Cookies">
-          <p>
-            Ce site utilise uniquement un cookie de session technique, nécessaire au bon
-            fonctionnement du service (maintien de votre connexion). Ce cookie ne nécessite pas de
-            consentement selon les lignes directrices de l'APD.
-          </p>
+        <Section title={t("privacy.cookies.title")}>
+          <p>{t("privacy.cookies.text")}</p>
         </Section>
       </div>
     </div>
