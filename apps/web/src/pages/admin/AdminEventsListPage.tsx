@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { Copy, Plus, Archive, Pencil } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { EventDTO } from "@ensemble/db/shared";
 import { api } from "@/lib/api";
 import { AdminLayout } from "@/components/admin/AdminLayout";
@@ -14,13 +15,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
-
-const STATUS_LABEL: Record<string, string> = {
-  brouillon: "Brouillon",
-  publie: "Publié",
-  archive: "Archivé",
-};
+import { cn, formatFullDate } from "@/lib/utils";
 
 const STATUS_CLASS: Record<string, string> = {
   brouillon: "bg-chip text-ink2",
@@ -28,21 +23,23 @@ const STATUS_CLASS: Record<string, string> = {
   archive: "bg-surface text-label",
 };
 
-/** Formats a date for display: uses ISO date if available, falls back to the free-text date string. */
-function formatDate(dateIso: string | null, dateTxt: string): string {
-  if (dateIso) {
-    return new Intl.DateTimeFormat("fr-BE", { dateStyle: "full" }).format(
-      new Date(dateIso + "T12:00:00"),
-    );
-  }
-  return dateTxt || "—";
-}
-
 /** Admin events list: create, duplicate, and navigate to individual events. */
 export default function AdminEventsListPage() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation("admin");
+  const STATUS_LABEL: Record<string, string> = {
+    brouillon: t("eventsList.statusDraft"),
+    publie: t("eventsList.statusPublished"),
+    archive: t("eventsList.statusArchived"),
+  };
   const [events, setEvents] = React.useState<EventDTO[]>([]);
   const [loading, setLoading] = React.useState(true);
+
+  /** Formats a date for display: uses ISO date if available, falls back to the free-text date string. */
+  function formatDate(dateIso: string | null, dateTxt: string): string {
+    if (dateIso) return formatFullDate(dateIso, i18n.language);
+    return dateTxt || t("eventsList.emptyValue");
+  }
   const [creating, setCreating] = React.useState(false);
   const [showDialog, setShowDialog] = React.useState(false);
   const [nom, setNom] = React.useState("");
@@ -62,11 +59,7 @@ export default function AdminEventsListPage() {
       const ev = await api.createEvent({
         nom: nom.trim(),
         dateIso: dateIso || null,
-        date: dateIso
-          ? new Intl.DateTimeFormat("fr-BE", { dateStyle: "full" }).format(
-              new Date(dateIso + "T12:00:00"),
-            )
-          : "",
+        date: dateIso ? formatFullDate(dateIso, i18n.language) : "",
       });
       navigate(`/admin/events/${ev.id}`);
     } finally {
@@ -91,26 +84,24 @@ export default function AdminEventsListPage() {
   ];
 
   return (
-    <AdminLayout eyebrow="Pilotage" title="Événements">
+    <AdminLayout eyebrow={t("shared.pilotage")} title={t("eventsList.title")}>
       <div className="flex items-center justify-between mb-6">
         <p className="text-[13px] text-label">
-          {loading ? "Chargement…" : `${events.length} événement${events.length !== 1 ? "s" : ""}`}
+          {loading ? t("shared.loading") : t("eventsList.eventCount", { count: events.length })}
         </p>
         <Button onClick={() => setShowDialog(true)}>
           <Plus className="h-4 w-4" />
-          Créer un événement
+          {t("eventsList.createEvent")}
         </Button>
       </div>
 
       {!loading && sorted.length === 0 && (
         <div className="rounded-card border border-dashed border-hair py-16 text-center">
-          <p className="text-[15px] font-700 text-ink">Aucun événement</p>
-          <p className="mt-1 text-[13px] text-label">
-            Créez votre premier événement pour commencer.
-          </p>
+          <p className="text-[15px] font-700 text-ink">{t("eventsList.noEvents")}</p>
+          <p className="mt-1 text-[13px] text-label">{t("eventsList.noEventsHint")}</p>
           <Button className="mt-5" onClick={() => setShowDialog(true)}>
             <Plus className="h-4 w-4" />
-            Créer un événement
+            {t("eventsList.createEvent")}
           </Button>
         </div>
       )}
@@ -147,7 +138,7 @@ export default function AdminEventsListPage() {
                   variant="outline"
                   size="sm"
                   onClick={() => handleDuplicate(ev.id)}
-                  title="Dupliquer"
+                  title={t("eventsList.duplicate")}
                 >
                   <Copy className="h-3.5 w-3.5" />
                 </Button>
@@ -156,14 +147,14 @@ export default function AdminEventsListPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => handleArchive(ev.id)}
-                    title="Archiver"
+                    title={t("eventsList.archive")}
                   >
                     <Archive className="h-3.5 w-3.5" />
                   </Button>
                 )}
                 <Button size="sm" onClick={() => navigate(`/admin/events/${ev.id}`)}>
                   <Pencil className="h-3.5 w-3.5" />
-                  Modifier
+                  {t("eventsList.edit")}
                 </Button>
               </div>
             </div>
@@ -174,22 +165,22 @@ export default function AdminEventsListPage() {
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Créer un événement</DialogTitle>
+            <DialogTitle>{t("eventsList.createDialogTitle")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
-              <Label htmlFor="create-nom">Nom de l'événement *</Label>
+              <Label htmlFor="create-nom">{t("eventsList.eventNameLabel")}</Label>
               <Input
                 id="create-nom"
                 value={nom}
                 onChange={(e) => setNom(e.target.value)}
-                placeholder="Ex : Fête de l'école 2027"
+                placeholder={t("eventsList.eventNamePlaceholder")}
                 onKeyDown={(e) => e.key === "Enter" && handleCreate()}
                 autoFocus
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="create-date">Date</Label>
+              <Label htmlFor="create-date">{t("eventsList.dateLabel")}</Label>
               <Input
                 id="create-date"
                 type="date"
@@ -200,10 +191,10 @@ export default function AdminEventsListPage() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowDialog(false)}>
-              Annuler
+              {t("eventsList.cancel")}
             </Button>
             <Button onClick={handleCreate} disabled={!nom.trim() || creating}>
-              {creating ? "Création…" : "Créer"}
+              {creating ? t("eventsList.creating") : t("eventsList.create")}
             </Button>
           </DialogFooter>
         </DialogContent>
