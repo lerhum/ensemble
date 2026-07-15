@@ -3,6 +3,7 @@ import { inscriptions, settings } from "@ensemble/db";
 import type { Db } from "@ensemble/db/node";
 import type { EmailService } from "./email.js";
 import { creneauStartInstant } from "./scheduling.js";
+import { t, normalizeLocale, type SupportedLocale } from "./i18n.js";
 
 export interface DueInscriptionRow {
   creneauId: string;
@@ -18,7 +19,7 @@ export interface DueInscriptionRow {
       };
     };
   };
-  volunteer: { email: string | null; nom: string; statut: string };
+  volunteer: { email: string | null; nom: string; statut: string; locale: string };
 }
 
 /**
@@ -67,10 +68,11 @@ export async function sendDueReminders(
     const { creneau, volunteer } = row;
     if (!volunteer.email) continue; // Bénévole ajouté par l'admin sans email : pas de rappel possible.
     const { event } = creneau.tache.pole;
+    const locale = normalizeLocale(volunteer.locale);
 
     await email.send(
       volunteer.email,
-      `Rappel — ton créneau approche (${event.nom})`,
+      t(locale, "emails.reminder.subject", { event: event.nom }),
       reminderHtml(
         volunteer.nom,
         event.nom,
@@ -79,6 +81,7 @@ export async function sendDueReminders(
         creneau.debut,
         creneau.fin,
         event.lieu,
+        locale,
       ),
       reminderText(
         volunteer.nom,
@@ -88,6 +91,7 @@ export async function sendDueReminders(
         creneau.debut,
         creneau.fin,
         event.lieu,
+        locale,
       ),
     );
 
@@ -116,7 +120,7 @@ async function readReminderHoursBefore(db: Db): Promise<number> {
 // ── Templates email ───────────────────────────────────────────────────────
 
 /** Generates the HTML body for the slot-reminder email. */
-function reminderHtml(
+export function reminderHtml(
   nom: string,
   eventNom: string,
   tacheNom: string,
@@ -124,26 +128,27 @@ function reminderHtml(
   debut: string,
   fin: string,
   lieu: string,
+  locale: SupportedLocale,
 ): string {
   return `<!DOCTYPE html>
-<html lang="fr">
-<head><meta charset="utf-8"><title>Rappel de créneau</title></head>
+<html lang="${locale}">
+<head><meta charset="utf-8"><title>${t(locale, "emails.reminder.htmlTitle")}</title></head>
 <body style="font-family:system-ui,sans-serif;background:#f9f9f9;margin:0;padding:40px 0">
   <div style="max-width:520px;margin:0 auto;background:#fff;border-radius:12px;padding:36px;border:1px solid #e8e8e8">
-    <p style="font-size:22px;font-weight:800;color:#111;margin:0 0 8px">Bonjour ${nom} 👋</p>
-    <p style="color:#555;margin:0 0 24px">Petit rappel : ton créneau approche pour <strong>${eventNom}</strong>.</p>
+    <p style="font-size:22px;font-weight:800;color:#111;margin:0 0 8px">${t(locale, "emails.greeting", { nom })}</p>
+    <p style="color:#555;margin:0 0 24px">${t(locale, "emails.reminder.intro", { event: `<strong>${eventNom}</strong>` })}</p>
     <div style="background:#f5f5f5;border-radius:8px;padding:16px 20px;margin:0 0 24px">
       <p style="margin:0 0 4px;color:#111;font-weight:700">${poleNom} — ${tacheNom}</p>
       <p style="margin:0;color:#555">${debut} – ${fin}${lieu ? ` · ${lieu}` : ""}</p>
     </div>
-    <p style="color:#aaa;font-size:12px;margin:0">Merci pour ton engagement !</p>
+    <p style="color:#aaa;font-size:12px;margin:0">${t(locale, "emails.reminder.thanks")}</p>
   </div>
 </body>
 </html>`;
 }
 
 /** Generates the plain-text body for the slot-reminder email. */
-function reminderText(
+export function reminderText(
   nom: string,
   eventNom: string,
   tacheNom: string,
@@ -151,15 +156,16 @@ function reminderText(
   debut: string,
   fin: string,
   lieu: string,
+  locale: SupportedLocale,
 ): string {
-  return `Bonjour ${nom},
+  return `${t(locale, "emails.textGreeting", { nom })}
 
-Petit rappel : ton créneau approche pour ${eventNom}.
+${t(locale, "emails.reminder.intro", { event: eventNom })}
 
 ${poleNom} — ${tacheNom}
 ${debut} – ${fin}${lieu ? ` · ${lieu}` : ""}
 
-Merci pour ton engagement !
+${t(locale, "emails.reminder.thanks")}
 
-Ensemble`;
+${t(locale, "emails.signature")}`;
 }

@@ -20,6 +20,7 @@ import {
 import type { AppEnv } from "../context.js";
 import { conflict, notFound, validate } from "../errors.js";
 import { requireAdmin } from "../auth.js";
+import { t, normalizeLocale, type SupportedLocale } from "../i18n.js";
 import {
   buildEventDetailById,
   buildVolunteers,
@@ -486,8 +487,8 @@ adminRoutes.post("/events/:id/volunteers/broadcast", async (c) => {
       email.send(
         v.email,
         body.subject,
-        broadcastHtml(v.nom, body.message),
-        broadcastText(v.nom, body.message),
+        broadcastHtml(v.nom, body.message, normalizeLocale(v.locale)),
+        broadcastText(v.nom, body.message, normalizeLocale(v.locale)),
       ),
     ),
   );
@@ -514,21 +515,21 @@ function escapeMessageHtml(message: string): string {
     .replace(/\n/g, "<br>");
 }
 
-/** Generates the HTML body for an admin broadcast email. */
-function broadcastHtml(nom: string, message: string): string {
+/** Generates the HTML body for an admin broadcast email. Only the wrapper (greeting, signature) is translated — the admin's free-typed subject/message is never routed through t(). */
+export function broadcastHtml(nom: string, message: string, locale: SupportedLocale): string {
   return `<!DOCTYPE html>
-<html lang="fr">
-<head><meta charset="utf-8"><title>Message</title></head>
+<html lang="${locale}">
+<head><meta charset="utf-8"><title>${t(locale, "emails.broadcast.htmlTitle")}</title></head>
 <body style="font-family:system-ui,sans-serif;background:#f9f9f9;margin:0;padding:40px 0">
   <div style="max-width:520px;margin:0 auto;background:#fff;border-radius:12px;padding:36px;border:1px solid #e8e8e8">
-    <p style="font-size:22px;font-weight:800;color:#111;margin:0 0 8px">Bonjour ${nom} 👋</p>
+    <p style="font-size:22px;font-weight:800;color:#111;margin:0 0 8px">${t(locale, "emails.greeting", { nom })}</p>
     <p style="color:#555;margin:0;white-space:pre-line">${escapeMessageHtml(message)}</p>
   </div>
 </body>
 </html>`;
 }
 
-/** Generates the plain-text body for an admin broadcast email. */
-function broadcastText(nom: string, message: string): string {
-  return `Bonjour ${nom},\n\n${message}\n\nEnsemble`;
+/** Generates the plain-text body for an admin broadcast email. Only the wrapper is translated, never the admin's message. */
+export function broadcastText(nom: string, message: string, locale: SupportedLocale): string {
+  return `${t(locale, "emails.textGreeting", { nom })}\n\n${message}\n\n${t(locale, "emails.signature")}`;
 }

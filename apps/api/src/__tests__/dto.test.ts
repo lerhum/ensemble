@@ -16,6 +16,7 @@ function makeVolunteer(overrides: Partial<VolunteerDTO> = {}): VolunteerDTO {
     email: "alice@example.com",
     tel: null,
     statut: "confirme",
+    locale: "fr",
     poles: [{ id: "p-1", nom: "Bar" }],
     creneaux: [{ id: "cr-1", tacheId: "t-1", tache: "Serveur", debut: "10:00", fin: "12:00" }],
     ...overrides,
@@ -138,6 +139,7 @@ describe("volunteersToCsv", () => {
 describe("filterVolunteers", () => {
   const alice = makeVolunteer({
     statut: "confirme",
+    locale: "fr",
     poles: [{ id: "p-1", nom: "Bar" }],
     creneaux: [{ id: "cr-1", tacheId: "t-1", tache: "Serveur", debut: "10:00", fin: "12:00" }],
   });

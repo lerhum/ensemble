@@ -7,6 +7,7 @@ import { inscriptionSchema } from "@ensemble/db/shared";
 import type { AppEnv } from "../context.js";
 import { conflict, notFound, validate } from "../errors.js";
 import { buildEventDetailBySlug, buildMesInscriptions, loadCreneau } from "../dto.js";
+import { t, normalizeLocale, localizedPath, type SupportedLocale } from "../i18n.js";
 
 export const publicRoutes = new Hono<AppEnv>();
 
@@ -136,14 +137,18 @@ publicRoutes.post("/creneaux/:id/inscriptions", async (c) => {
   const needsConfirmation = !existing || existing.statut === "attente";
 
   if (needsConfirmation) {
-    const confirmUrl = `${webOrigin}/confirmer/${token}`;
-    const inscriptionsUrl = `${webOrigin}/mes-inscriptions/${token}`;
-    const definePasswordUrl = `${webOrigin}/definir-mot-de-passe/${token}`;
+    // body.locale is runtime-guaranteed "fr"|"nl"|"en" by inscriptionSchema's transform, but zod's
+    // object-output inference still widens it to include undefined — normalizeLocale is a no-op
+    // coercion here, not a real fallback path.
+    const locale = normalizeLocale(body.locale);
+    const confirmUrl = localizedPath(webOrigin, `/confirmer/${token}`, locale);
+    const inscriptionsUrl = localizedPath(webOrigin, `/mes-inscriptions/${token}`, locale);
+    const definePasswordUrl = localizedPath(webOrigin, `/definir-mot-de-passe/${token}`, locale);
     await email.send(
       body.email,
-      "Confirme ta participation — Ensemble",
-      confirmationHtml(body.nom, confirmUrl, inscriptionsUrl, definePasswordUrl),
-      confirmationText(body.nom, confirmUrl),
+      t(locale, "emails.confirmation.subject"),
+      confirmationHtml(body.nom, confirmUrl, inscriptionsUrl, definePasswordUrl, locale),
+      confirmationText(body.nom, confirmUrl, locale),
     );
   }
 
@@ -228,47 +233,48 @@ publicRoutes.delete("/volunteers/me", async (c) => {
 // ── Templates email ───────────────────────────────────────────────────────
 
 /** Generates the HTML body for the participation confirmation email. */
-function confirmationHtml(
+export function confirmationHtml(
   nom: string,
   confirmUrl: string,
   inscriptionsUrl: string,
   definePasswordUrl: string,
+  locale: SupportedLocale,
 ): string {
   return `<!DOCTYPE html>
-<html lang="fr">
-<head><meta charset="utf-8"><title>Confirme ta participation</title></head>
+<html lang="${locale}">
+<head><meta charset="utf-8"><title>${t(locale, "emails.confirmation.htmlTitle")}</title></head>
 <body style="font-family:system-ui,sans-serif;background:#f9f9f9;margin:0;padding:40px 0">
   <div style="max-width:520px;margin:0 auto;background:#fff;border-radius:12px;padding:36px;border:1px solid #e8e8e8">
-    <p style="font-size:22px;font-weight:800;color:#111;margin:0 0 8px">Bonjour ${nom} 👋</p>
-    <p style="color:#555;margin:0 0 24px">Merci pour ton inscription ! Clique sur le bouton ci-dessous pour confirmer ta participation.</p>
+    <p style="font-size:22px;font-weight:800;color:#111;margin:0 0 8px">${t(locale, "emails.greeting", { nom })}</p>
+    <p style="color:#555;margin:0 0 24px">${t(locale, "emails.confirmation.intro")}</p>
     <a href="${confirmUrl}" style="display:inline-block;background:#DA4A40;color:#fff;font-weight:700;font-size:15px;padding:14px 28px;border-radius:8px;text-decoration:none">
-      Confirmer ma participation
+      ${t(locale, "emails.confirmation.confirmButton")}
     </a>
     <p style="margin:24px 0 8px;color:#888;font-size:13px">
-      Ou consulte directement tes inscriptions :<br>
+      ${t(locale, "emails.confirmation.viewSignups")}<br>
       <a href="${inscriptionsUrl}" style="color:#1C3A5E">${inscriptionsUrl}</a>
     </p>
     <hr style="border:none;border-top:1px solid #eee;margin:24px 0">
     <p style="color:#555;font-size:13px;margin:0 0 8px">
-      💡 Crée ton accès personnel pour retrouver tes inscriptions à tout moment :<br>
-      <a href="${definePasswordUrl}" style="color:#1C3A5E;font-weight:700">Définir mon mot de passe →</a>
+      ${t(locale, "emails.confirmation.createAccess")}<br>
+      <a href="${definePasswordUrl}" style="color:#1C3A5E;font-weight:700">${t(locale, "emails.confirmation.setPasswordLink")}</a>
     </p>
     <hr style="border:none;border-top:1px solid #eee;margin:24px 0">
-    <p style="color:#aaa;font-size:12px;margin:0">Ces liens expirent dans 7 jours. Si tu n'as pas demandé cette inscription, ignore cet email.</p>
+    <p style="color:#aaa;font-size:12px;margin:0">${t(locale, "emails.confirmation.expiry")}</p>
   </div>
 </body>
 </html>`;
 }
 
 /** Generates the plain-text body for the participation confirmation email. */
-function confirmationText(nom: string, confirmUrl: string): string {
-  return `Bonjour ${nom},
+export function confirmationText(nom: string, confirmUrl: string, locale: SupportedLocale): string {
+  return `${t(locale, "emails.textGreeting", { nom })}
 
-Merci pour ton inscription ! Confirme ta participation en ouvrant ce lien :
+${t(locale, "emails.confirmation.textIntro")}
 
 ${confirmUrl}
 
-Ce lien expire dans 7 jours.
+${t(locale, "emails.confirmation.textExpiry")}
 
-Ensemble`;
+${t(locale, "emails.signature")}`;
 }
