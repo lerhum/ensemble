@@ -44,9 +44,10 @@ export default tseslint.config(
     },
   },
   {
-    // Context providers co-locate their hook with the Provider component,
-    // which breaks Fast Refresh but is the established pattern here.
-    files: ["apps/web/src/lib/*-context.tsx"],
+    // Context providers co-locate their hook with the Provider component, and routes.tsx
+    // exports a JSX-returning route-tree function alongside a small local component — both
+    // break Fast Refresh but are the established pattern here.
+    files: ["apps/web/src/lib/*-context.tsx", "apps/web/src/routes.tsx"],
     rules: {
       "react-refresh/only-export-components": "off",
     },
