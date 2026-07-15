@@ -105,9 +105,9 @@ describe("volunteersToCsv", () => {
     expect(csv).toContain('"Nom","Email","Téléphone","Pôle(s)","Créneaux","Statut"');
   });
 
-  it("accepts an explicit locale — falls back to French headers until nl content lands (D1)", () => {
+  it("translates headers for an explicit locale", () => {
     const csv = volunteersToCsv([makeVolunteer()], "nl");
-    expect(csv).toContain('"Nom","Email","Téléphone","Pôle(s)","Créneaux","Statut"');
+    expect(csv).toContain('"Naam","E-mail","Telefoon","Stand(s)","Tijdsloten","Status"');
   });
 
   it("escapes double quotes inside fields", () => {

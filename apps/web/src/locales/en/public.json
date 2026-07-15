@@ -1,1 +1,163 @@
-{}
+{
+  "shared": {
+    "loading": "Loading…",
+    "error": "Error",
+    "participate": "Sign me up",
+    "confirmParticipation": "Confirm your participation",
+    "signingUp": "Signing up…",
+    "signupFailed": "Signup failed. Please try again.",
+    "placesRemaining_one": "{{count}} spot",
+    "placesRemaining_other": "{{count}} spots",
+    "slotsCount_one": "{{count}} slot",
+    "slotsCount_other": "{{count}} slots"
+  },
+  "eventParent": {
+    "kicker": "School fair",
+    "polesHeadingMobile": "Stations",
+    "ctaSubtitle": "Choose your slots on the next step.",
+    "viewProgram": "View the program",
+    "parentsSignedUp": " / {{necessaires}} parents signed up",
+    "placesLabel": "{{count}} spots",
+    "whyParticipate": "Why volunteer",
+    "choosePole": "Choose your station",
+    "polesSummary": "{{nbPoles}} stations · {{aCompleter}} slots to fill",
+    "footerTagline": "Ensemble — school volunteering, made simple.",
+    "contact": "Contact",
+    "confidentiality": "Privacy",
+    "poleFull": "Full",
+    "poleCardSlots": "{{count}} slots",
+    "view": "View"
+  },
+  "eventRedirect": {
+    "noEvent": "No event currently running",
+    "comeBackLater": "Please check back soon."
+  },
+  "poleSelection": {
+    "poleNotFound": "Station not found",
+    "coverageLabel": "Station coverage",
+    "signupSuccess": "Thanks! Your signup is registered.",
+    "confirmationEmailSent": "An email has been sent. Click the link to confirm your participation and secure your access.",
+    "viewMySignups": "View my signups →",
+    "aboutPole": "Station",
+    "tasksAndSlots": "Tasks & slots",
+    "clickToSignupDesktop": "Click \"Sign me up\" to sign up directly.",
+    "clickToSignupMobile": "Click \"Sign me up\" for the slot that suits you."
+  },
+  "inscriptionDialog": {
+    "description": "Give us your details to complete your signup.",
+    "emailLabel": "Email",
+    "prefilledFromParent": "Your details are pre-filled.",
+    "prefilledFromLookup": "We found you — your details are pre-filled.",
+    "nameLabel": "Full name",
+    "phoneLabel": "Phone (optional)",
+    "phonePlaceholder": "0470 00 00 00",
+    "privacyNoticePrefix": "Your details (name, email, phone) are only used to organize this event. You can ask to have them deleted from \"My signups\"",
+    "privacyNoticeContactPrefix": "or by contacting"
+  },
+  "confirmationDialog": {
+    "confirmAs": "Confirm the signup as",
+    "confirm": "Confirm",
+    "editInfo": "Edit my details"
+  },
+  "confirm": {
+    "verifying": "Verifying…",
+    "invalidLinkTitle": "Invalid or expired link",
+    "invalidLinkBody": "This confirmation link is no longer valid. Contact the organizer if needed.",
+    "backToHome": "Back to home",
+    "alreadyConfirmedTitle": "Participation already confirmed",
+    "confirmedTitle": "Participation confirmed!",
+    "alreadyConfirmedBody": "Your participation had already been confirmed.",
+    "confirmedBody": "Thanks! Your participation is registered.",
+    "viewMySignups": "View my signups",
+    "createAccessTitle": "Create your personal access",
+    "createAccessBody": "Set a password so you can find your signups and sign up again in one click.",
+    "setPassword": "Set my password"
+  },
+  "mesInscriptions": {
+    "backToHome": "Back to home",
+    "breadcrumb": "My signups",
+    "title": "My signups",
+    "confirmed": "Participation confirmed",
+    "pendingTitle": "Awaiting confirmation",
+    "pendingBody": "Check your email to confirm your participation.",
+    "volunteerKicker": "Volunteer",
+    "eventKicker": "Event",
+    "viewEvent": "View event →",
+    "mySlots": "My slots ({{count}})",
+    "noSlots": "No slots registered.",
+    "keepLinkHint": "Keep this link — it will let you find your signups again.",
+    "myDataKicker": "My data",
+    "deleteDataBody": "You can request the deletion of all your personal data (name, email, phone, and signups).",
+    "deleteData": "Delete my data",
+    "deleteConfirmPrompt": "This action cannot be undone. Confirm?",
+    "deleting": "Deleting…",
+    "confirmDelete": "Yes, delete",
+    "cancel": "Cancel",
+    "invalidLink": "Invalid or expired link.",
+    "notConnected": "Not signed in, or session expired."
+  },
+  "privacy": {
+    "back": "← Back",
+    "title": "Privacy policy",
+    "subtitle": "In accordance with Regulation (EU) 2016/679 (GDPR)",
+    "defaultOrgName": "the organizing committee",
+    "responsible": {
+      "title": "Data controller",
+      "intro": "The controller responsible for the data collected via this platform is",
+      "contactPrefix": "For any question about your data, contact:"
+    },
+    "dataCollected": {
+      "title": "Data collected",
+      "intro": "When you sign up as a volunteer, we collect:",
+      "fullName": "Full name",
+      "email": "Email address",
+      "phone": "Phone number (optional)",
+      "basis": "This data is collected on the basis of your consent (GDPR Art. 6.1.a) and as part of carrying out a task in the public interest (organizing a school event)."
+    },
+    "purposes": {
+      "title": "Purposes of processing",
+      "slots": "Managing volunteer slot signups",
+      "communication": "Communication about the event (confirmation, reminders)",
+      "coordination": "Coordination of volunteers by the organizers"
+    },
+    "retention": {
+      "title": "Retention period",
+      "text": "Your data is kept until the end of the event you're signed up for, then deleted or anonymized within a reasonable time."
+    },
+    "rights": {
+      "title": "Your rights",
+      "intro": "In accordance with the GDPR, you have the following rights:",
+      "access": {
+        "label": "Right of access",
+        "description": "view your data via the \"My signups\" page"
+      },
+      "rectification": {
+        "label": "Right to rectification",
+        "description": "correct your information"
+      },
+      "erasure": {
+        "label": "Right to erasure",
+        "description": "delete your account from \"My signups\""
+      },
+      "objection": {
+        "label": "Right to object",
+        "description": "object to the processing of your data"
+      },
+      "exercisePrefix": "To exercise these rights, go to the",
+      "exerciseLinkText": "My signups",
+      "exerciseOr": "page or contact",
+      "complaintPrefix": "You also have the right to lodge a complaint with the",
+      "complaintLinkText": "Belgian Data Protection Authority (APD/GBA)",
+      "complaintSuffix": "."
+    },
+    "cookies": {
+      "title": "Cookies",
+      "text": "This site only uses a technical session cookie, necessary for the service to function properly (keeping you signed in). This cookie does not require consent under the APD/GBA's guidelines."
+    }
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "This page doesn't exist (anymore).",
+    "backToEvent": "→ Back to the event"
+  }
+}

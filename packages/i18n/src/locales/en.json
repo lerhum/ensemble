@@ -1,1 +1,72 @@
-{}
+{
+  "errors": {
+    "notFound": "Resource not found",
+    "eventNotFound": "Event not found",
+    "creneauNotFound": "Slot not found",
+    "volunteerNotFound": "Volunteer not found",
+    "poleNotFound": "Station not found",
+    "tacheNotFound": "Task not found",
+    "fileMissing": "File missing",
+    "linkInvalidOrExpired": "Invalid or expired link.",
+    "unauthorized": "Not authenticated",
+    "invalidCredentials": "Incorrect email or password.",
+    "forbidden": "Access denied",
+    "slotFull": "This slot is full.",
+    "installAlreadyDone": "Setup has already been completed.",
+    "validationFailed": "Invalid data",
+    "routeNotFound": "Route not found",
+    "internalError": "Server error",
+    "tokenNotFound": "Token not found."
+  },
+  "validation": {
+    "hhmm": "Expected time in HH:MM format",
+    "hexColor": "Expected hex color (#RRGGBB)",
+    "orgNomRequired": "Organization name required",
+    "rgpdEmailInvalid": "Invalid GDPR email",
+    "emailInvalid": "Invalid email",
+    "passwordMinLength": "Password: 8 characters minimum",
+    "passwordsMismatch": "Passwords don't match",
+    "passwordRequired": "Password required",
+    "dateIsoFormat": "Expected YYYY-MM-DD format",
+    "tokenRequired": "Token required",
+    "nomRequired": "Name required",
+    "subjectRequired": "Subject required",
+    "messageRequired": "Message required"
+  },
+  "emails": {
+    "greeting": "Hi {nom} 👋",
+    "textGreeting": "Hi {nom},",
+    "signature": "Ensemble",
+    "confirmation": {
+      "subject": "Confirm your participation — Ensemble",
+      "htmlTitle": "Confirm your participation",
+      "intro": "Thanks for signing up! Click the button below to confirm your participation.",
+      "confirmButton": "Confirm my participation",
+      "viewSignups": "Or check your signups directly:",
+      "createAccess": "💡 Create your personal access to find your signups anytime:",
+      "setPasswordLink": "Set my password →",
+      "expiry": "These links expire in 7 days. If you didn't request this signup, ignore this email.",
+      "textIntro": "Thanks for signing up! Confirm your participation by opening this link:",
+      "textExpiry": "This link expires in 7 days."
+    },
+    "reminder": {
+      "subject": "Reminder — your slot is coming up ({event})",
+      "htmlTitle": "Slot reminder",
+      "intro": "Quick reminder: your slot for {event} is coming up.",
+      "thanks": "Thanks for volunteering!"
+    },
+    "broadcast": {
+      "htmlTitle": "Message"
+    }
+  },
+  "csv": {
+    "headerNom": "Name",
+    "headerEmail": "Email",
+    "headerTel": "Phone",
+    "headerPoles": "Station(s)",
+    "headerCreneaux": "Slots",
+    "headerStatut": "Status",
+    "statusConfirmed": "Confirmed",
+    "statusPending": "Pending"
+  }
+}

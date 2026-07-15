@@ -29,9 +29,9 @@ describe("confirmation email", () => {
     expect(html).toContain("http://localhost:5173/nl/confirmer/tok");
   });
 
-  it("plain-text body greets and signs the same way regardless of locale, until nl/en content lands (D1)", () => {
+  it("translates the plain-text body greeting for the recipient's locale, keeping the signature untranslated (brand name)", () => {
     const text = confirmationText("Alice", "http://localhost:5173/confirmer/tok", "nl");
-    expect(text).toContain("Bonjour Alice,");
+    expect(text).toContain("Hallo Alice,");
     expect(text).toContain("Ensemble");
   });
 });

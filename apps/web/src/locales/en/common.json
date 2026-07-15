@@ -1,1 +1,24 @@
-{}
+{
+  "nav": {
+    "home": "Home",
+    "myRegistrations": "My signups",
+    "logout": "Log out",
+    "login": "Log in"
+  },
+  "status": {
+    "complet": "Full",
+    "urgent": "Urgent",
+    "placesLeft_one": "{{count}} spot left",
+    "placesLeft_other": "{{count}} spots left"
+  },
+  "errors": {
+    "authProviderMissing": "useAuth must be used within <AuthProvider>",
+    "loadFailed": "Failed to load"
+  },
+  "localeSwitcher": {
+    "label": "Change language",
+    "fr": "Français",
+    "nl": "Nederlands",
+    "en": "English"
+  }
+}
