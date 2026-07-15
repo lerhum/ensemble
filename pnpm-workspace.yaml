@@ -8,3 +8,4 @@ allowBuilds:
   workerd: true
   sharp: false
   core-js: false
+  lefthook: true
