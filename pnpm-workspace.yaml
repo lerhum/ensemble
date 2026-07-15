@@ -9,3 +9,9 @@ allowBuilds:
   sharp: false
   core-js: false
   lefthook: true
+
+# Force les sous-dépendances vulnérables (esbuild-kit via drizzle-kit, undici via danger)
+# vers leurs versions patchées — ces packages n'ont pas publié de release qui bump ces pins.
+overrides:
+  "undici@<6.27.0": ">=6.27.0"
+  "esbuild@<0.24.3": ">=0.24.3"
