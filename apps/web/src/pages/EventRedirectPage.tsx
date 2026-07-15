@@ -1,10 +1,12 @@
 import * as React from "react";
 import { Navigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api } from "@/lib/api";
 import type { EventDetailDTO } from "@ensemble/db/shared";
 
 /** Root redirect: fetches the current active event and navigates to its public page. Shows nothing while loading. */
 export default function EventRedirectPage() {
+  const { t } = useTranslation("public");
   const [event, setEvent] = React.useState<EventDetailDTO | null | undefined>(undefined);
 
   React.useEffect(() => {
@@ -20,8 +22,8 @@ export default function EventRedirectPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-surface">
       <div className="text-center">
-        <p className="text-[15px] font-700 text-ink">Aucun événement en cours</p>
-        <p className="mt-1 text-[13px] text-label">Revenez prochainement.</p>
+        <p className="text-[15px] font-700 text-ink">{t("eventRedirect.noEvent")}</p>
+        <p className="mt-1 text-[13px] text-label">{t("eventRedirect.comeBackLater")}</p>
       </div>
     </div>
   );

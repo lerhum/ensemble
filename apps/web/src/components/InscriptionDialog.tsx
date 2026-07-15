@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
@@ -35,6 +36,7 @@ export function InscriptionDialog({
   onConfirm,
 }: Props) {
   const { rgpdEmail } = useAuth();
+  const { t } = useTranslation("public");
   const [form, setForm] = React.useState({ nom: "", email: "", tel: "" });
   const [prefilled, setPrefilled] = React.useState(false);
   const [busy, setBusy] = React.useState(false);
@@ -86,7 +88,7 @@ export function InscriptionDialog({
     try {
       await onConfirm({ nom: form.nom, email: form.email, tel: form.tel || undefined });
     } catch {
-      setError("L'inscription a échoué. Réessaie.");
+      setError(t("shared.signupFailed"));
     } finally {
       setBusy(false);
     }
@@ -96,14 +98,12 @@ export function InscriptionDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Confirme ta participation</DialogTitle>
-          <DialogDescription>
-            Laisse-nous tes coordonnées pour finaliser l'inscription.
-          </DialogDescription>
+          <DialogTitle>{t("shared.confirmParticipation")}</DialogTitle>
+          <DialogDescription>{t("inscriptionDialog.description")}</DialogDescription>
         </DialogHeader>
         <form className="space-y-4" onSubmit={submit}>
           <div className="space-y-1.5">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t("inscriptionDialog.emailLabel")}</Label>
             <Input
               id="email"
               type="email"
@@ -117,29 +117,33 @@ export function InscriptionDialog({
           {prefilled && (
             <p className="rounded-md bg-[#EEF1F4] px-3 py-2 text-[13px] text-navy">
               {initialIdentite
-                ? "Tes informations sont pré-remplies."
-                : "Nous t'avons retrouvé·e — tes infos sont pré-remplies."}
+                ? t("inscriptionDialog.prefilledFromParent")
+                : t("inscriptionDialog.prefilledFromLookup")}
             </p>
           )}
           <div className="space-y-1.5">
-            <Label htmlFor="nom">Nom complet</Label>
+            <Label htmlFor="nom">{t("inscriptionDialog.nameLabel")}</Label>
             <Input id="nom" value={form.nom} onChange={set("nom")} required />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="tel">Téléphone (optionnel)</Label>
-            <Input id="tel" value={form.tel} onChange={set("tel")} placeholder="0470 00 00 00" />
+            <Label htmlFor="tel">{t("inscriptionDialog.phoneLabel")}</Label>
+            <Input
+              id="tel"
+              value={form.tel}
+              onChange={set("tel")}
+              placeholder={t("inscriptionDialog.phonePlaceholder")}
+            />
           </div>
           {error && <p className="text-sm font-600 text-danger">{error}</p>}
           <Button type="submit" variant="brand" size="lg" className="w-full" disabled={busy}>
-            {busy ? "Inscription…" : "Je participe"}
+            {busy ? t("shared.signingUp") : t("shared.participate")}
           </Button>
           <p className="text-[11px] leading-relaxed text-label2 text-center">
-            Tes coordonnées (nom, email, tél.) sont utilisées uniquement pour organiser cet
-            événement. Tu peux demander leur suppression depuis « Mes inscriptions »
+            {t("inscriptionDialog.privacyNoticePrefix")}
             {rgpdEmail ? (
               <>
                 {" "}
-                ou en contactant{" "}
+                {t("inscriptionDialog.privacyNoticeContactPrefix")}{" "}
                 <a href={`mailto:${rgpdEmail}`} className="underline">
                   {rgpdEmail}
                 </a>

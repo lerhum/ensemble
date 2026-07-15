@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Link, useParams } from "react-router-dom";
 import { Calendar, ChevronRight, Clock, MapPin, Users } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { EventDetailDTO, PoleDTO } from "@ensemble/db/shared";
 import { useEvent } from "@/lib/useEvent";
 import { useAuth } from "@/lib/auth-context";
@@ -15,13 +16,14 @@ export default function EventParentPage() {
   const { slug = "" } = useParams();
   const { event, loading, error } = useEvent(slug);
   const { siteTitle, siteLogo, rgpdEmail } = useAuth();
+  const { t } = useTranslation("public");
 
   React.useEffect(() => {
     if (event) applyAccent(event.couleurTheme);
   }, [event]);
 
-  if (loading) return <Center>Chargement…</Center>;
-  if (error || !event) return <Center className="text-danger">{error ?? "Erreur"}</Center>;
+  if (loading) return <Center>{t("shared.loading")}</Center>;
+  if (error || !event) return <Center className="text-danger">{error ?? t("shared.error")}</Center>;
 
   return (
     <div className="min-h-screen bg-white">
@@ -43,6 +45,7 @@ function MobileView({
   siteLogo: string | null;
 }) {
   const polesRef = React.useRef<HTMLDivElement>(null);
+  const { t } = useTranslation("public");
   return (
     <div className="mx-auto max-w-md md:hidden">
       <header className="flex items-center justify-between px-4 py-3">
@@ -70,7 +73,7 @@ function MobileView({
 
       <div className="px-4 pb-28 pt-5">
         <p className="text-[11px] font-800 uppercase tracking-[.1em] text-label2">
-          Fête de l'école
+          {t("eventParent.kicker")}
         </p>
         <h1 className="mt-1 text-[28px] font-800 leading-[1.05] tracking-tightest text-ink">
           {event.nom}
@@ -86,7 +89,9 @@ function MobileView({
 
         <Coverage event={event} className="mt-6" />
 
-        <h2 className="mb-3 mt-7 text-lg font-800 tracking-tighter2 text-ink">Les pôles</h2>
+        <h2 className="mb-3 mt-7 text-lg font-800 tracking-tighter2 text-ink">
+          {t("eventParent.polesHeadingMobile")}
+        </h2>
         <div ref={polesRef} className="space-y-2.5">
           {event.poles.map((p) => (
             <PoleRow key={p.id} slug={event.slug} pole={p} />
@@ -102,11 +107,9 @@ function MobileView({
           className="w-full"
           onClick={() => polesRef.current?.scrollIntoView({ behavior: "smooth" })}
         >
-          Je participe
+          {t("shared.participate")}
         </Button>
-        <p className="mt-1.5 text-center text-[12px] text-label">
-          Choisis les créneaux à l'étape suivante.
-        </p>
+        <p className="mt-1.5 text-center text-[12px] text-label">{t("eventParent.ctaSubtitle")}</p>
       </div>
     </div>
   );
@@ -126,6 +129,7 @@ function DesktopView({
   rgpdEmail: string;
 }) {
   const polesRef = React.useRef<HTMLDivElement>(null);
+  const { t } = useTranslation("public");
   return (
     <div className="hidden md:block">
       <PublicNav
@@ -139,7 +143,7 @@ function DesktopView({
         <section className="grid grid-cols-[1fr_430px] items-center gap-12 py-14">
           <div>
             <p className="text-[11px] font-800 uppercase tracking-[.1em] text-label2">
-              Fête de l'école
+              {t("eventParent.kicker")}
             </p>
             <h1 className="mt-2 text-[46px] font-800 leading-[1.02] tracking-tightest text-ink">
               {event.nom}
@@ -154,14 +158,14 @@ function DesktopView({
                 size="lg"
                 onClick={() => polesRef.current?.scrollIntoView({ behavior: "smooth" })}
               >
-                Je participe
+                {t("shared.participate")}
               </Button>
               <Button
                 variant="outline"
                 size="lg"
                 onClick={() => polesRef.current?.scrollIntoView({ behavior: "smooth" })}
               >
-                Voir le programme
+                {t("eventParent.viewProgram")}
               </Button>
             </div>
             <Coverage event={event} className="mt-8 max-w-md" withAvatars />
@@ -181,7 +185,7 @@ function DesktopView({
         {(event.pourquoiTitre || event.pourquoiTexte) && (
           <section className="border-t border-hair py-12">
             <p className="text-[11px] font-800 uppercase tracking-[.1em] text-label2">
-              Pourquoi participer
+              {t("eventParent.whyParticipate")}
             </p>
             <div className="mt-3 grid grid-cols-[1fr_1.4fr] items-start gap-10">
               {event.pourquoiTitre && (
@@ -199,9 +203,14 @@ function DesktopView({
         {/* Choisis ton pôle */}
         <section ref={polesRef} className="border-t border-hair py-12">
           <div className="mb-6 flex items-baseline justify-between">
-            <h2 className="text-[24px] font-800 tracking-tighter2 text-ink">Choisis ton pôle</h2>
+            <h2 className="text-[24px] font-800 tracking-tighter2 text-ink">
+              {t("eventParent.choosePole")}
+            </h2>
             <p className="text-[13px] text-label">
-              {event.counters.nbPoles} pôles · {event.counters.aCompleter} créneaux à pourvoir
+              {t("eventParent.polesSummary", {
+                nbPoles: event.counters.nbPoles,
+                aCompleter: event.counters.aCompleter,
+              })}
             </p>
           </div>
           <div className="grid grid-cols-3 gap-4">
@@ -212,15 +221,15 @@ function DesktopView({
         </section>
 
         <footer className="flex items-center justify-between border-t border-hair py-8 text-[13px] text-label">
-          <span>Ensemble — le bénévolat scolaire, simplement.</span>
+          <span>{t("eventParent.footerTagline")}</span>
           <span className="flex items-center gap-3">
             {rgpdEmail && (
               <a href={`mailto:${rgpdEmail}`} className="hover:underline">
-                Contact
+                {t("eventParent.contact")}
               </a>
             )}
             <Link to="/confidentialite" className="hover:underline">
-              Confidentialité
+              {t("eventParent.confidentiality")}
             </Link>
           </span>
         </footer>
@@ -252,6 +261,7 @@ function Coverage({
 }) {
   const { inscrits, necessaires } = event.counters;
   const libres = Math.max(0, necessaires - inscrits);
+  const { t } = useTranslation("public");
   return (
     <div className={className}>
       <div className="flex items-center gap-3">
@@ -271,9 +281,13 @@ function Coverage({
           <div className="mb-1 flex items-baseline justify-between">
             <span className="text-sm">
               <span className="text-[22px] font-800 text-ink">{inscrits}</span>
-              <span className="font-700 text-label"> / {necessaires} parents inscrits</span>
+              <span className="font-700 text-label">
+                {t("eventParent.parentsSignedUp", { necessaires })}
+              </span>
             </span>
-            <span className="text-[13px] font-700 text-warn">{libres} places</span>
+            <span className="text-[13px] font-700 text-warn">
+              {t("eventParent.placesLabel", { count: libres })}
+            </span>
           </div>
           <Jauge inscrits={inscrits} necessaires={necessaires} showValue={false} />
         </div>
@@ -286,6 +300,7 @@ function Coverage({
 function PoleRow({ slug, pole }: { slug: string; pole: PoleDTO }) {
   const libres = pole.placesLibres;
   const color = libres === 0 ? "#2F7E59" : libres <= 1 ? "#B5781E" : "#C7443A";
+  const { t } = useTranslation("public");
   return (
     <Link
       to={`/e/${slug}/pole/${pole.id}`}
@@ -296,10 +311,12 @@ function PoleRow({ slug, pole }: { slug: string; pole: PoleDTO }) {
       </span>
       <div className="min-w-0 flex-1">
         <div className="font-700 text-ink">{pole.nom}</div>
-        <div className="text-[12px] text-label">{pole.nbCreneaux} créneaux</div>
+        <div className="text-[12px] text-label">
+          {t("eventParent.poleCardSlots", { count: pole.nbCreneaux })}
+        </div>
       </div>
       <span className="text-right text-[13px] font-700" style={{ color }}>
-        {libres === 0 ? "Complet" : `${libres} place${libres > 1 ? "s" : ""}`}
+        {libres === 0 ? t("eventParent.poleFull") : t("shared.placesRemaining", { count: libres })}
       </span>
       <ChevronRight className="h-4 w-4 text-label2" />
     </Link>
@@ -308,6 +325,7 @@ function PoleRow({ slug, pole }: { slug: string; pole: PoleDTO }) {
 
 /** Mobile card for a pole: shows name, spot count, coverage gauge, and links to slot selection. */
 function PoleCard({ slug, pole }: { slug: string; pole: PoleDTO }) {
+  const { t } = useTranslation("public");
   return (
     <Link
       to={`/e/${slug}/pole/${pole.id}`}
@@ -327,10 +345,11 @@ function PoleCard({ slug, pole }: { slug: string; pole: PoleDTO }) {
       </div>
       <div className="mt-3 flex items-center justify-between text-[13px]">
         <span className="font-700 text-ink2">
-          {pole.placesLibres} place{pole.placesLibres > 1 ? "s" : ""} · {pole.nbCreneaux} créneaux
+          {t("shared.placesRemaining", { count: pole.placesLibres })} ·{" "}
+          {t("eventParent.poleCardSlots", { count: pole.nbCreneaux })}
         </span>
         <span className="inline-flex items-center gap-0.5 font-700 text-brand group-hover:gap-1.5">
-          Voir <ChevronRight className="h-3.5 w-3.5" />
+          {t("eventParent.view")} <ChevronRight className="h-3.5 w-3.5" />
         </span>
       </div>
     </Link>

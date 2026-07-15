@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { CheckCircle2, Clock, MapPin, Calendar, User } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { MesInscriptionsDTO } from "@ensemble/db/shared";
 import { api } from "@/lib/api";
 import { applyAccent } from "@/lib/theme";
@@ -15,6 +16,7 @@ export default function MesInscriptionsPage() {
   const { siteTitle, siteLogo } = useAuth();
   const { logout, clearToken } = useVolunteer();
   const navigate = useNavigate();
+  const { t } = useTranslation("public");
   const [data, setData] = React.useState<MesInscriptionsDTO | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -28,7 +30,7 @@ export default function MesInscriptionsPage() {
       .then(setData)
       .catch(() => {
         if (token) clearToken();
-        setError(token ? "Lien invalide ou expiré." : "Non connecté ou session expirée.");
+        setError(token ? t("mesInscriptions.invalidLink") : t("mesInscriptions.notConnected"));
       })
       .finally(() => setLoading(false));
     // clearToken isn't memoized in VolunteerProvider; adding it here would refetch on every provider render.
@@ -42,16 +44,16 @@ export default function MesInscriptionsPage() {
   if (loading) {
     return (
       <Center>
-        <p className="text-label">Chargement…</p>
+        <p className="text-label">{t("shared.loading")}</p>
       </Center>
     );
   }
   if (error || !data) {
     return (
       <Center>
-        <p className="text-danger font-700">{error ?? "Erreur"}</p>
+        <p className="text-danger font-700">{error ?? t("shared.error")}</p>
         <Link to="/" className="mt-4 text-sm text-navy underline">
-          Retour à l'accueil
+          {t("mesInscriptions.backToHome")}
         </Link>
       </Center>
     );
@@ -78,29 +80,31 @@ export default function MesInscriptionsPage() {
               <Link to={`/e/${event.slug}`} className="hover:underline">
                 {event.nom}
               </Link>{" "}
-              / Mes inscriptions
+              / {t("mesInscriptions.breadcrumb")}
             </p>
-            <h1 className="mt-2 text-2xl font-800 tracking-tighter2 text-ink">Mes inscriptions</h1>
+            <h1 className="mt-2 text-2xl font-800 tracking-tighter2 text-ink">
+              {t("mesInscriptions.title")}
+            </h1>
           </div>
 
           {/* Statut de confirmation */}
           {confirmed ? (
             <div className="flex items-center gap-2 rounded-card border border-success bg-success-bg px-4 py-3 text-success">
               <CheckCircle2 className="h-5 w-5 shrink-0" />
-              <span className="font-700">Participation confirmée</span>
+              <span className="font-700">{t("mesInscriptions.confirmed")}</span>
             </div>
           ) : (
             <div className="rounded-card border border-[#E8A13A] bg-[#FBF1DF] px-4 py-3 text-[#B5781E]">
-              <p className="font-700">En attente de confirmation</p>
-              <p className="mt-0.5 text-[13px]">
-                Consulte ton email pour confirmer ta participation.
-              </p>
+              <p className="font-700">{t("mesInscriptions.pendingTitle")}</p>
+              <p className="mt-0.5 text-[13px]">{t("mesInscriptions.pendingBody")}</p>
             </div>
           )}
 
           {/* Infos bénévole */}
           <div className="rounded-card border border-hair bg-white p-5">
-            <p className="text-[11px] font-800 uppercase tracking-[.1em] text-label2">Bénévole</p>
+            <p className="text-[11px] font-800 uppercase tracking-[.1em] text-label2">
+              {t("mesInscriptions.volunteerKicker")}
+            </p>
             <div className="mt-3 flex items-center gap-2">
               <User className="h-4 w-4 text-label" />
               <span className="font-700 text-ink">{volunteer.nom}</span>
@@ -111,7 +115,9 @@ export default function MesInscriptionsPage() {
 
           {/* Infos événement */}
           <div className="rounded-card border border-hair bg-white p-5">
-            <p className="text-[11px] font-800 uppercase tracking-[.1em] text-label2">Événement</p>
+            <p className="text-[11px] font-800 uppercase tracking-[.1em] text-label2">
+              {t("mesInscriptions.eventKicker")}
+            </p>
             <p className="mt-2 font-800 text-ink">{event.nom}</p>
             <div className="mt-2 space-y-1">
               <div className="flex items-center gap-2 text-sm text-label">
@@ -129,17 +135,17 @@ export default function MesInscriptionsPage() {
               to={`/e/${event.slug}`}
               className="mt-3 inline-block text-[13px] font-700 text-navy underline-offset-2 hover:underline"
             >
-              Voir l'événement →
+              {t("mesInscriptions.viewEvent")}
             </Link>
           </div>
 
           {/* Créneaux inscrits */}
           <div className="rounded-card border border-hair bg-white p-5">
             <p className="text-[11px] font-800 uppercase tracking-[.1em] text-label2">
-              Mes créneaux ({inscriptions.length})
+              {t("mesInscriptions.mySlots", { count: inscriptions.length })}
             </p>
             {inscriptions.length === 0 ? (
-              <p className="mt-3 text-sm text-label">Aucun créneau enregistré.</p>
+              <p className="mt-3 text-sm text-label">{t("mesInscriptions.noSlots")}</p>
             ) : (
               <div className="mt-3 divide-y divide-[#F1F3F5]">
                 {inscriptions.map((ins, i) => (
@@ -160,19 +166,16 @@ export default function MesInscriptionsPage() {
 
           {token && (
             <p className="text-center text-[12px] text-label2">
-              Garde ce lien — il te permettra de retrouver tes inscriptions.
+              {t("mesInscriptions.keepLinkHint")}
             </p>
           )}
 
           {/* Droit à l'effacement */}
           <div className="rounded-card border border-hair bg-white p-5">
             <p className="text-[11px] font-800 uppercase tracking-[.1em] text-label2">
-              Mes données
+              {t("mesInscriptions.myDataKicker")}
             </p>
-            <p className="mt-2 text-sm text-label">
-              Tu peux demander la suppression de toutes tes données personnelles (nom, email,
-              téléphone et inscriptions).
-            </p>
+            <p className="mt-2 text-sm text-label">{t("mesInscriptions.deleteDataBody")}</p>
             {!deleteConfirm ? (
               <Button
                 variant="outline"
@@ -180,12 +183,12 @@ export default function MesInscriptionsPage() {
                 className="mt-3 border-danger text-danger hover:bg-danger/5"
                 onClick={() => setDeleteConfirm(true)}
               >
-                Supprimer mes données
+                {t("mesInscriptions.deleteData")}
               </Button>
             ) : (
               <div className="mt-3 space-y-2">
                 <p className="text-sm font-700 text-danger">
-                  Cette action est irréversible. Confirmer ?
+                  {t("mesInscriptions.deleteConfirmPrompt")}
                 </p>
                 <div className="flex gap-2">
                   <Button
@@ -205,7 +208,7 @@ export default function MesInscriptionsPage() {
                       }
                     }}
                   >
-                    {deleting ? "Suppression…" : "Oui, supprimer"}
+                    {deleting ? t("mesInscriptions.deleting") : t("mesInscriptions.confirmDelete")}
                   </Button>
                   <Button
                     variant="outline"
@@ -213,7 +216,7 @@ export default function MesInscriptionsPage() {
                     disabled={deleting}
                     onClick={() => setDeleteConfirm(false)}
                   >
-                    Annuler
+                    {t("mesInscriptions.cancel")}
                   </Button>
                 </div>
               </div>

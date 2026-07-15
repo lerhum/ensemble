@@ -1,1 +1,163 @@
-{}
+{
+  "shared": {
+    "loading": "Chargement…",
+    "error": "Erreur",
+    "participate": "Je participe",
+    "confirmParticipation": "Confirme ta participation",
+    "signingUp": "Inscription…",
+    "signupFailed": "L'inscription a échoué. Réessaie.",
+    "placesRemaining_one": "{{count}} place",
+    "placesRemaining_other": "{{count}} places",
+    "slotsCount_one": "{{count}} créneau",
+    "slotsCount_other": "{{count}} créneaux"
+  },
+  "eventParent": {
+    "kicker": "Fête de l'école",
+    "polesHeadingMobile": "Les pôles",
+    "ctaSubtitle": "Choisis les créneaux à l'étape suivante.",
+    "viewProgram": "Voir le programme",
+    "parentsSignedUp": " / {{necessaires}} parents inscrits",
+    "placesLabel": "{{count}} places",
+    "whyParticipate": "Pourquoi participer",
+    "choosePole": "Choisis ton pôle",
+    "polesSummary": "{{nbPoles}} pôles · {{aCompleter}} créneaux à pourvoir",
+    "footerTagline": "Ensemble — le bénévolat scolaire, simplement.",
+    "contact": "Contact",
+    "confidentiality": "Confidentialité",
+    "poleFull": "Complet",
+    "poleCardSlots": "{{count}} créneaux",
+    "view": "Voir"
+  },
+  "eventRedirect": {
+    "noEvent": "Aucun événement en cours",
+    "comeBackLater": "Revenez prochainement."
+  },
+  "poleSelection": {
+    "poleNotFound": "Pôle introuvable",
+    "coverageLabel": "Couverture du pôle",
+    "signupSuccess": "Merci ! Ton inscription est enregistrée.",
+    "confirmationEmailSent": "Un email a été envoyé. Clique sur le lien pour confirmer ta participation et protéger ton accès.",
+    "viewMySignups": "Voir mes inscriptions →",
+    "aboutPole": "Le pôle",
+    "tasksAndSlots": "Tâches & créneaux",
+    "clickToSignupDesktop": "Clique sur « Je participe » pour t'inscrire directement.",
+    "clickToSignupMobile": "Clique sur « Je participe » pour le créneau qui t'arrange."
+  },
+  "inscriptionDialog": {
+    "description": "Laisse-nous tes coordonnées pour finaliser l'inscription.",
+    "emailLabel": "Email",
+    "prefilledFromParent": "Tes informations sont pré-remplies.",
+    "prefilledFromLookup": "Nous t'avons retrouvé·e — tes infos sont pré-remplies.",
+    "nameLabel": "Nom complet",
+    "phoneLabel": "Téléphone (optionnel)",
+    "phonePlaceholder": "0470 00 00 00",
+    "privacyNoticePrefix": "Tes coordonnées (nom, email, tél.) sont utilisées uniquement pour organiser cet événement. Tu peux demander leur suppression depuis « Mes inscriptions »",
+    "privacyNoticeContactPrefix": "ou en contactant"
+  },
+  "confirmationDialog": {
+    "confirmAs": "Confirmer l'inscription en tant que",
+    "confirm": "Confirmer",
+    "editInfo": "Modifier mes informations"
+  },
+  "confirm": {
+    "verifying": "Vérification en cours…",
+    "invalidLinkTitle": "Lien invalide ou expiré",
+    "invalidLinkBody": "Ce lien de confirmation n'est plus valide. Contacte l'organisateur si nécessaire.",
+    "backToHome": "Retour à l'accueil",
+    "alreadyConfirmedTitle": "Participation déjà confirmée",
+    "confirmedTitle": "Participation confirmée !",
+    "alreadyConfirmedBody": "Ta participation avait déjà été confirmée.",
+    "confirmedBody": "Merci ! Ta participation est bien enregistrée.",
+    "viewMySignups": "Voir mes inscriptions",
+    "createAccessTitle": "Crée ton accès personnel",
+    "createAccessBody": "Définis un mot de passe pour retrouver tes inscriptions et t'inscrire en un clic.",
+    "setPassword": "Définir mon mot de passe"
+  },
+  "mesInscriptions": {
+    "backToHome": "Retour à l'accueil",
+    "breadcrumb": "Mes inscriptions",
+    "title": "Mes inscriptions",
+    "confirmed": "Participation confirmée",
+    "pendingTitle": "En attente de confirmation",
+    "pendingBody": "Consulte ton email pour confirmer ta participation.",
+    "volunteerKicker": "Bénévole",
+    "eventKicker": "Événement",
+    "viewEvent": "Voir l'événement →",
+    "mySlots": "Mes créneaux ({{count}})",
+    "noSlots": "Aucun créneau enregistré.",
+    "keepLinkHint": "Garde ce lien — il te permettra de retrouver tes inscriptions.",
+    "myDataKicker": "Mes données",
+    "deleteDataBody": "Tu peux demander la suppression de toutes tes données personnelles (nom, email, téléphone et inscriptions).",
+    "deleteData": "Supprimer mes données",
+    "deleteConfirmPrompt": "Cette action est irréversible. Confirmer ?",
+    "deleting": "Suppression…",
+    "confirmDelete": "Oui, supprimer",
+    "cancel": "Annuler",
+    "invalidLink": "Lien invalide ou expiré.",
+    "notConnected": "Non connecté ou session expirée."
+  },
+  "privacy": {
+    "back": "← Retour",
+    "title": "Politique de confidentialité",
+    "subtitle": "Conformément au Règlement (UE) 2016/679 (RGPD)",
+    "defaultOrgName": "le comité organisateur",
+    "responsible": {
+      "title": "Responsable du traitement",
+      "intro": "Le responsable du traitement des données collectées via cette plateforme est",
+      "contactPrefix": "Pour toute question relative à vos données, contactez :"
+    },
+    "dataCollected": {
+      "title": "Données collectées",
+      "intro": "Lors de votre inscription comme bénévole, nous collectons :",
+      "fullName": "Nom complet",
+      "email": "Adresse email",
+      "phone": "Numéro de téléphone (optionnel)",
+      "basis": "Ces données sont collectées sur la base de votre consentement (Art. 6.1.a RGPD) et dans le cadre de l'exécution d'une mission d'intérêt général (organisation d'un événement scolaire)."
+    },
+    "purposes": {
+      "title": "Finalités du traitement",
+      "slots": "Gestion des inscriptions aux créneaux de bénévolat",
+      "communication": "Communication relative à l'événement (confirmation, rappels)",
+      "coordination": "Coordination des bénévoles par les organisateurs"
+    },
+    "retention": {
+      "title": "Durée de conservation",
+      "text": "Vos données sont conservées jusqu'à la fin de l'événement auquel vous êtes inscrit·e, puis supprimées ou anonymisées dans un délai raisonnable."
+    },
+    "rights": {
+      "title": "Vos droits",
+      "intro": "Conformément au RGPD, vous disposez des droits suivants :",
+      "access": {
+        "label": "Droit d'accès",
+        "description": "consulter vos données via la page « Mes inscriptions »"
+      },
+      "rectification": {
+        "label": "Droit de rectification",
+        "description": "corriger vos informations"
+      },
+      "erasure": {
+        "label": "Droit à l'effacement",
+        "description": "supprimer votre compte depuis « Mes inscriptions »"
+      },
+      "objection": {
+        "label": "Droit d'opposition",
+        "description": "vous opposer au traitement de vos données"
+      },
+      "exercisePrefix": "Pour exercer ces droits, rendez-vous sur la page",
+      "exerciseLinkText": "Mes inscriptions",
+      "exerciseOr": "ou contactez",
+      "complaintPrefix": "Vous avez également le droit d'introduire une réclamation auprès de l'",
+      "complaintLinkText": "Autorité de protection des données (APD)",
+      "complaintSuffix": "belge."
+    },
+    "cookies": {
+      "title": "Cookies",
+      "text": "Ce site utilise uniquement un cookie de session technique, nécessaire au bon fonctionnement du service (maintien de votre connexion). Ce cookie ne nécessite pas de consentement selon les lignes directrices de l'APD."
+    }
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "body": "Cette page n'existe pas (ou plus).",
+    "backToEvent": "→ Retour à l'événement"
+  }
+}
