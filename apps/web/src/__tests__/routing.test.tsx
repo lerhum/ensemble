@@ -13,13 +13,16 @@ const bareLinksAlreadySent = [
 ];
 
 describe("locale-prefixed routing", () => {
-  it.each(bareLinksAlreadySent)("resolves already-emailed link %s via the bare French branch", (path) => {
-    const matches = matchRoutes(routes, path);
-    expect(matches).not.toBeNull();
-    const matchedPaths = matches!.map((m) => m.route.path);
-    expect(matchedPaths).not.toContain("nl");
-    expect(matchedPaths).not.toContain("en");
-  });
+  it.each(bareLinksAlreadySent)(
+    "resolves already-emailed link %s via the bare French branch",
+    (path) => {
+      const matches = matchRoutes(routes, path);
+      expect(matches).not.toBeNull();
+      const matchedPaths = matches!.map((m) => m.route.path);
+      expect(matchedPaths).not.toContain("nl");
+      expect(matchedPaths).not.toContain("en");
+    },
+  );
 
   it("resolves other bare routes (home, event page, admin) unchanged", () => {
     for (const path of ["/", "/e/demo-gots-talent", "/e/demo-gots-talent/pole/1", "/admin"]) {
