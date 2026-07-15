@@ -100,6 +100,16 @@ describe("volunteersToCsv", () => {
     expect(volunteersToCsv([makeVolunteer({ statut: "attente" })])).toContain("En attente");
   });
 
+  it("defaults to French headers when no locale is given", () => {
+    const csv = volunteersToCsv([makeVolunteer()]);
+    expect(csv).toContain('"Nom","Email","Téléphone","Pôle(s)","Créneaux","Statut"');
+  });
+
+  it("accepts an explicit locale — falls back to French headers until nl content lands (D1)", () => {
+    const csv = volunteersToCsv([makeVolunteer()], "nl");
+    expect(csv).toContain('"Nom","Email","Téléphone","Pôle(s)","Créneaux","Statut"');
+  });
+
   it("escapes double quotes inside fields", () => {
     const csv = volunteersToCsv([makeVolunteer({ nom: 'Alice "La Grande" Dupont' })]);
     expect(csv).toContain('""La Grande""');

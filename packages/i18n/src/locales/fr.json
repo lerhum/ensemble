@@ -58,5 +58,15 @@
     "broadcast": {
       "htmlTitle": "Message"
     }
+  },
+  "csv": {
+    "headerNom": "Nom",
+    "headerEmail": "Email",
+    "headerTel": "Téléphone",
+    "headerPoles": "Pôle(s)",
+    "headerCreneaux": "Créneaux",
+    "headerStatut": "Statut",
+    "statusConfirmed": "Confirmé",
+    "statusPending": "En attente"
   }
 }

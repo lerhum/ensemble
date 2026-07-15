@@ -12,6 +12,7 @@ import {
   type VolunteerFilter,
 } from "@ensemble/db/shared";
 import type { Db } from "@ensemble/db/node";
+import { t, type SupportedLocale } from "./i18n.js";
 
 /** Sort comparator for entities with a position field, ascending. */
 const asc =
@@ -302,9 +303,16 @@ export async function buildVolunteers(
 }
 
 /** Serializes a volunteer list to CSV (UTF-8 BOM for Excel compatibility, comma-separated). */
-export function volunteersToCsv(list: VolunteerDTO[]): string {
+export function volunteersToCsv(list: VolunteerDTO[], locale: SupportedLocale = "fr"): string {
   const esc = (s: string) => `"${s.replace(/"/g, '""')}"`;
-  const header = ["Nom", "Email", "Téléphone", "Pôle(s)", "Créneaux", "Statut"];
+  const header = [
+    t(locale, "csv.headerNom"),
+    t(locale, "csv.headerEmail"),
+    t(locale, "csv.headerTel"),
+    t(locale, "csv.headerPoles"),
+    t(locale, "csv.headerCreneaux"),
+    t(locale, "csv.headerStatut"),
+  ];
   const lines = list.map((v) =>
     [
       v.nom,
@@ -312,7 +320,7 @@ export function volunteersToCsv(list: VolunteerDTO[]): string {
       v.tel ?? "",
       v.poles.map((p) => p.nom).join(" / "),
       v.creneaux.map((cr) => `${cr.tache} ${cr.debut}-${cr.fin}`).join(" / "),
-      v.statut === "confirme" ? "Confirmé" : "En attente",
+      v.statut === "confirme" ? t(locale, "csv.statusConfirmed") : t(locale, "csv.statusPending"),
     ]
       .map(esc)
       .join(","),

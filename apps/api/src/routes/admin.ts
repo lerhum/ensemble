@@ -20,7 +20,7 @@ import {
 import type { AppEnv } from "../context.js";
 import { conflict, notFound, validate } from "../errors.js";
 import { requireAdmin } from "../auth.js";
-import { t, normalizeLocale, type SupportedLocale } from "../i18n.js";
+import { t, normalizeLocale, resolveLocale, type SupportedLocale } from "../i18n.js";
 import {
   buildEventDetailById,
   buildVolunteers,
@@ -409,12 +409,13 @@ adminRoutes.get("/events/:id/volunteers", async (c) => {
   return c.json({ volunteers: list, total: list.length });
 });
 
-/** Streams filtered volunteers as a CSV download (UTF-8 BOM for Excel). */
+/** Streams filtered volunteers as a CSV download (UTF-8 BOM for Excel). Headers/status labels follow ?locale= (resolveLocale precedence: query param → Accept-Language → French). */
 adminRoutes.get("/events/:id/volunteers.csv", async (c) => {
   const list = await buildVolunteers(c.get("db"), c.req.param("id"), parseFilter(c));
+  const locale = resolveLocale(c);
   c.header("Content-Type", "text/csv; charset=utf-8");
   c.header("Content-Disposition", 'attachment; filename="benevoles.csv"');
-  return c.body(volunteersToCsv(list));
+  return c.body(volunteersToCsv(list, locale));
 });
 
 /** Manually registers a person on a slot (admin action) — email/tel are optional, unlike public signup. */
