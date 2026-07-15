@@ -4,5 +4,14 @@
     "myRegistrations": "Mes inscriptions",
     "logout": "Se déconnecter",
     "login": "Se connecter"
+  },
+  "status": {
+    "complet": "Complet",
+    "urgent": "Urgent",
+    "placesLeft_one": "{{count}} place",
+    "placesLeft_other": "{{count}} places"
+  },
+  "errors": {
+    "authProviderMissing": "useAuth doit être utilisé dans <AuthProvider>"
   }
 }

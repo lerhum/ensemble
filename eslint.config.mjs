@@ -79,6 +79,9 @@ export default tseslint.config(
       "apps/web/src/pages/admin/AdminPilotagePage.tsx",
       "apps/web/src/pages/admin/AdminPolesPage.tsx",
       "apps/web/src/pages/admin/AdminVolunteersPage.tsx",
+      "apps/web/src/components/primitives/status.ts",
+      "apps/web/src/lib/auth-context.tsx",
+      "apps/web/src/lib/volunteer-context.tsx",
     ],
     plugins: { i18next },
     rules: {

@@ -2,6 +2,10 @@ import { describe, it, expect } from "vitest";
 import { statusMeta } from "@/components/primitives/status.js";
 import { STATUS_COLORS } from "@ensemble/db/shared";
 
+// statusMeta() now sources its label via i18n.t(), and i18n.ts defaults to "fr" with no
+// changeLanguage() call in this suite — so these assertions verify the default French rendering
+// (including real i18next pluralization for placesLeft), not the label structure independently
+// of language. nl/en coverage lives in the translation-content QA pass (D1/D2).
 describe("statusMeta", () => {
   it("returns complet metadata when slot is full", () => {
     const m = statusMeta(10, 10);
