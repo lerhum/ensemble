@@ -37,7 +37,10 @@ describe("t", () => {
     expect(t("fr", "errors.notFound", { who: "test" })).toBe("Ressource introuvable");
   });
 
-  // No dictionary key uses {placeholder}/pluralization yet — this issue's only real content is
-  // errors.notFound. Interpolation/pluralization substitution gets exercised for real once C2's
-  // email templates (which need both) land; see packages/i18n's t() implementation for the logic.
+  it("interpolates a {placeholder} (C2 email templates)", () => {
+    expect(t("fr", "emails.greeting", { nom: "Alice" })).toBe("Bonjour Alice 👋");
+    expect(t("fr", "emails.reminder.subject", { event: "Demo Got's Talent" })).toBe(
+      "Rappel — ton créneau approche (Demo Got's Talent)",
+    );
+  });
 });

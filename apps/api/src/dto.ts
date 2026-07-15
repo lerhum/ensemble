@@ -292,6 +292,7 @@ export async function buildVolunteers(
       email: v.email,
       tel: v.tel,
       statut: v.statut,
+      locale: v.locale,
       poles: [...polesMap].map(([id, nom]) => ({ id, nom })),
       creneaux,
     };

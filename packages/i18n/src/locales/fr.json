@@ -32,5 +32,31 @@
     "nomRequired": "Nom requis",
     "subjectRequired": "Sujet requis",
     "messageRequired": "Message requis"
+  },
+  "emails": {
+    "greeting": "Bonjour {nom} 👋",
+    "textGreeting": "Bonjour {nom},",
+    "signature": "Ensemble",
+    "confirmation": {
+      "subject": "Confirme ta participation — Ensemble",
+      "htmlTitle": "Confirme ta participation",
+      "intro": "Merci pour ton inscription ! Clique sur le bouton ci-dessous pour confirmer ta participation.",
+      "confirmButton": "Confirmer ma participation",
+      "viewSignups": "Ou consulte directement tes inscriptions :",
+      "createAccess": "💡 Crée ton accès personnel pour retrouver tes inscriptions à tout moment :",
+      "setPasswordLink": "Définir mon mot de passe →",
+      "expiry": "Ces liens expirent dans 7 jours. Si tu n'as pas demandé cette inscription, ignore cet email.",
+      "textIntro": "Merci pour ton inscription ! Confirme ta participation en ouvrant ce lien :",
+      "textExpiry": "Ce lien expire dans 7 jours."
+    },
+    "reminder": {
+      "subject": "Rappel — ton créneau approche ({event})",
+      "htmlTitle": "Rappel de créneau",
+      "intro": "Petit rappel : ton créneau approche pour {event}.",
+      "thanks": "Merci pour ton engagement !"
+    },
+    "broadcast": {
+      "htmlTitle": "Message"
+    }
   }
 }

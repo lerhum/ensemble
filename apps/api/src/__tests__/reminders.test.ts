@@ -21,7 +21,7 @@ function makeRow(overrides: Partial<DueInscriptionRow> = {}): DueInscriptionRow 
         },
       },
     },
-    volunteer: { email: "alice@example.com", nom: "Alice", statut: "confirme" },
+    volunteer: { email: "alice@example.com", nom: "Alice", statut: "confirme", locale: "fr" },
     ...overrides,
   };
 }
@@ -63,7 +63,9 @@ describe("selectDueReminders", () => {
   });
 
   it("excludes waitlisted volunteers", () => {
-    const rows = [makeRow({ volunteer: { email: "a@b.com", nom: "Bob", statut: "attente" } })];
+    const rows = [
+      makeRow({ volunteer: { email: "a@b.com", nom: "Bob", statut: "attente", locale: "fr" } }),
+    ];
     expect(selectDueReminders(rows, NOW, 4)).toHaveLength(0);
   });
 });

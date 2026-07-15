@@ -99,6 +99,7 @@ export interface VolunteerDTO {
   email: string | null;
   tel: string | null;
   statut: VolunteerStatut;
+  locale: string;
   poles: { id: string; nom: string }[];
   creneaux: { id: string; tacheId: string; tache: string; debut: string; fin: string }[];
 }
