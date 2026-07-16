@@ -88,6 +88,11 @@ export default tseslint.config(
       "apps/web/src/lib/auth-context.tsx",
       "apps/web/src/lib/volunteer-context.tsx",
       "apps/web/src/components/LocaleSwitcher.tsx",
+      "apps/web/src/components/primitives/CarteCreneau.tsx",
+      "apps/web/src/components/primitives/LigneCreneau.tsx",
+      "apps/web/src/components/primitives/BadgeStatut.tsx",
+      "apps/web/src/components/primitives/Jauge.tsx",
+      "apps/web/src/components/primitives/Pastilles.tsx",
     ],
     plugins: { i18next },
     rules: {

@@ -1,4 +1,5 @@
 import { Check } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { cn, formatPlage } from "@/lib/utils";
 import { Pastilles } from "./Pastilles";
@@ -24,16 +25,12 @@ export function LigneCreneau({
   onToggle,
   className,
 }: LigneCreneauProps) {
+  const { t } = useTranslation("public");
   const meta = statusMeta(inscrits, necessaires);
   const complet = meta.status === "complet";
-  const suffix =
-    meta.status === "complet"
-      ? "complet"
-      : meta.status === "urgent"
-        ? "urgent"
-        : meta.status === "ambre"
-          ? "1 place"
-          : "inscrits";
+  // meta.label already matches for complet/urgent/ambre; only "cours" shows a distinct generic
+  // word here instead of repeating the "N places" count already displayed just before it.
+  const suffix = meta.status === "cours" ? t("shared.signedUpSuffix") : meta.label;
 
   return (
     <div className={cn("flex items-center gap-4 py-3", className)}>
@@ -47,10 +44,10 @@ export function LigneCreneau({
       </span>
 
       {complet ? (
-        <span className="text-sm font-700 text-label">Complet</span>
+        <span className="text-sm font-700 text-label">{meta.label}</span>
       ) : selected ? (
         <Button variant="outline" size="sm" onClick={onToggle} className="w-32 gap-1.5">
-          <Check className="h-4 w-4 text-success" /> Inscrit
+          <Check className="h-4 w-4 text-success" /> {t("shared.alreadySignedUp")}
         </Button>
       ) : (
         <Button
@@ -59,7 +56,7 @@ export function LigneCreneau({
           onClick={onToggle}
           className="w-32"
         >
-          Je participe
+          {t("shared.participate")}
         </Button>
       )}
     </div>

@@ -9,7 +9,9 @@
     "placesRemaining_one": "nog {{count}} plaats",
     "placesRemaining_other": "nog {{count}} plaatsen",
     "slotsCount_one": "{{count}} tijdslot",
-    "slotsCount_other": "{{count}} tijdsloten"
+    "slotsCount_other": "{{count}} tijdsloten",
+    "signedUpSuffix": "ingeschreven",
+    "alreadySignedUp": "Ingeschreven"
   },
   "eventParent": {
     "kicker": "Schoolfeest",

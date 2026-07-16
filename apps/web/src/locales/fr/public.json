@@ -9,7 +9,9 @@
     "placesRemaining_one": "{{count}} place",
     "placesRemaining_other": "{{count}} places",
     "slotsCount_one": "{{count}} créneau",
-    "slotsCount_other": "{{count}} créneaux"
+    "slotsCount_other": "{{count}} créneaux",
+    "signedUpSuffix": "inscrits",
+    "alreadySignedUp": "Inscrit"
   },
   "eventParent": {
     "kicker": "Fête de l'école",
