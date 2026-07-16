@@ -32,7 +32,8 @@
   },
   "eventRedirect": {
     "noEvent": "Momenteel geen actief evenement",
-    "comeBackLater": "Kom binnenkort terug."
+    "comeBackLater": "Kom binnenkort terug.",
+    "brandFallback": "Ensemble"
   },
   "poleSelection": {
     "poleNotFound": "Stand niet gevonden",
