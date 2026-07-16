@@ -14,7 +14,7 @@
     "alreadySignedUp": "Inscrit"
   },
   "eventParent": {
-    "kicker": "Fête de l'école",
+    "kicker": "Événement",
     "polesHeadingMobile": "Les pôles",
     "ctaSubtitle": "Choisis les créneaux à l'étape suivante.",
     "viewProgram": "Voir le programme",
@@ -23,7 +23,7 @@
     "whyParticipate": "Pourquoi participer",
     "choosePole": "Choisis ton pôle",
     "polesSummary": "{{nbPoles}} pôles · {{aCompleter}} créneaux à pourvoir",
-    "footerTagline": "Ensemble — le bénévolat scolaire, simplement.",
+    "footerTagline": "Ensemble — le bénévolat, simplement.",
     "contact": "Contact",
     "confidentiality": "Confidentialité",
     "poleFull": "Complet",
@@ -115,7 +115,7 @@
       "fullName": "Nom complet",
       "email": "Adresse email",
       "phone": "Numéro de téléphone (optionnel)",
-      "basis": "Ces données sont collectées sur la base de votre consentement (Art. 6.1.a RGPD) et dans le cadre de l'exécution d'une mission d'intérêt général (organisation d'un événement scolaire)."
+      "basis": "Ces données sont collectées sur la base de votre consentement (Art. 6.1.a RGPD) et dans le cadre de l'exécution d'une mission d'intérêt général (organisation d'un événement)."
     },
     "purposes": {
       "title": "Finalités du traitement",

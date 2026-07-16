@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 interface LogoProps {
-  /** Accent color (default: school theme via --accent-brand). */
+  /** Accent color (default: brand theme via --accent-brand). */
   color?: string;
   className?: string;
   /** Show the word "Ensemble" next to the symbol. */

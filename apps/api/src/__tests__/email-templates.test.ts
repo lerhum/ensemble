@@ -45,7 +45,7 @@ describe("reminder email", () => {
       "Bar",
       "13:00",
       "14:00",
-      "École",
+      "Salle des fêtes",
       "nl",
     );
     expect(html).toContain('lang="nl"');
@@ -60,7 +60,7 @@ describe("reminder email", () => {
       "Bar",
       "13:00",
       "14:00",
-      "École",
+      "Salle des fêtes",
       "fr",
     );
     expect(text).not.toContain("<strong>");

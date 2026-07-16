@@ -16,7 +16,7 @@ function makeRow(overrides: Partial<DueInscriptionRow> = {}): DueInscriptionRow 
             statut: "publie",
             dateIso: "2026-01-15",
             nom: "Demo Got's Talent",
-            lieu: "École",
+            lieu: "Salle des fêtes",
           },
         },
       },

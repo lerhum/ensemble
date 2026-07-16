@@ -1,4 +1,4 @@
-// Thème par école : applique la couleur d'accent de l'événement à la variable
+// Thème par organisation : applique la couleur d'accent de l'événement à la variable
 // CSS --accent-brand (utilisée par le logo, les CTA, les liens).
 export const DEFAULT_ACCENT = "#DA4A40";
 
