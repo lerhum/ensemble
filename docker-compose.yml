@@ -78,6 +78,9 @@ services:
       SMTP_HOST: ${SMTP_HOST:-mailpit}
       SMTP_PORT: ${SMTP_PORT:-1025}
       EMAIL_FROM: ${EMAIL_FROM:-Ensemble <noreply@ensemble.local>}
+      # Skips the (git-less image, pointless in a container) lefthook install pnpm's implicit
+      # deps-status-check can trigger on a package.json/lockfile change — same as `migrate`.
+      CI: "true"
     ports:
       - "${API_PORT:-8787}:8787"
     volumes: *node_modules
@@ -91,6 +94,7 @@ services:
       - api
     environment:
       VITE_API_PROXY: ${VITE_API_PROXY:-http://api:8787}
+      CI: "true"
     ports:
       - "${WEB_PORT:-5173}:5173"
     volumes: *node_modules
