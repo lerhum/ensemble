@@ -63,6 +63,7 @@ export default tseslint.config(
     // CONTRIBUTING.md § Internationalization.
     files: [
       "apps/web/src/components/public/PublicNav.tsx",
+      "apps/web/src/components/public/PublicFooter.tsx",
       "apps/web/src/pages/InstallPage.tsx",
       "apps/web/src/pages/LoginPage.tsx",
       "apps/web/src/pages/VolunteerLoginPage.tsx",
