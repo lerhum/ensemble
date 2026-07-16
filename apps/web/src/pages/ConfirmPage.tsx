@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { api } from "@/lib/api";
 import { useVolunteer } from "@/lib/volunteer-context";
 import { Button } from "@/components/ui/button";
+import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 
 /** Page displayed when a volunteer clicks the email confirmation link. Confirms participation via token. */
 export default function ConfirmPage() {
@@ -28,6 +29,9 @@ export default function ConfirmPage() {
   if (state === "loading") {
     return (
       <Center>
+        <div className="fixed right-4 top-4 z-10">
+          <LocaleSwitcher />
+        </div>
         <Loader2 className="h-8 w-8 animate-spin text-label" />
         <p className="mt-3 text-label">{t("confirm.verifying")}</p>
       </Center>
@@ -37,6 +41,9 @@ export default function ConfirmPage() {
   if (state === "error") {
     return (
       <Center>
+        <div className="fixed right-4 top-4 z-10">
+          <LocaleSwitcher />
+        </div>
         <XCircle className="h-10 w-10 text-danger" />
         <h1 className="mt-3 text-xl font-800 text-ink">{t("confirm.invalidLinkTitle")}</h1>
         <p className="mt-1 text-sm text-label">{t("confirm.invalidLinkBody")}</p>
@@ -49,6 +56,9 @@ export default function ConfirmPage() {
 
   return (
     <Center>
+      <div className="fixed right-4 top-4 z-10">
+        <LocaleSwitcher />
+      </div>
       <CheckCircle2 className="h-10 w-10 text-success" />
       <h1 className="mt-3 text-xl font-800 text-ink">
         {state === "already" ? t("confirm.alreadyConfirmedTitle") : t("confirm.confirmedTitle")}
