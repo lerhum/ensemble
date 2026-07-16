@@ -1,4 +1,5 @@
 import { Check } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { cn, formatPlage } from "@/lib/utils";
 import { BadgeStatut } from "./BadgeStatut";
@@ -28,6 +29,7 @@ export function CarteCreneau({
   onToggle,
   className,
 }: CarteCreneauProps) {
+  const { t } = useTranslation("public");
   const meta = statusMeta(inscrits, necessaires);
   const complet = meta.status === "complet";
 
@@ -55,15 +57,15 @@ export function CarteCreneau({
             <span className={complet ? "" : "text-ink"}>
               {inscrits}/{necessaires}
             </span>{" "}
-            <span className="text-label">inscrits</span>
+            <span className="text-label">{t("shared.signedUpSuffix")}</span>
           </span>
         </div>
 
         {complet ? (
-          <span className="text-sm font-700 text-label">Complet</span>
+          <span className="text-sm font-700 text-label">{meta.label}</span>
         ) : selected ? (
           <Button variant="outline" size="sm" onClick={onToggle} className="gap-1.5">
-            <Check className="h-4 w-4 text-success" /> Inscrit
+            <Check className="h-4 w-4 text-success" /> {t("shared.alreadySignedUp")}
           </Button>
         ) : (
           <Button
@@ -71,7 +73,7 @@ export function CarteCreneau({
             size="sm"
             onClick={onToggle}
           >
-            Je participe
+            {t("shared.participate")}
           </Button>
         )}
       </div>

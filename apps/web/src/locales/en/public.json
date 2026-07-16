@@ -9,7 +9,9 @@
     "placesRemaining_one": "{{count}} spot",
     "placesRemaining_other": "{{count}} spots",
     "slotsCount_one": "{{count}} slot",
-    "slotsCount_other": "{{count}} slots"
+    "slotsCount_other": "{{count}} slots",
+    "signedUpSuffix": "signed up",
+    "alreadySignedUp": "Signed up"
   },
   "eventParent": {
     "kicker": "School fair",
