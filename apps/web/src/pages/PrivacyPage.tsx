@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/lib/auth-context";
+import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 
 /** GDPR privacy policy page, referencing the site title and RGPD contact email from settings. */
 export default function PrivacyPage() {
@@ -10,6 +11,9 @@ export default function PrivacyPage() {
 
   return (
     <div className="min-h-screen bg-[#F9F9F8] px-4 py-12">
+      <div className="fixed right-4 top-4 z-10">
+        <LocaleSwitcher />
+      </div>
       <div className="mx-auto max-w-2xl space-y-8">
         <div>
           <Link to="/" className="text-[13px] text-label hover:underline">
