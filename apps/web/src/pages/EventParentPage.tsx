@@ -8,6 +8,7 @@ import { useAuth } from "@/lib/auth-context";
 import { applyAccent } from "@/lib/theme";
 import { initials } from "@/lib/utils";
 import { PublicNav } from "@/components/public/PublicNav";
+import { PublicFooter } from "@/components/public/PublicFooter";
 import { Button } from "@/components/ui/button";
 import { Jauge } from "@/components/primitives/Jauge";
 
@@ -220,19 +221,7 @@ function DesktopView({
           </div>
         </section>
 
-        <footer className="flex items-center justify-between border-t border-hair py-8 text-[13px] text-label">
-          <span>{t("eventParent.footerTagline")}</span>
-          <span className="flex items-center gap-3">
-            {rgpdEmail && (
-              <a href={`mailto:${rgpdEmail}`} className="hover:underline">
-                {t("eventParent.contact")}
-              </a>
-            )}
-            <Link to="/confidentialite" className="hover:underline">
-              {t("eventParent.confidentiality")}
-            </Link>
-          </span>
-        </footer>
+        <PublicFooter rgpdEmail={rgpdEmail} />
       </div>
     </div>
   );
