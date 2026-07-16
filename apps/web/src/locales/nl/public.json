@@ -14,7 +14,7 @@
     "alreadySignedUp": "Ingeschreven"
   },
   "eventParent": {
-    "kicker": "Schoolfeest",
+    "kicker": "Evenement",
     "polesHeadingMobile": "De stands",
     "ctaSubtitle": "Kies je tijdsloten in de volgende stap.",
     "viewProgram": "Bekijk het programma",
@@ -23,7 +23,7 @@
     "whyParticipate": "Waarom meedoen",
     "choosePole": "Kies je stand",
     "polesSummary": "{{nbPoles}} stands · {{aCompleter}} tijdsloten in te vullen",
-    "footerTagline": "Ensemble — schoolvrijwilligerswerk, eenvoudig gemaakt.",
+    "footerTagline": "Ensemble — vrijwilligerswerk, eenvoudig gemaakt.",
     "contact": "Contact",
     "confidentiality": "Privacy",
     "poleFull": "Volzet",
@@ -115,7 +115,7 @@
       "fullName": "Volledige naam",
       "email": "E-mailadres",
       "phone": "Telefoonnummer (optioneel)",
-      "basis": "Deze gegevens worden verzameld op basis van uw toestemming (Art. 6.1.a AVG) en in het kader van de uitvoering van een taak van algemeen belang (organisatie van een schoolevenement)."
+      "basis": "Deze gegevens worden verzameld op basis van uw toestemming (Art. 6.1.a AVG) en in het kader van de uitvoering van een taak van algemeen belang (organisatie van een evenement)."
     },
     "purposes": {
       "title": "Doeleinden van de verwerking",

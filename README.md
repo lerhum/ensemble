@@ -1,10 +1,10 @@
 # Ensemble
 
-**Ensemble** is a web app for managing **school volunteering** (French-language, Belgian schools).
-Parents discover a school event (e.g. _Demo Got's Talent_), read its story, browse **pôles**
-(Bar & Buvette, Pêche aux canards, Grimage…) and sign up for one or more **créneaux**.
-The school committee manages the event: customizable public page, pôle/tâche/créneau
-configuration, volunteer tracking (filters + CSV export).
+**Ensemble** is a web app for managing **event volunteering** (French-language, aimed at Belgian
+community organizations). Visitors discover an event (e.g. _Demo Got's Talent_), read its story,
+browse **pôles** (Bar & Buvette, Pêche aux canards, Grimage…) and sign up for one or more
+**créneaux**. The organizing committee manages the event: customizable public page, pôle/tâche/
+créneau configuration, volunteer tracking (filters + CSV export).
 
 ## Stack
 
@@ -12,7 +12,7 @@ configuration, volunteer tracking (filters + CSV export).
 
 | Workspace     | Stack                                            | Role                                                                |
 | ------------- | ------------------------------------------------ | ------------------------------------------------------------------- |
-| `apps/web`    | React + Vite + TypeScript + Tailwind + shadcn/ui | Frontend (Manrope, per-school theming)                              |
+| `apps/web`    | React + Vite + TypeScript + Tailwind + shadcn/ui | Frontend (Manrope, per-organization theming)                        |
 | `apps/api`    | Hono + TypeScript + zod                          | REST API — runs on **Node** (dev) **and Cloudflare Workers** (prod) |
 | `packages/db` | Drizzle ORM + PostgreSQL                         | Schema, migrations, seed, shared types + zod schemas                |
 

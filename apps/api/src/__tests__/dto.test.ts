@@ -35,7 +35,7 @@ function makeEvent(poles: unknown[] = []): EventWithTree {
     histoire: "",
     banniere: null,
     couleurTheme: "#DA4A40",
-    orgNom: "École Test",
+    orgNom: "Organisation Test",
     statut: "publie",
     pourquoiTitre: "",
     pourquoiTexte: "",

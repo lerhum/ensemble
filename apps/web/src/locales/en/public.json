@@ -14,7 +14,7 @@
     "alreadySignedUp": "Signed up"
   },
   "eventParent": {
-    "kicker": "School fair",
+    "kicker": "Event",
     "polesHeadingMobile": "Stations",
     "ctaSubtitle": "Choose your slots on the next step.",
     "viewProgram": "View the program",
@@ -23,7 +23,7 @@
     "whyParticipate": "Why volunteer",
     "choosePole": "Choose your station",
     "polesSummary": "{{nbPoles}} stations · {{aCompleter}} slots to fill",
-    "footerTagline": "Ensemble — school volunteering, made simple.",
+    "footerTagline": "Ensemble — volunteering, made simple.",
     "contact": "Contact",
     "confidentiality": "Privacy",
     "poleFull": "Full",
@@ -115,7 +115,7 @@
       "fullName": "Full name",
       "email": "Email address",
       "phone": "Phone number (optional)",
-      "basis": "This data is collected on the basis of your consent (GDPR Art. 6.1.a) and as part of carrying out a task in the public interest (organizing a school event)."
+      "basis": "This data is collected on the basis of your consent (GDPR Art. 6.1.a) and as part of carrying out a task in the public interest (organizing an event)."
     },
     "purposes": {
       "title": "Purposes of processing",

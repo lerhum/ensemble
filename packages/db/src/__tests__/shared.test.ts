@@ -60,7 +60,7 @@ describe("STATUS_COLORS", () => {
 
 describe("installSchema", () => {
   const valid = {
-    orgNom: "École Test",
+    orgNom: "Organisation Test",
     rgpdEmail: "rgpd@test.be",
     email: "admin@test.be",
     password: "motdepasse",
@@ -97,7 +97,7 @@ describe("installSchema", () => {
 });
 
 describe("eventInputSchema", () => {
-  const valid = { nom: "Gala de l'école" };
+  const valid = { nom: "Gala annuel" };
 
   it("accepts minimal valid payload (only nom required)", () => {
     const r = eventInputSchema.safeParse(valid);

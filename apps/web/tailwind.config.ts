@@ -35,7 +35,7 @@ export default {
         ink2: "#42505E",
         navy: "#1C3A5E",
         coral: { DEFAULT: "#DA4A40", light: "#F4897E" },
-        // Accent thématisé par école (var --accent-brand, défaut corail)
+        // Accent thématisé par organisation (var --accent-brand, défaut corail)
         brand: "var(--accent-brand)",
         success: { DEFAULT: "#2F7E59", bg: "#EAF4EF" },
         warn: { DEFAULT: "#B5781E", bg: "#FBF1DF", bar: "#E8A13A" },

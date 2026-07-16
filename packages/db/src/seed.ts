@@ -116,7 +116,7 @@ const POLES: PoleSeed[] = [
   },
   {
     nom: "Pêche aux canards",
-    description: "Animer le stand de pêche aux canards pour les enfants.",
+    description: "Animer le stand de pêche aux canards.",
     taches: [
       {
         nom: "Préparation du stand",
@@ -132,7 +132,7 @@ const POLES: PoleSeed[] = [
       },
       {
         nom: "Animation",
-        description: "Accueillir les enfants au stand",
+        description: "Accueillir le public au stand",
         creneaux: [
           {
             debut: "14:30",
@@ -147,7 +147,7 @@ const POLES: PoleSeed[] = [
   },
   {
     nom: "Grimage & maquillage",
-    description: "Maquiller les enfants : papillons, super-héros, animaux.",
+    description: "Maquiller les visiteurs : papillons, super-héros, animaux.",
     taches: [
       {
         nom: "Installation",
@@ -163,7 +163,7 @@ const POLES: PoleSeed[] = [
       },
       {
         nom: "Maquillage",
-        description: "Maquiller les enfants",
+        description: "Maquiller les visiteurs",
         creneaux: [
           {
             debut: "14:30",
@@ -183,7 +183,7 @@ const POLES: PoleSeed[] = [
   },
   {
     nom: "Pâtisseries",
-    description: "Vendre les pâtisseries préparées par les familles.",
+    description: "Vendre les pâtisseries préparées par les bénévoles.",
     taches: [
       {
         nom: "Vente pâtisseries",
@@ -202,11 +202,11 @@ const POLES: PoleSeed[] = [
   },
   {
     nom: "Accueil & billetterie",
-    description: "Accueillir les familles et vendre les tickets.",
+    description: "Accueillir le public et vendre les tickets.",
     taches: [
       {
         nom: "Accueil",
-        description: "Accueillir et orienter les familles",
+        description: "Accueillir et orienter le public",
         creneaux: [
           {
             debut: "13:30",
@@ -274,17 +274,17 @@ async function main() {
       nom: "Demo Got's Talent",
       date: "Samedi 14 juin 2026",
       horaires: "14h00 – 20h00",
-      lieu: "Nouvelle école — 1 rue de la Fête, Belgique",
+      lieu: "Salle des fêtes — 1 rue de la Fête, Belgique",
       histoire:
-        "Les enfants répètent depuis des semaines pour vous offrir un spectacle inoubliable. Le comité et les bénévoles préparent cette fête avec le cœur — il ne manque plus que vous. Quelques heures suffisent à faire toute la différence.",
+        "Nos artistes répètent depuis des semaines pour vous offrir un spectacle inoubliable. Le comité et les bénévoles préparent cette fête avec le cœur — il ne manque plus que vous. Quelques heures suffisent à faire toute la différence.",
       banniere: null,
       couleurTheme: "#DA4A40",
-      orgNom: "Comité scolaire",
+      orgNom: "Comité organisateur",
       statut: "publie",
       dateIso: "2026-06-14",
-      pourquoiTitre: "Une fête portée par les parents",
+      pourquoiTitre: "Une fête portée par ses bénévoles",
       pourquoiTexte:
-        "Le comité et les bénévoles préparent cette journée avec le cœur. Chaque pôle a besoin de quelques mains pour tourner — tenir le bar une heure, accueillir les familles, ranger en fin de journée. Inscris-toi sur les créneaux qui t'arrangent : même une heure compte.",
+        "Le comité et les bénévoles préparent cette journée avec le cœur. Chaque pôle a besoin de quelques mains pour tourner — tenir le bar une heure, accueillir le public, ranger en fin de journée. Inscris-toi sur les créneaux qui t'arrangent : même une heure compte.",
     })
     .returning();
   const eventId = event!.id;

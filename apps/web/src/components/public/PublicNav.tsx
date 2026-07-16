@@ -11,7 +11,7 @@ interface Props {
   containerClassName?: string;
 }
 
-/** Top navigation bar for the public event page: school branding, "Mes inscriptions" link, and volunteer session controls. */
+/** Top navigation bar for the public event page: organization branding, "Mes inscriptions" link, and volunteer session controls. */
 export function PublicNav({
   orgNom,
   accent,
