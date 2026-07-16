@@ -32,7 +32,8 @@
   },
   "eventRedirect": {
     "noEvent": "No event currently running",
-    "comeBackLater": "Please check back soon."
+    "comeBackLater": "Please check back soon.",
+    "brandFallback": "Ensemble"
   },
   "poleSelection": {
     "poleNotFound": "Station not found",

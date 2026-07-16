@@ -32,7 +32,8 @@
   },
   "eventRedirect": {
     "noEvent": "Aucun événement en cours",
-    "comeBackLater": "Revenez prochainement."
+    "comeBackLater": "Revenez prochainement.",
+    "brandFallback": "Ensemble"
   },
   "poleSelection": {
     "poleNotFound": "Pôle introuvable",
